@@ -1,0 +1,2460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Renter Dashboard | Eastern Ethiopia Digital Broker</title>
+
+<!-- SUPABASE LIBRARY -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+<!-- YOUR SUPABASE CONFIG -->
+<script src="supabase.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    background: #f5f7fb;
+    color: #172033;
+}
+
+/* =========================
+   NAVBAR
+========================= */
+
+.navbar {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: white;
+    border-bottom: 1px solid #e5e7eb;
+}
+
+.nav-container {
+    max-width: 1250px;
+    margin: auto;
+    min-height: 68px;
+    padding: 0 18px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.logo {
+    text-decoration: none;
+    font-size: 19px;
+    font-weight: 900;
+    color: #166534;
+}
+
+.logo span {
+    color: #2563eb;
+}
+
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.nav-btn {
+    border: none;
+    padding: 10px 14px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 700;
+    background: #eef2f7;
+    color: #172033;
+}
+
+.nav-btn.primary {
+    background: #166534;
+    color: white;
+}
+
+.nav-btn.danger {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+/* =========================
+   PAGE
+========================= */
+
+.page {
+    max-width: 1250px;
+    margin: auto;
+    padding: 25px 18px 50px;
+}
+
+/* =========================
+   WELCOME
+========================= */
+
+.welcome {
+    background: linear-gradient(
+        135deg,
+        #166534,
+        #2563eb
+    );
+
+    color: white;
+    border-radius: 20px;
+    padding: 28px;
+    margin-bottom: 22px;
+}
+
+.welcome h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+.welcome p {
+    margin: 0;
+    opacity: .9;
+}
+
+/* =========================
+   ACCOUNT
+========================= */
+
+.account-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 22px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.user-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.avatar {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+
+    background: #dcfce7;
+    color: #166534;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-weight: 900;
+    font-size: 20px;
+}
+
+.user-name {
+    font-size: 18px;
+    font-weight: 900;
+    margin-bottom: 5px;
+}
+
+.user-phone {
+    color: #64748b;
+    font-size: 14px;
+}
+
+.role-badge {
+    background: #dbeafe;
+    color: #1d4ed8;
+
+    padding: 7px 11px;
+    border-radius: 999px;
+
+    font-size: 12px;
+    font-weight: 800;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.stat-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.stat-number {
+    font-size: 28px;
+    font-weight: 900;
+    color: #166534;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* =========================
+   SEARCH
+========================= */
+
+.search-panel {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 25px;
+}
+
+.search-panel h2 {
+    margin-top: 0;
+    font-size: 20px;
+}
+
+.search-row {
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1fr
+        1fr
+        1fr;
+
+    gap: 10px;
+}
+
+.input,
+.select {
+    width: 100%;
+    padding: 13px 14px;
+
+    border: 1px solid #dbe1ea;
+    border-radius: 10px;
+
+    outline: none;
+    background: white;
+
+    font-size: 14px;
+}
+
+.input:focus,
+.select:focus {
+    border-color: #2563eb;
+}
+
+/* =========================
+   TYPE TABS
+========================= */
+
+.type-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 15px;
+}
+
+.type-tab {
+    border: none;
+    background: #eef2f7;
+    color: #475569;
+
+    padding: 10px 18px;
+    border-radius: 999px;
+
+    cursor: pointer;
+    font-weight: 800;
+}
+
+.type-tab.active {
+    background: #166534;
+    color: white;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 15px;
+}
+
+.section-header h2 {
+    margin: 0;
+    font-size: 22px;
+}
+
+.result-count {
+    color: #64748b;
+    font-size: 13px;
+}
+
+/* =========================
+   PROPERTY GRID
+========================= */
+
+.property-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+/* =========================
+   PROPERTY CARD
+========================= */
+
+.property-card {
+    background: white;
+    border: 1px solid #e5e7eb;
+
+    border-radius: 17px;
+    overflow: hidden;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.property-card:hover {
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px
+        rgba(15, 23, 42, .10);
+}
+
+.property-image-wrap {
+    position: relative;
+}
+
+.property-image {
+    width: 100%;
+    height: 210px;
+
+    object-fit: cover;
+    display: block;
+
+    background: #eef2f7;
+}
+
+.property-badges {
+    position: absolute;
+
+    top: 10px;
+    left: 10px;
+
+    display: flex;
+    gap: 6px;
+}
+
+.badge {
+    padding: 6px 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+    font-weight: 900;
+
+    background: white;
+}
+
+.badge.rent {
+    color: #166534;
+}
+
+.badge.sale {
+    color: #1d4ed8;
+}
+
+.badge.featured {
+    color: #92400e;
+}
+
+.property-body {
+    padding: 16px;
+}
+
+.property-title {
+    font-size: 17px;
+    font-weight: 900;
+
+    margin-bottom: 7px;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.property-location {
+    color: #64748b;
+    font-size: 13px;
+
+    margin-bottom: 12px;
+    min-height: 34px;
+}
+
+.property-price {
+    color: #166534;
+
+    font-size: 20px;
+    font-weight: 900;
+
+    margin-bottom: 13px;
+}
+
+.property-features {
+    display: flex;
+    flex-wrap: wrap;
+
+    gap: 6px;
+    margin-bottom: 14px;
+}
+
+.feature {
+    background: #f8fafc;
+    color: #475569;
+
+    padding: 6px 8px;
+    border-radius: 7px;
+
+    font-size: 11px;
+    font-weight: 700;
+}
+
+.property-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+}
+
+.action-btn {
+    border: none;
+
+    padding: 11px 8px;
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: 800;
+    font-size: 12px;
+
+    text-decoration: none;
+    text-align: center;
+}
+
+.view-btn {
+    background: #166534;
+    color: white;
+}
+
+.call-btn {
+    background: #eef2f7;
+    color: #172033;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #64748b;
+}
+
+/* =========================
+   EMPTY
+========================= */
+
+.empty {
+    background: white;
+
+    border: 1px solid #e5e7eb;
+    border-radius: 16px;
+
+    padding: 45px 20px;
+
+    text-align: center;
+
+    color: #64748b;
+}
+
+.empty h3 {
+    color: #172033;
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.error-box {
+    background: #fff1f2;
+
+    border: 1px solid #fecdd3;
+
+    color: #be123c;
+
+    border-radius: 14px;
+
+    padding: 20px;
+
+    margin-bottom: 20px;
+
+    display: none;
+}
+
+/* =========================
+   FOOTER
+========================= */
+
+.footer {
+    background: #172033;
+    color: #cbd5e1;
+
+    padding: 30px 20px;
+
+    text-align: center;
+
+    margin-top: 40px;
+}
+
+.footer strong {
+    color: white;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 950px) {
+
+    .property-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .search-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .nav-container {
+        min-height: 62px;
+    }
+
+    .logo {
+        font-size: 15px;
+    }
+
+    .nav-btn {
+        padding: 8px 9px;
+        font-size: 11px;
+    }
+
+    .page {
+        padding: 18px 12px 40px;
+    }
+
+    .welcome {
+        padding: 22px;
+        border-radius: 16px;
+    }
+
+    .welcome h1 {
+        font-size: 22px;
+    }
+
+    .account-card {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+    }
+
+    .stat-card {
+        padding: 14px 10px;
+    }
+
+    .stat-number {
+        font-size: 21px;
+    }
+
+    .stat-label {
+        font-size: 10px;
+    }
+
+    .search-row {
+        grid-template-columns: 1fr;
+    }
+
+    .property-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================
+   HIDDEN
+========================= */
+
+.hidden {
+    display: none !important;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- =========================
+     NAVBAR
+========================= -->
+
+<nav class="navbar">
+
+    <div class="nav-container">
+
+        <a
+            href="index.html"
+            class="logo"
+        >
+            Eastern Ethiopia
+            <span>Digital Broker</span>
+        </a>
+
+        <div class="nav-actions">
+
+            <button
+                class="nav-btn"
+                onclick="goHome()"
+            >
+                Home
+            </button>
+
+            <button
+                id="logoutButton"
+                class="nav-btn danger"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</nav>
+
+
+<!-- =========================
+     PAGE
+========================= -->
+
+<main class="page">
+
+    <!-- WELCOME -->
+
+    <section class="welcome">
+
+        <h1>
+            Welcome,
+            <span id="welcomeName">
+                Renter
+            </span>
+            👋
+        </h1>
+
+        <p>
+            Find your next home or property
+            across Eastern Ethiopia.
+        </p>
+
+    </section>
+
+
+    <!-- ACCOUNT -->
+
+    <section class="account-card">
+
+        <div class="user-left">
+
+            <div
+                id="avatar"
+                class="avatar"
+            >
+                R
+            </div>
+
+            <div>
+
+                <div
+                    id="userName"
+                    class="user-name"
+                >
+                    Loading...
+                </div>
+
+                <div
+                    id="userPhone"
+                    class="user-phone"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+        <div
+            id="roleBadge"
+            class="role-badge"
+        >
+            RENTER
+        </div>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div class="stat-card">
+
+            <div
+                id="totalProperties"
+                class="stat-number"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                Available Properties
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div
+                id="rentProperties"
+                class="stat-number"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                For Rent
+            </div>
+
+        </div>
+
+        <div class="stat-card">
+
+            <div
+                id="saleProperties"
+                class="stat-number"
+            >
+                0
+            </div>
+
+            <div class="stat-label">
+                For Sale
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="errorBox"
+        class="error-box"
+    ></div>
+
+
+    <!-- SEARCH -->
+
+    <section class="search-panel">
+
+        <h2>
+            🔎 Find Properties
+        </h2>
+
+        <div class="type-tabs">
+
+            <button
+                class="type-tab active"
+                data-type="all"
+                onclick="setType('all')"
+            >
+                All
+            </button>
+
+            <button
+                class="type-tab"
+                data-type="rent"
+                onclick="setType('rent')"
+            >
+                Rent
+            </button>
+
+            <button
+                class="type-tab"
+                data-type="sale"
+                onclick="setType('sale')"
+            >
+                Sale
+            </button>
+
+        </div>
+
+
+        <div class="search-row">
+
+            <input
+                id="searchInput"
+                class="input"
+                type="search"
+                placeholder="Search property, location..."
+            >
+
+            <select
+                id="cityFilter"
+                class="select"
+            >
+
+                <option value="">
+                    All Cities / Towns
+                </option>
+
+            </select>
+
+            <input
+                id="minPrice"
+                class="input"
+                type="number"
+                min="0"
+                placeholder="Min price"
+            >
+
+            <input
+                id="maxPrice"
+                class="input"
+                type="number"
+                min="0"
+                placeholder="Max price"
+            >
+
+        </div>
+
+    </section>
+
+
+    <!-- PROPERTY SECTION -->
+
+    <section>
+
+        <div class="section-header">
+
+            <h2>
+                🏠 Properties
+            </h2>
+
+            <div
+                id="resultCount"
+                class="result-count"
+            >
+                0 properties
+            </div>
+
+        </div>
+
+
+        <div
+            id="loading"
+            class="loading"
+        >
+            Loading properties...
+        </div>
+
+
+        <div
+            id="empty"
+            class="empty hidden"
+        >
+
+            <h3>
+                No properties found
+            </h3>
+
+            <p>
+                Try changing your search
+                or filter options.
+            </p>
+
+        </div>
+
+
+        <div
+            id="propertyGrid"
+            class="property-grid"
+        ></div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     FOOTER
+========================= -->
+
+<footer class="footer">
+
+    <strong>
+        Eastern Ethiopia Digital Broker
+    </strong>
+
+    <br>
+
+    Find houses, apartments and properties
+    across Eastern Ethiopia.
+
+</footer>
+
+
+<script>
+
+/* =====================================================
+   GLOBAL DATA
+===================================================== */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let allProperties = [];
+
+let filteredProperties = [];
+
+let locations = [];
+
+let locationMap = new Map();
+
+let selectedType = "all";
+
+
+/* =====================================================
+   PAGE START
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        try {
+
+            /*
+             * supabase.js has already created "db".
+             */
+
+            if (!db) {
+
+                throw new Error(
+                    "Supabase client is not initialized. Check supabase.js."
+                );
+
+            }
+
+            await checkRenter();
+
+            if (!currentUser || !currentProfile) {
+                return;
+            }
+
+            setupSearchListeners();
+
+            await loadLocations();
+
+            await loadProperties();
+
+        } catch (error) {
+
+            console.error(
+                "Renter dashboard error:",
+                error
+            );
+
+            showError(
+                error.message ||
+                "Something went wrong."
+            );
+
+            setLoading(false);
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CHECK RENTER
+===================================================== */
+
+async function checkRenter() {
+
+    const {
+        data,
+        error
+    } =
+        await db.auth.getUser();
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    currentUser =
+        data.user;
+
+
+    if (!currentUser) {
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    const {
+        data: profile,
+        error: profileError
+    } =
+        await db
+            .from("profiles")
+            .select(
+                "id, full_name, phone, role"
+            )
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+    if (profileError) {
+
+        throw profileError;
+
+    }
+
+
+    if (!profile) {
+
+        showError(
+            "Your profile could not be found."
+        );
+
+        return;
+
+    }
+
+
+    currentProfile =
+        profile;
+
+
+    /* SECURITY CHECK */
+
+    if (
+        String(profile.role)
+            .toLowerCase()
+            .trim()
+        !==
+        "renter"
+    ) {
+
+        alert(
+            "Access denied. This dashboard is for renter accounts."
+        );
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    renderUserInfo();
+
+}
+
+
+/* =====================================================
+   USER INFO
+===================================================== */
+
+function renderUserInfo() {
+
+    const name =
+        currentProfile.full_name ||
+        "Renter";
+
+
+    const phone =
+        currentProfile.phone ||
+        "Phone not provided";
+
+
+    document
+        .getElementById(
+            "welcomeName"
+        )
+        .textContent =
+            name;
+
+
+    document
+        .getElementById(
+            "userName"
+        )
+        .textContent =
+            name;
+
+
+    document
+        .getElementById(
+            "userPhone"
+        )
+        .textContent =
+            phone;
+
+
+    document
+        .getElementById(
+            "avatar"
+        )
+        .textContent =
+            getInitials(name);
+
+
+    document
+        .getElementById(
+            "roleBadge"
+        )
+        .textContent =
+            String(
+                currentProfile.role
+            ).toUpperCase();
+
+}
+
+
+/* =====================================================
+   LOAD LOCATIONS
+===================================================== */
+
+async function loadLocations() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("locations")
+            .select(
+                "id,parent_id,name,type"
+            )
+            .eq(
+                "is_active",
+                true
+            );
+
+
+    if (error) {
+
+        console.warn(
+            "Location loading failed:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    locations =
+        data || [];
+
+
+    locationMap.clear();
+
+
+    locations.forEach(
+        location => {
+
+            locationMap.set(
+                location.id,
+                location
+            );
+
+        }
+    );
+
+
+    populateCities();
+
+}
+
+
+/* =====================================================
+   POPULATE CITIES
+===================================================== */
+
+function populateCities() {
+
+    const select =
+        document.getElementById(
+            "cityFilter"
+        );
+
+
+    select.innerHTML =
+        `
+        <option value="">
+            All Cities / Towns
+        </option>
+        `;
+
+
+    locations
+        .filter(
+            location =>
+                location.type === "city"
+        )
+        .sort(
+            (a, b) =>
+                a.name.localeCompare(
+                    b.name
+                )
+        )
+        .forEach(
+            location => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    location.id;
+
+
+                option.textContent =
+                    location.name;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   LOAD PROPERTIES
+===================================================== */
+
+async function loadProperties() {
+
+    setLoading(true);
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("properties")
+            .select(`
+                *,
+                property_images (
+                    id,
+                    storage_path,
+                    display_order
+                )
+            `)
+            .eq(
+                "status",
+                "published"
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Property loading error:",
+            error
+        );
+
+        showError(
+            "Could not load properties. Please check your Supabase RLS policies."
+        );
+
+        setLoading(false);
+
+        return;
+
+    }
+
+
+    allProperties =
+        data || [];
+
+
+    updateStats();
+
+    applyFilters();
+
+    setLoading(false);
+
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function updateStats() {
+
+    const total =
+        allProperties.length;
+
+
+    const rent =
+        allProperties.filter(
+            property =>
+                getPropertyType(property)
+                ===
+                "rent"
+        ).length;
+
+
+    const sale =
+        allProperties.filter(
+            property =>
+                getPropertyType(property)
+                ===
+                "sale"
+        ).length;
+
+
+    document
+        .getElementById(
+            "totalProperties"
+        )
+        .textContent =
+            total;
+
+
+    document
+        .getElementById(
+            "rentProperties"
+        )
+        .textContent =
+            rent;
+
+
+    document
+        .getElementById(
+            "saleProperties"
+        )
+        .textContent =
+            sale;
+
+}
+
+
+/* =====================================================
+   PROPERTY TYPE
+===================================================== */
+
+function getPropertyType(
+    property
+) {
+
+    return String(
+        property.listing_type ||
+        property.property_type ||
+        property.type ||
+        "rent"
+    )
+        .toLowerCase()
+        .trim();
+
+}
+
+
+/* =====================================================
+   SEARCH LISTENERS
+===================================================== */
+
+function setupSearchListeners() {
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .addEventListener(
+            "input",
+            applyFilters
+        );
+
+
+    document
+        .getElementById(
+            "cityFilter"
+        )
+        .addEventListener(
+            "change",
+            applyFilters
+        );
+
+
+    document
+        .getElementById(
+            "minPrice"
+        )
+        .addEventListener(
+            "input",
+            applyFilters
+        );
+
+
+    document
+        .getElementById(
+            "maxPrice"
+        )
+        .addEventListener(
+            "input",
+            applyFilters
+        );
+
+
+    document
+        .getElementById(
+            "logoutButton"
+        )
+        .addEventListener(
+            "click",
+            logoutUser
+        );
+
+}
+
+
+/* =====================================================
+   TYPE FILTER
+===================================================== */
+
+function setType(type) {
+
+    selectedType =
+        type;
+
+
+    document
+        .querySelectorAll(
+            ".type-tab"
+        )
+        .forEach(
+            button => {
+
+                button.classList.toggle(
+                    "active",
+                    button.dataset.type
+                    ===
+                    type
+                );
+
+            }
+        );
+
+
+    applyFilters();
+
+}
+
+
+/* =====================================================
+   APPLY FILTERS
+===================================================== */
+
+function applyFilters() {
+
+    const search =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const cityId =
+        document
+            .getElementById(
+                "cityFilter"
+            )
+            .value;
+
+
+    const minPrice =
+        Number(
+            document
+                .getElementById(
+                    "minPrice"
+                )
+                .value
+        ) || 0;
+
+
+    const maxPrice =
+        Number(
+            document
+                .getElementById(
+                    "maxPrice"
+                )
+                .value
+        ) || Infinity;
+
+
+    filteredProperties =
+        allProperties.filter(
+            property => {
+
+                const type =
+                    getPropertyType(
+                        property
+                    );
+
+
+                if (
+                    selectedType !==
+                    "all" &&
+                    type !==
+                    selectedType
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (
+                    cityId &&
+                    property.city_id !==
+                    cityId
+                ) {
+
+                    return false;
+
+                }
+
+
+                const price =
+                    Number(
+                        property.price
+                    ) || 0;
+
+
+                if (
+                    price < minPrice ||
+                    price > maxPrice
+                ) {
+
+                    return false;
+
+                }
+
+
+                if (search) {
+
+                    const locationText =
+                        buildLocationText(
+                            property
+                        );
+
+
+                    const searchable =
+                        [
+                            property.title,
+
+                            property.property_title,
+
+                            property.description,
+
+                            property.location,
+
+                            property.address,
+
+                            property.category,
+
+                            locationText
+
+                        ]
+                            .filter(Boolean)
+                            .join(" ")
+                            .toLowerCase();
+
+
+                    if (
+                        !searchable.includes(
+                            search
+                        )
+                    ) {
+
+                        return false;
+
+                    }
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    renderProperties();
+
+}
+
+
+/* =====================================================
+   LOCATION TEXT
+===================================================== */
+
+function buildLocationText(
+    property
+) {
+
+    const ids = [
+
+        property.region_id,
+
+        property.zone_id,
+
+        property.city_id,
+
+        property.woreda_id,
+
+        property.area_id
+
+    ];
+
+
+    return ids
+        .map(
+            id =>
+                locationMap.get(id)
+                    ?.name
+        )
+        .filter(Boolean)
+        .join(" → ");
+
+}
+
+
+/* =====================================================
+   RENDER PROPERTIES
+===================================================== */
+
+function renderProperties() {
+
+    const grid =
+        document.getElementById(
+            "propertyGrid"
+        );
+
+
+    const empty =
+        document.getElementById(
+            "empty"
+        );
+
+
+    const count =
+        document.getElementById(
+            "resultCount"
+        );
+
+
+    grid.innerHTML =
+        "";
+
+
+    count.textContent =
+        filteredProperties.length +
+        (
+            filteredProperties.length === 1
+                ? " property"
+                : " properties"
+        );
+
+
+    if (
+        filteredProperties.length === 0
+    ) {
+
+        empty.classList.remove(
+            "hidden"
+        );
+
+        return;
+
+    }
+
+
+    empty.classList.add(
+        "hidden"
+    );
+
+
+    filteredProperties.forEach(
+        property => {
+
+            grid.appendChild(
+                createPropertyCard(
+                    property
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CREATE PROPERTY CARD
+===================================================== */
+
+function createPropertyCard(
+    property
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "property-card";
+
+
+    const type =
+        getPropertyType(
+            property
+        );
+
+
+    const title =
+        property.title ||
+        property.property_title ||
+        "Property";
+
+
+    const location =
+        buildLocationText(
+            property
+        ) ||
+        property.location ||
+        property.address ||
+        "Location not specified";
+
+
+    const price =
+        property.price !== null &&
+        property.price !== undefined &&
+        property.price !== ""
+            ? formatPrice(
+                property.price
+            )
+            : "Price not specified";
+
+
+    const bedrooms =
+        property.bedrooms;
+
+
+    const bathrooms =
+        property.bathrooms;
+
+
+    const images =
+        Array.isArray(
+            property.property_images
+        )
+            ? [
+                ...property.property_images
+            ]
+            : [];
+
+
+    images.sort(
+        (a, b) =>
+            (a.display_order || 0) -
+            (b.display_order || 0)
+    );
+
+
+    let imageUrl =
+        createPlaceholderImage();
+
+
+    if (
+        images.length > 0
+    ) {
+
+        imageUrl =
+            getStorageImageUrl(
+                images[0].storage_path
+            );
+
+    }
+
+
+    const propertyId =
+        property.id;
+
+
+    const escapedTitle =
+        escapeHtml(title);
+
+
+    const escapedLocation =
+        escapeHtml(location);
+
+
+    let features = "";
+
+
+    if (
+        bedrooms !== null &&
+        bedrooms !== undefined &&
+        bedrooms !== ""
+    ) {
+
+        features +=
+            `
+            <span class="feature">
+                🛏️ ${escapeHtml(
+                    String(bedrooms)
+                )} Beds
+            </span>
+            `;
+
+    }
+
+
+    if (
+        bathrooms !== null &&
+        bathrooms !== undefined &&
+        bathrooms !== ""
+    ) {
+
+        features +=
+            `
+            <span class="feature">
+                🚿 ${escapeHtml(
+                    String(bathrooms)
+                )} Baths
+            </span>
+            `;
+
+    }
+
+
+    features +=
+        `
+        <span class="feature">
+            ${
+                type === "sale"
+                    ? "🏷️ Sale"
+                    : "🏠 Rent"
+            }
+        </span>
+        `;
+
+
+    const ownerPhone =
+        getOwnerPhone(property);
+
+
+    card.innerHTML = `
+
+        <div class="property-image-wrap">
+
+            <img
+                class="property-image"
+                src="${imageUrl}"
+                alt="${escapedTitle}"
+                loading="lazy"
+            >
+
+            <div class="property-badges">
+
+                <span
+                    class="badge ${
+                        type === "sale"
+                            ? "sale"
+                            : "rent"
+                    }"
+                >
+                    ${
+                        type === "sale"
+                            ? "FOR SALE"
+                            : "FOR RENT"
+                    }
+                </span>
+
+                ${
+                    property.is_featured === true ||
+                    property.featured === true
+                        ? `
+                        <span class="badge featured">
+                            ⭐ FEATURED
+                        </span>
+                        `
+                        : ""
+                }
+
+            </div>
+
+        </div>
+
+
+        <div class="property-body">
+
+            <div class="property-title">
+                ${escapedTitle}
+            </div>
+
+            <div class="property-location">
+                📍 ${escapedLocation}
+            </div>
+
+            <div class="property-price">
+                ${price}
+                ${
+                    type === "rent"
+                        ? " / month"
+                        : ""
+                }
+            </div>
+
+            <div class="property-features">
+                ${features}
+            </div>
+
+            <div class="property-actions">
+
+                <button
+                    class="action-btn view-btn"
+                    onclick="viewProperty('${escapeHtml(propertyId)}')"
+                >
+                    👁️ View Property
+                </button>
+
+                ${
+                    ownerPhone
+                        ? `
+                        <a
+                            class="action-btn call-btn"
+                            href="tel:${escapeHtml(ownerPhone)}"
+                        >
+                            📞 Call Owner
+                        </a>
+                        `
+                        : `
+                        <button
+                            class="action-btn call-btn"
+                            onclick="viewProperty('${escapeHtml(propertyId)}')"
+                        >
+                            Contact
+                        </button>
+                        `
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    const image =
+        card.querySelector(
+            ".property-image"
+        );
+
+
+    image.onerror =
+        function () {
+
+            this.onerror = null;
+
+            this.src =
+                createPlaceholderImage();
+
+        };
+
+
+    return card;
+
+}
+
+
+/* =====================================================
+   OWNER PHONE
+===================================================== */
+
+function getOwnerPhone(
+    property
+) {
+
+    return (
+        property.owner_phone ||
+        property.phone ||
+        ""
+    );
+
+}
+
+
+/* =====================================================
+   VIEW PROPERTY
+===================================================== */
+
+function viewProperty(
+    propertyId
+) {
+
+    if (!propertyId) {
+
+        return;
+
+    }
+
+
+    localStorage.setItem(
+        "selectedPropertyId",
+        propertyId
+    );
+
+
+    window.location.href =
+        "property-details.html?id=" +
+        encodeURIComponent(
+            propertyId
+        );
+
+}
+
+
+/* =====================================================
+   STORAGE IMAGE
+===================================================== */
+
+function getStorageImageUrl(
+    storagePath
+) {
+
+    if (!storagePath) {
+
+        return createPlaceholderImage();
+
+    }
+
+
+    try {
+
+        const {
+            data
+        } =
+            db.storage
+                .from(
+                    "property-images"
+                )
+                .getPublicUrl(
+                    storagePath
+                );
+
+
+        return (
+            data &&
+            data.publicUrl
+        )
+            ? data.publicUrl
+            : createPlaceholderImage();
+
+    } catch (error) {
+
+        console.error(
+            "Storage URL error:",
+            error
+        );
+
+        return createPlaceholderImage();
+
+    }
+
+}
+
+
+/* =====================================================
+   PLACEHOLDER IMAGE
+===================================================== */
+
+function createPlaceholderImage() {
+
+    return (
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(`
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="800"
+                height="500"
+                viewBox="0 0 800 500"
+            >
+
+                <rect
+                    width="800"
+                    height="500"
+                    fill="#eef2f7"
+                />
+
+                <text
+                    x="400"
+                    y="250"
+                    text-anchor="middle"
+                    dominant-baseline="middle"
+                    font-family="Arial"
+                    font-size="28"
+                    fill="#64748b"
+                >
+                    No Property Image
+                </text>
+
+            </svg>
+        `)
+    );
+
+}
+
+
+/* =====================================================
+   FORMAT PRICE
+===================================================== */
+
+function formatPrice(
+    value
+) {
+
+    const number =
+        Number(value);
+
+
+    if (
+        Number.isNaN(number)
+    ) {
+
+        return escapeHtml(
+            String(value)
+        );
+
+    }
+
+
+    return (
+        new Intl.NumberFormat(
+            "en-US"
+        ).format(number) +
+        " ETB"
+    );
+
+}
+
+
+/* =====================================================
+   INITIALS
+===================================================== */
+
+function getInitials(
+    name
+) {
+
+    if (!name) {
+
+        return "R";
+
+    }
+
+
+    return String(name)
+        .trim()
+        .split(/\s+/)
+        .slice(0, 2)
+        .map(
+            word =>
+                word
+                    .charAt(0)
+                    .toUpperCase()
+        )
+        .join("");
+
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHtml(
+    value
+) {
+
+    return String(value)
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =====================================================
+   LOADING
+===================================================== */
+
+function setLoading(
+    loading
+) {
+
+    const element =
+        document.getElementById(
+            "loading"
+        );
+
+
+    if (!element) {
+
+        return;
+
+    }
+
+
+    element.style.display =
+        loading
+            ? "block"
+            : "none";
+
+}
+
+
+/* =====================================================
+   ERROR
+===================================================== */
+
+function showError(
+    message
+) {
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    if (!box) {
+
+        return;
+
+    }
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   HOME
+===================================================== */
+
+function goHome() {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+async function logoutUser() {
+
+    const button =
+        document.getElementById(
+            "logoutButton"
+        );
+
+
+    button.disabled =
+        true;
+
+
+    button.textContent =
+        "Logging out...";
+
+
+    try {
+
+        const {
+            error
+        } =
+            await db.auth.signOut();
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        localStorage.removeItem(
+            "selectedPropertyId"
+        );
+
+
+        window.location.href =
+            "index.html";
+
+    } catch (error) {
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+
+        button.disabled =
+            false;
+
+
+        button.textContent =
+            "Logout";
+
+
+        alert(
+            "Logout failed. Please try again."
+        );
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>

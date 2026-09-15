@@ -1,0 +1,6399 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#155EEF">
+
+<title>Admin Dashboard | Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="app-core.js"></script>
+
+<style>
+:root{
+  --primary:#155EEF;
+  --primary-dark:#0B4ACB;
+  --primary-soft:#EFF4FF;
+
+  --bg:#F4F7FB;
+  --surface:#FFFFFF;
+  --surface-2:#F8FAFC;
+
+  --text:#101828;
+  --muted:#667085;
+  --line:#E4E7EC;
+
+  --green:#12B76A;
+  --green-soft:#ECFDF3;
+
+  --red:#F04438;
+  --red-soft:#FEF3F2;
+
+  --orange:#F79009;
+  --orange-soft:#FFFAEB;
+
+  --purple:#7F56D9;
+  --purple-soft:#F9F5FF;
+
+  --shadow:0 10px 35px rgba(16,24,40,.07);
+  --shadow-lg:0 18px 55px rgba(16,24,40,.13);
+
+  --radius:18px;
+  --radius-sm:12px;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+html{
+  scroll-behavior:smooth;
+}
+
+body{
+  margin:0;
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+}
+
+button,
+input,
+select,
+textarea{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.55;
+  cursor:not-allowed;
+}
+
+.hidden{
+  display:none!important;
+}
+
+/* =========================
+   SIDEBAR
+========================= */
+
+.side{
+  position:fixed;
+  inset:0 auto 0 0;
+  width:265px;
+  background:#101828;
+  color:#fff;
+  padding:18px 13px;
+  z-index:50;
+  overflow:auto;
+  box-shadow:10px 0 35px rgba(16,24,40,.08);
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  padding:7px 10px 20px;
+  border-bottom:1px solid #253149;
+}
+
+.logo{
+  width:45px;
+  height:45px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#155EEF,#7F56D9);
+  display:grid;
+  place-items:center;
+  font-weight:950;
+  font-size:14px;
+  flex:none;
+  box-shadow:0 8px 20px rgba(21,94,239,.25);
+}
+
+.brand b{
+  display:block;
+  font-size:13px;
+  line-height:1.25;
+}
+
+.brand small{
+  display:block;
+  color:#98A2B3;
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.08em;
+  margin-top:5px;
+}
+
+.nav{
+  padding-top:15px;
+}
+
+.nav .label{
+  color:#667085;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.12em;
+  padding:14px 12px 7px;
+}
+
+.nav button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#B7C3D4;
+  text-align:left;
+  padding:11px 12px;
+  border-radius:12px;
+  margin:2px 0;
+  font-weight:750;
+  font-size:12px;
+  transition:.18s;
+}
+
+.nav button:hover,
+.nav button.active{
+  background:#1D2939;
+  color:#fff;
+}
+
+.nav button.active{
+  box-shadow:inset 3px 0 0 var(--primary);
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+  margin-left:265px;
+  min-height:100vh;
+}
+
+.top{
+  height:72px;
+  background:#fff;
+  border-bottom:1px solid var(--line);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 24px;
+  position:sticky;
+  top:0;
+  z-index:40;
+}
+
+.top-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.menu{
+  display:none;
+  border:0;
+  background:#EEF2F6;
+  border-radius:11px;
+  width:40px;
+  height:40px;
+  font-size:18px;
+}
+
+.top h1{
+  font-size:19px;
+  margin:0;
+}
+
+.user{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.avatar{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  background:var(--primary-soft);
+  color:var(--primary);
+  display:grid;
+  place-items:center;
+  font-weight:950;
+}
+
+.user-info b{
+  display:block;
+  font-size:12px;
+}
+
+.user-info small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:2px;
+}
+
+/* =========================
+   CONTENT
+========================= */
+
+.content{
+  padding:22px;
+  max-width:1500px;
+  margin:auto;
+}
+
+.section{
+  display:none;
+}
+
+.section.active{
+  display:block;
+}
+
+.head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
+}
+
+.head h2{
+  font-size:22px;
+  margin:0;
+}
+
+.head p{
+  margin:5px 0 0;
+  color:var(--muted);
+  font-size:12px;
+}
+
+/* =========================
+   BUTTONS
+========================= */
+
+.actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+}
+
+.btn{
+  border:0;
+  border-radius:11px;
+  padding:10px 14px;
+  font-weight:850;
+  font-size:11px;
+  transition:.16s;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.primary{
+  background:var(--primary);
+  color:#fff;
+}
+
+.primary:hover{
+  background:var(--primary-dark);
+}
+
+.success{
+  background:var(--green);
+  color:#fff;
+}
+
+.danger{
+  background:var(--red);
+  color:#fff;
+}
+
+.light{
+  background:#EEF2F6;
+  color:#344054;
+}
+
+.warning{
+  background:var(--orange-soft);
+  color:#B54708;
+}
+
+.purple{
+  background:var(--purple);
+  color:#fff;
+}
+
+.feature-btn{
+  background:#FFF7E8;
+  color:#B54708;
+}
+
+.unfeature-btn{
+  background:#F9F5FF;
+  color:#6941C6;
+}
+
+/* =========================
+   HERO
+========================= */
+
+.hero{
+  background:
+    radial-gradient(circle at 85% 20%,rgba(255,255,255,.17),transparent 28%),
+    linear-gradient(135deg,#155EEF,#6D45D8);
+  color:#fff;
+  border-radius:24px;
+  padding:26px;
+  margin-bottom:18px;
+  box-shadow:0 15px 40px rgba(21,94,239,.18);
+}
+
+.hero-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:flex-start;
+  gap:20px;
+}
+
+.hero h2{
+  margin:0;
+  font-size:25px;
+  line-height:1.2;
+}
+
+.hero p{
+  margin:8px 0 0;
+  opacity:.86;
+  font-size:12px;
+  max-width:700px;
+  line-height:1.6;
+}
+
+.hero .btn{
+  background:#fff;
+  color:var(--primary);
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.stat{
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:17px;
+  padding:18px;
+  box-shadow:var(--shadow);
+  position:relative;
+  overflow:hidden;
+}
+
+.stat-icon{
+  width:38px;
+  height:38px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  background:var(--primary-soft);
+  font-size:18px;
+  margin-bottom:10px;
+}
+
+.stat span{
+  color:var(--muted);
+  font-size:10px;
+  font-weight:800;
+}
+
+.stat strong{
+  display:block;
+  font-size:28px;
+  margin-top:6px;
+}
+
+/* =========================
+   CARDS
+========================= */
+
+.card{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+  margin-bottom:16px;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+}
+
+.grid3{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:14px;
+}
+
+.full{
+  grid-column:1/-1;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.field label{
+  display:block;
+  font-size:10px;
+  font-weight:850;
+  color:#344054;
+  margin:0 0 6px;
+}
+
+.input{
+  width:100%;
+  border:1px solid #D0D5DD;
+  border-radius:11px;
+  padding:11px 12px;
+  background:#fff;
+  color:var(--text);
+  outline:0;
+}
+
+.input:focus{
+  border-color:var(--primary);
+  box-shadow:0 0 0 3px #155EEF18;
+}
+
+textarea.input{
+  resize:vertical;
+}
+
+.hint{
+  font-size:10px;
+  color:var(--muted);
+  margin-top:5px;
+  line-height:1.5;
+}
+
+.location-note{
+  padding:12px 13px;
+  border-radius:12px;
+  background:#EFF8FF;
+  color:#175CD3;
+  font-size:10px;
+  line-height:1.5;
+  margin-bottom:14px;
+}
+
+.form-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:16px;
+}
+
+/* =========================
+   FILTER BAR
+========================= */
+
+.filter-card{
+  padding:14px;
+}
+
+.filter-grid{
+  display:grid;
+  grid-template-columns:2fr 1fr 1fr;
+  gap:10px;
+}
+
+/* =========================
+   TABLE
+========================= */
+
+.tablewrap{
+  overflow:auto;
+}
+
+.table{
+  width:100%;
+  border-collapse:collapse;
+  min-width:920px;
+}
+
+.table th,
+.table td{
+  padding:12px 10px;
+  border-bottom:1px solid #EEF1F5;
+  text-align:left;
+  font-size:11px;
+  vertical-align:middle;
+}
+
+.table th{
+  color:#667085;
+  font-size:9px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  background:#FAFBFC;
+}
+
+.table tr:hover td{
+  background:#FCFDFE;
+}
+
+.empty{
+  text-align:center;
+  padding:42px!important;
+  color:var(--muted);
+  font-size:11px;
+}
+
+/* =========================
+   PROPERTY ROW
+========================= */
+
+.property-preview{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  min-width:220px;
+}
+
+.property-thumb{
+  width:64px;
+  height:52px;
+  border-radius:11px;
+  object-fit:cover;
+  background:#EEF2F6;
+  border:1px solid #E4E7EC;
+  flex:none;
+}
+
+.property-thumb.placeholder{
+  display:grid;
+  place-items:center;
+  color:#98A2B3;
+  font-size:20px;
+}
+
+.property-title{
+  min-width:0;
+}
+
+.property-title b{
+  display:block;
+  max-width:190px;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:11px;
+}
+
+.property-title small{
+  display:block;
+  color:var(--muted);
+  margin-top:3px;
+  font-size:9px;
+}
+
+.type-chip{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 9px;
+  border-radius:999px;
+  font-size:9px;
+  font-weight:900;
+}
+
+.type-rent{
+  background:#EFF8FF;
+  color:#175CD3;
+}
+
+.type-sell{
+  background:#ECFDF3;
+  color:#027A48;
+}
+
+.feature-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  margin-top:4px;
+  padding:4px 7px;
+  border-radius:999px;
+  background:#FFF7E8;
+  color:#B54708;
+  font-size:8px;
+  font-weight:900;
+}
+
+.price{
+  font-weight:900;
+  white-space:nowrap;
+}
+
+.mini-actions{
+  display:flex;
+  gap:5px;
+  flex-wrap:wrap;
+}
+
+.mini-actions .btn{
+  padding:7px 9px;
+  font-size:9px;
+}
+
+/* =========================
+   BADGES
+========================= */
+
+.badge{
+  display:inline-flex;
+  align-items:center;
+  padding:5px 8px;
+  border-radius:999px;
+  font-size:8px;
+  font-weight:950;
+  white-space:nowrap;
+}
+
+.b-green{
+  background:var(--green-soft);
+  color:#027A48;
+}
+
+.b-orange{
+  background:var(--orange-soft);
+  color:#B54708;
+}
+
+.b-red{
+  background:var(--red-soft);
+  color:#B42318;
+}
+
+.b-blue{
+  background:#EFF8FF;
+  color:#175CD3;
+}
+
+.b-purple{
+  background:var(--purple-soft);
+  color:#6941C6;
+}
+
+.b-gray{
+  background:#F2F4F7;
+  color:#475467;
+}
+
+/* =========================
+   PHOTO UPLOAD
+========================= */
+
+.photo-upload{
+  border:1.5px dashed #B8C3D1;
+  border-radius:16px;
+  padding:16px;
+  background:#FAFCFF;
+}
+
+.photo-upload-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+
+.photo-upload-info b{
+  display:block;
+  font-size:11px;
+}
+
+.photo-upload-info small{
+  display:block;
+  color:var(--muted);
+  font-size:9px;
+  margin-top:3px;
+}
+
+.photo-preview-grid{
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:8px;
+  margin-top:12px;
+}
+
+.photo-preview{
+  position:relative;
+  aspect-ratio:1/1;
+  border-radius:12px;
+  overflow:hidden;
+  background:#EEF2F6;
+  border:1px solid var(--line);
+}
+
+.photo-preview img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.photo-remove{
+  position:absolute;
+  right:5px;
+  top:5px;
+  width:25px;
+  height:25px;
+  border:0;
+  border-radius:50%;
+  background:#101828D9;
+  color:#fff;
+  font-size:13px;
+}
+
+/* =========================
+   GALLERY
+========================= */
+
+.gallery-main{
+  width:100%;
+  height:330px;
+  border-radius:18px;
+  object-fit:cover;
+  background:#EEF2F6;
+  display:block;
+}
+
+.gallery-thumbs{
+  display:flex;
+  gap:8px;
+  overflow:auto;
+  margin-top:10px;
+  padding-bottom:3px;
+}
+
+.gallery-thumb{
+  width:68px;
+  height:58px;
+  object-fit:cover;
+  border-radius:10px;
+  border:2px solid transparent;
+  cursor:pointer;
+  flex:none;
+}
+
+.gallery-thumb.active{
+  border-color:var(--primary);
+}
+
+/* =========================
+   DETAIL
+========================= */
+
+.detail-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+}
+
+.detail-grid>div{
+  background:#F8FAFC;
+  border:1px solid #EEF1F5;
+  border-radius:12px;
+  padding:12px;
+}
+
+.detail-grid b{
+  display:block;
+  font-size:9px;
+  color:#667085;
+  margin-bottom:5px;
+}
+
+.detail-grid span{
+  font-size:11px;
+  line-height:1.5;
+}
+
+.detail-grid .wide{
+  grid-column:1/-1;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:#101828B8;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:15px;
+  z-index:100;
+  backdrop-filter:blur(3px);
+}
+
+.modal.show{
+  display:flex;
+}
+
+.modalbox{
+  width:100%;
+  max-width:780px;
+  max-height:94vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:23px;
+  padding:20px;
+  box-shadow:var(--shadow-lg);
+}
+
+.modalbox.large{
+  max-width:900px;
+}
+
+.modalhead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:17px;
+}
+
+.modalhead h3{
+  margin:0;
+  font-size:17px;
+}
+
+.close{
+  border:0;
+  background:#EEF2F6;
+  color:#344054;
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  font-size:18px;
+}
+
+/* =========================
+   QUICK ACTIONS
+========================= */
+
+.quick-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.quick-btn{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:14px;
+  padding:15px 10px;
+  font-weight:850;
+  color:#344054;
+}
+
+.quick-btn:hover{
+  border-color:#B8C7E8;
+  background:#FAFCFF;
+}
+
+.quick-icon{
+  font-size:22px;
+  margin-bottom:7px;
+}
+
+/* =========================
+   TOAST
+========================= */
+
+.toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:200;
+  max-width:370px;
+  padding:12px 15px;
+  border-radius:13px;
+  background:#101828;
+  color:#fff;
+  font-size:11px;
+  box-shadow:var(--shadow-lg);
+  transform:translateY(20px);
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+}
+
+.toast.show{
+  transform:none;
+  opacity:1;
+}
+
+.toast.success{
+  background:#067647;
+}
+
+.toast.error{
+  background:#B42318;
+}
+
+/* =========================
+   MOBILE NAV
+========================= */
+
+.mobile-nav{
+  display:none;
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1050px){
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .grid3{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .filter-grid{
+    grid-template-columns:1fr 1fr 1fr;
+  }
+}
+
+@media(max-width:850px){
+
+  .side{
+    transform:translateX(-100%);
+    transition:.22s;
+  }
+
+  .side.open{
+    transform:none;
+  }
+
+  .main{
+    margin-left:0;
+  }
+
+  .menu{
+    display:block;
+  }
+
+  .top{
+    padding:0 14px;
+  }
+
+  .content{
+    padding:14px 14px 92px;
+  }
+
+  .grid,
+  .grid3{
+    grid-template-columns:1fr;
+  }
+
+  .filter-grid{
+    grid-template-columns:1fr;
+  }
+
+  .head{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .actions{
+    width:100%;
+  }
+
+  .actions .btn{
+    flex:1;
+  }
+
+  .hero{
+    padding:20px;
+  }
+
+  .hero-top{
+    flex-direction:column;
+  }
+
+  .hero h2{
+    font-size:21px;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .quick-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .mobile-nav{
+    display:flex;
+    position:fixed;
+    left:0;
+    right:0;
+    bottom:0;
+    height:68px;
+    background:#fff;
+    border-top:1px solid var(--line);
+    z-index:60;
+    justify-content:space-around;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+
+  .mobile-nav button{
+    flex:1;
+    border:0;
+    background:#fff;
+    color:#667085;
+    font-size:8px;
+    font-weight:850;
+  }
+
+  .mobile-nav button.active{
+    color:var(--primary);
+  }
+
+  .mobile-nav span{
+    display:block;
+    font-size:19px;
+    margin-bottom:2px;
+  }
+
+  .user-info{
+    display:none;
+  }
+
+  .photo-preview-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .gallery-main{
+    height:240px;
+  }
+
+  .detail-grid{
+    grid-template-columns:1fr;
+  }
+
+  .detail-grid .wide{
+    grid-column:auto;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     SIDEBAR
+========================= -->
+
+<aside id="side" class="side">
+
+  <div class="brand">
+    <div class="logo">ED</div>
+    <div>
+      <b>Eastern Ethiopia<br>Digital Broker</b>
+      <small>ADMIN CONTROL CENTER</small>
+    </div>
+  </div>
+
+  <div class="nav">
+
+    <div class="label">MAIN</div>
+
+    <button data-go="home">⌂ Dashboard</button>
+    <button data-go="properties">🏠 Properties</button>
+    <button data-go="jobs">💼 Jobs</button>
+    <button data-go="applications">📄 Applications</button>
+
+    <div class="label">MANAGEMENT</div>
+
+    <button data-go="users">👥 Users</button>
+    <button data-go="locations">📍 Locations</button>
+    <button id="cityAdminNav" data-go="cityadmins">🛡 City Admins</button>
+
+    <div class="label">ACCOUNT</div>
+
+    <button id="logoutBtn">↪ Logout</button>
+
+  </div>
+</aside>
+
+
+<!-- =========================
+     MAIN
+========================= -->
+
+<main class="main">
+
+<header class="top">
+
+  <div class="top-left">
+    <button id="menu" class="menu">☰</button>
+    <h1 id="pageTitle">Admin Dashboard</h1>
+  </div>
+
+  <div class="user">
+    <div class="avatar" id="avatar">A</div>
+
+    <div class="user-info">
+      <b id="userName">Admin</b>
+      <small id="userRole">ADMIN</small>
+    </div>
+  </div>
+
+</header>
+
+
+<div class="content">
+
+<!-- =========================
+     HOME
+========================= -->
+
+<section id="home" class="section active">
+
+  <div class="hero">
+
+    <div class="hero-top">
+
+      <div>
+        <h2 id="welcome">Welcome back 👋</h2>
+
+        <p>
+          Manage properties, jobs, applications, users and
+          Eastern Ethiopia location data from one professional
+          administration center.
+        </p>
+      </div>
+
+      <div class="actions">
+        <button class="btn" onclick="go('properties');openPropertyForm()">
+          ＋ Add Property
+        </button>
+
+        <button class="btn" onclick="go('jobs');openJobForm()">
+          ＋ Add Job
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="stats">
+
+    <div class="stat">
+      <div class="stat-icon">🏠</div>
+      <span>Total Properties</span>
+      <strong id="sProperties">0</strong>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">💼</div>
+      <span>Total Jobs</span>
+      <strong id="sJobs">0</strong>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">📄</div>
+      <span>Applications</span>
+      <strong id="sApps">0</strong>
+    </div>
+
+    <div class="stat">
+      <div class="stat-icon">👥</div>
+      <span>Users</span>
+      <strong id="sUsers">0</strong>
+    </div>
+
+  </div>
+
+
+  <div class="grid" style="margin-top:16px">
+
+    <div class="card">
+
+      <div class="head">
+        <div>
+          <h2>Quick Actions</h2>
+          <p>Frequently used administration tools</p>
+        </div>
+      </div>
+
+      <div class="quick-grid">
+
+        <button class="quick-btn" onclick="go('properties');openPropertyForm()">
+          <div class="quick-icon">🏠</div>
+          Add Property
+        </button>
+
+        <button class="quick-btn" onclick="go('jobs');openJobForm()">
+          <div class="quick-icon">💼</div>
+          Add Job
+        </button>
+
+        <button class="quick-btn" onclick="go('users')">
+          <div class="quick-icon">👥</div>
+          Manage Users
+        </button>
+
+        <button class="quick-btn" onclick="go('locations')">
+          <div class="quick-icon">📍</div>
+          Locations
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="head">
+        <div>
+          <h2>Access Control</h2>
+          <p>Role-based administration</p>
+        </div>
+      </div>
+
+      <div class="hint">
+        <b>Super Admin:</b>
+        full Eastern Ethiopia control, user roles and city assignments.
+      </div>
+
+      <div class="hint" style="margin-top:10px">
+        <b>Admin:</b>
+        manage properties and jobs according to RLS permissions.
+      </div>
+
+      <div class="hint" style="margin-top:10px">
+        <b>City Admin:</b>
+        manage only data belonging to assigned cities.
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     PROPERTIES
+========================= -->
+
+<section id="properties" class="section">
+
+  <div class="head">
+
+    <div>
+      <h2>Property Management</h2>
+      <p>Review, publish, feature and manage property listings.</p>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" onclick="openPropertyForm()">
+        ＋ Add Property
+      </button>
+    </div>
+
+  </div>
+
+
+  <div class="card filter-card">
+
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Search properties</label>
+        <input
+          id="propSearch"
+          class="input"
+          placeholder="Search title or location..."
+        >
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+
+        <select id="propStatusFilter" class="input">
+          <option value="">All statuses</option>
+          <option value="pending_review">Pending Review</option>
+          <option value="approved">Approved</option>
+          <option value="published">Published</option>
+          <option value="active">Active</option>
+          <option value="sold">Sold</option>
+          <option value="rented">Rented</option>
+          <option value="hidden">Hidden</option>
+          <option value="rejected">Rejected</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Listing type</label>
+
+        <select id="propTypeFilter" class="input">
+          <option value="">All listings</option>
+          <option value="rent">Rent</option>
+          <option value="sell">Sell</option>
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card filter-card" style="margin-bottom:12px"><div class="filter-grid"><div class="field"><label>Search locations</label><input id="locSearch" class="input" placeholder="Search location..."></div><div class="field"><label>Type</label><select id="locTypeFilter" class="input"><option value="">All types</option><option value="region">Region</option><option value="zone">Zone</option><option value="city">City</option><option value="woreda">Woreda</option><option value="area">Area</option></select></div><div class="field" style="align-self:end"><button class="btn primary" onclick="addLocation()">＋ Add Location</button></div></div></div>
+
+  <div class="card">
+
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Property</th>
+            <th>Listing</th>
+            <th>Price</th>
+            <th>Location</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="propRows">
+          <tr>
+            <td colspan="6" class="empty">Loading properties...</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     JOBS
+========================= -->
+
+<section id="jobs" class="section">
+
+  <div class="head">
+
+    <div>
+      <h2>Job Management</h2>
+      <p>Publish and manage jobs without manually entering Employer UUIDs.</p>
+    </div>
+
+    <button class="btn primary" onclick="openJobForm()">
+      ＋ Add Job
+    </button>
+
+  </div>
+
+
+  <div class="card filter-card">
+
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Search jobs</label>
+        <input
+          id="jobSearch"
+          class="input"
+          placeholder="Search title or company..."
+        >
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+
+        <select id="jobStatusFilter" class="input">
+          <option value="">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="published">Published</option>
+          <option value="rejected">Rejected</option>
+          <option value="closed">Closed</option>
+        </select>
+
+      </div>
+
+      <div class="field">
+        <label>Job type</label>
+
+        <select id="jobTypeFilter" class="input">
+          <option value="">All types</option>
+          <option value="full_time">Full Time</option>
+          <option value="part_time">Part Time</option>
+          <option value="contract">Contract</option>
+          <option value="temporary">Temporary</option>
+          <option value="internship">Internship</option>
+          <option value="volunteer">Volunteer</option>
+        </select>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Job</th>
+            <th>Company</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="jobRows">
+          <tr>
+            <td colspan="6" class="empty">Loading jobs...</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     APPLICATIONS
+========================= -->
+
+<section id="applications" class="section">
+  <div class="card filter-card"><div class="filter-grid"><div class="field"><label>Search applications</label><input id="appSearch" class="input" placeholder="Search applicant or job..."></div><div class="field"><label>Status</label><select id="appStatusFilter" class="input"><option value="">All statuses</option><option value="pending">Pending</option><option value="reviewing">Reviewing</option><option value="shortlisted">Shortlisted</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select></div></div></div>
+
+
+  <div class="head">
+    <div>
+      <h2>Applications</h2>
+      <p>Review and manage job-seeker applications.</p>
+    </div>
+  </div>
+
+
+  <div class="card">
+
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Job</th>
+            <th>Applicant</th>
+            <th>Status</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="appRows">
+          <tr>
+            <td colspan="5" class="empty">Loading applications...</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+    <div id="appPagination" style="display:flex;gap:8px;justify-content:center;align-items:center;padding:12px"></div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     USERS
+========================= -->
+
+<section id="users" class="section">
+
+  <div class="head">
+
+    <div>
+      <h2>User Management</h2>
+      <p>Manage profiles and administrative roles.</p>
+    </div>
+
+  </div>
+
+
+  <div class="card filter-card">
+
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Search users</label>
+        <input
+          id="userSearch"
+          class="input"
+          placeholder="Search name or phone..."
+        >
+      </div>
+
+      <div class="field">
+        <label>Role</label>
+
+        <select id="userRoleFilter" class="input">
+          <option value="">All roles</option>
+          <option value="super_admin">Super Admin</option>
+          <option value="admin">Admin</option>
+          <option value="city_admin">City Admin</option>
+          <option value="owner">Owner</option>
+          <option value="renter">Renter</option>
+          <option value="job_seeker">Job Seeker</option>
+          <option value="employer">Employer</option>
+        </select>
+
+      </div>
+
+      <div></div>
+
+    </div>
+
+  </div>
+
+
+  <div class="card">
+
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Phone</th>
+            <th>Role</th>
+            <th>Created</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+
+        <tbody id="userRows">
+          <tr>
+            <td colspan="5" class="empty">Loading users...</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     LOCATIONS
+========================= -->
+
+<section id="locations" class="section">
+
+  <div class="head">
+
+    <div>
+      <h2>Location Management</h2>
+      <p>Live Eastern Ethiopia location hierarchy.</p>
+    </div>
+
+  </div>
+
+
+  <div class="location-note">
+    <b>Hierarchy:</b>
+    Region → Zone → City → Woreda → Area.
+    <br>
+    Dire Dawa Administration and Harari-style structures can skip
+    a missing Zone level. Oromia structures such as
+    East Hararghe → Haramaya can continue through Woreda → Area.
+  </div>
+
+
+  <div class="card">
+
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Type</th>
+            <th>Parent</th>
+            <th>Active</th><th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="locRows">
+          <tr>
+            <td colspan="5" class="empty">Loading locations...</td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- =========================
+     CITY ADMINS
+========================= -->
+
+<section id="cityadmins" class="section">
+
+  <div class="head">
+
+    <div>
+      <h2>City Admin Management</h2>
+      <p>Assign one City Admin to one or multiple cities.</p>
+    </div>
+
+  </div>
+
+
+  <div id="cityAdminLocked" class="danger-note hidden">
+    This section is available only to Super Admin.
+  </div>
+
+
+  <div id="cityAdminPanel">
+
+    <div class="card">
+
+      <div class="grid">
+
+        <div class="field">
+
+          <label>Existing user</label>
+
+          <select id="caUser" class="input"></select>
+
+          <div class="hint">
+            Select an existing account. No Auth UUID needs to be entered manually.
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Assigned city</label>
+
+          <select id="caCity" class="input"></select>
+
+          <div class="hint">
+            The selected City Admin will be restricted to this city.
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          class="btn primary"
+          onclick="assignCityAdmin()"
+        >
+          🛡 Make City Admin & Assign City
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <div class="card">
+
+      <div class="tablewrap">
+
+        <table class="table">
+
+          <thead>
+            <tr>
+              <th>User</th>
+              <th>City</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+
+          <tbody id="caRows">
+            <tr>
+              <td colspan="3" class="empty">
+                Loading assignments...
+              </td>
+            </tr>
+          </tbody>
+
+        </table>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+</div>
+</main>
+
+
+<!-- =========================
+     MOBILE NAV
+========================= -->
+
+<nav class="mobile-nav">
+
+  <button data-go="home">
+    🏠
+    <span>Home</span>
+  </button>
+
+  <button data-go="properties">
+    🏠
+    <span>Property</span>
+  </button>
+
+  <button data-go="jobs">
+    💼
+    <span>Jobs</span>
+  </button>
+
+  <button data-go="applications">
+    📄
+    <span>Apps</span>
+  </button>
+
+  <button data-go="users">
+    👤
+    <span>Users</span>
+  </button>
+
+</nav>
+
+
+<!-- =========================================================
+     ADD / EDIT PROPERTY MODAL
+========================================================= -->
+
+<div id="propertyModal" class="modal">
+
+  <div class="modalbox large">
+
+    <div class="modalhead">
+
+      <div>
+        <h3 id="propertyModalTitle">Add Property</h3>
+
+        <div class="hint">
+          Create a professional property listing with up to 5 photos.
+        </div>
+      </div>
+
+      <button
+        class="close"
+        onclick="closeModal('propertyModal')"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="propertyForm">
+
+      <input type="hidden" id="propertyId">
+
+
+      <div class="grid">
+
+        <div class="field full">
+
+          <label>Listing owner</label>
+
+          <select id="propertyOwner" class="input">
+            <option value="">
+              Admin listing — no owner account
+            </option>
+          </select>
+
+          <div class="hint">
+            Optional. Admin can create a property directly without requiring an Owner UUID.
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Property title *</label>
+
+          <input
+            id="propertyTitle"
+            class="input"
+            required
+            placeholder="e.g. Modern 2 Bedroom House"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Listing type *</label>
+
+          <select
+            id="propertyListingType"
+            class="input"
+            required
+          >
+            <option value="">Select listing type</option>
+            <option value="rent">🏠 For Rent</option>
+            <option value="sell">💰 For Sale</option>
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Price *</label>
+
+          <input
+            id="propertyPrice"
+            class="input"
+            type="number"
+            min="1"
+            required
+            placeholder="Price"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Bedrooms</label>
+
+          <input
+            id="propertyBedrooms"
+            class="input"
+            type="number"
+            min="0"
+            value="0"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Status</label>
+
+          <select id="propertyStatus" class="input">
+
+            <option value="pending_review">
+              Pending Review
+            </option>
+
+            <option value="approved">
+              Approved
+            </option>
+
+            <option value="published">
+              Published
+            </option>
+
+            <option value="active">
+              Active
+            </option>
+
+            <option value="sold">
+              Sold
+            </option>
+
+            <option value="rented">
+              Rented
+            </option>
+
+            <option value="hidden">
+              Hidden
+            </option>
+
+            <option value="rejected">
+              Rejected
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Featured listing</label>
+
+          <label class="check" style="display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800">
+
+            <input
+              type="checkbox"
+              id="propertyFeatured"
+              style="width:17px;height:17px"
+            >
+
+            Show as Featured Property
+
+          </label>
+
+        </div>
+
+        <div class="field">
+          <label>Featured until</label>
+          <input id="propertyFeaturedUntil" class="input" type="datetime-local">
+          <div class="hint">Leave blank for featured with no expiry.</div>
+        </div>
+
+        <div class="full">
+
+          <div class="location-note">
+            Select only the location levels that actually exist in Supabase.
+            Area remains optional when the selected Woreda has no Area records.
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Region *</label>
+
+          <select id="prRegion" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Zone</label>
+
+          <select id="prZone" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>City *</label>
+
+          <select id="prCity" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Woreda</label>
+
+          <select id="prWoreda" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Area</label>
+
+          <select id="prArea" class="input"></select>
+
+        </div>
+
+
+        <div class="full field">
+
+          <label>Location display</label>
+
+          <input
+            id="propertyLocation"
+            class="input"
+            readonly
+            placeholder="Location will appear here"
+          >
+
+        </div>
+
+
+        <!-- PHOTO UPLOAD -->
+
+        <div class="full">
+
+          <div class="photo-upload">
+
+            <div class="photo-upload-top">
+
+              <div class="photo-upload-info">
+
+                <b>📸 Property Photos</b>
+
+                <small>
+                  Select up to 5 photos · JPG, PNG or WEBP · Maximum 5 MB each
+                </small>
+
+              </div>
+
+              <button
+                type="button"
+                class="btn primary"
+                onclick="document.getElementById('propertyPhotos').click()"
+              >
+                ＋ Select Photos
+              </button>
+
+            </div>
+
+
+            <input
+              id="propertyPhotos"
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              multiple
+              hidden
+            >
+
+
+            <div
+              id="photoPreviewGrid"
+              class="photo-preview-grid"
+            ></div>
+
+
+            <div
+              id="photoUploadHint"
+              class="hint"
+            >
+              No photos selected yet.
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <div class="full field">
+
+          <label>Description</label>
+
+          <textarea
+            id="propertyDescription"
+            class="input"
+            rows="5"
+            placeholder="Describe the property..."
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn light"
+          onclick="closeModal('propertyModal')"
+        >
+          Cancel
+        </button>
+
+        <button
+          id="propertySaveBtn"
+          class="btn primary"
+        >
+          💾 Save Property
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =========================================================
+     JOB MODAL
+========================================================= -->
+
+<div id="jobModal" class="modal">
+
+  <div class="modalbox large">
+
+    <div class="modalhead">
+
+      <div>
+        <h3>Add Job</h3>
+        <div class="hint">
+          Admin can publish jobs without entering Employer UUID.
+        </div>
+      </div>
+
+      <button
+        class="close"
+        onclick="closeModal('jobModal')"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <form id="jobForm">
+
+      <div class="grid">
+
+        <div class="field full">
+
+          <label>Employer</label>
+
+          <select id="jobEmployer" class="input">
+
+            <option value="">
+              Admin-posted job — no employer account
+            </option>
+
+          </select>
+
+          <div class="hint">
+            Optional. Admin is stored in posted_by and posting_method = admin.
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Job title *</label>
+
+          <input
+            id="jobTitle"
+            class="input"
+            required
+            placeholder="Job title"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Company name *</label>
+
+          <input
+            id="jobCompany"
+            class="input"
+            required
+            placeholder="Company name"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Category</label>
+
+          <input
+            id="jobCategory"
+            class="input"
+            placeholder="e.g. Healthcare"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Job type</label>
+
+          <select id="jobType" class="input">
+
+            <option value="">Select job type</option>
+            <option value="full_time">Full Time</option>
+            <option value="part_time">Part Time</option>
+            <option value="contract">Contract</option>
+            <option value="temporary">Temporary</option>
+            <option value="internship">Internship</option>
+            <option value="volunteer">Volunteer</option>
+
+          </select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Salary</label>
+
+          <input
+            id="jobSalary"
+            class="input"
+            type="number"
+            min="0"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Contact phone</label>
+
+          <input
+            id="jobPhone"
+            class="input"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Contact email</label>
+
+          <input
+            id="jobEmail"
+            class="input"
+            type="email"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Deadline</label>
+
+          <input
+            id="jobDeadline"
+            class="input"
+            type="date"
+          >
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Status</label>
+
+          <select id="jobStatus" class="input">
+            <option value="published">Published</option>
+            <option value="pending">Pending</option>
+            <option value="closed">Closed</option>
+            <option value="rejected">Rejected</option>
+          </select>
+
+        </div>
+
+
+        <div class="full">
+
+          <div class="location-note">
+            Job uses the same live location hierarchy:
+            Region → Zone → City → Woreda → Area.
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Region *</label>
+
+          <select id="jbRegion" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Zone</label>
+
+          <select id="jbZone" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>City *</label>
+
+          <select id="jbCity" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Woreda</label>
+
+          <select id="jbWoreda" class="input"></select>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Area</label>
+
+          <select id="jbArea" class="input"></select>
+
+        </div>
+
+
+        <div class="full field">
+
+          <label>Location display</label>
+
+          <input
+            id="jobLocation"
+            class="input"
+            readonly
+          >
+
+        </div>
+
+
+        <div class="full field">
+
+          <label>Description *</label>
+
+          <textarea
+            id="jobDescription"
+            class="input"
+            rows="6"
+            required
+          ></textarea>
+
+        </div>
+
+      </div>
+
+
+      <div class="form-actions">
+
+        <button
+          type="button"
+          class="btn light"
+          onclick="closeModal('jobModal')"
+        >
+          Cancel
+        </button>
+
+        <button class="btn primary">
+          💼 Publish Job
+        </button>
+
+      </div>
+
+    </form>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     DETAIL MODAL
+========================= -->
+
+<div id="detailModal" class="modal">
+
+  <div class="modalbox large">
+
+    <div class="modalhead">
+
+      <h3 id="detailTitle">Details</h3>
+
+      <button
+        class="close"
+        onclick="closeModal('detailModal')"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div id="detailBody"></div>
+
+  </div>
+
+</div>
+
+
+<!-- =========================
+     REJECT MODAL
+========================= -->
+
+<!-- =========================
+     CHANGE ROLE MODAL
+========================= -->
+
+<div id="roleModal" class="modal">
+
+  <div class="modalbox">
+
+    <div class="modalhead">
+
+      <div>
+        <h3>Change User Role</h3>
+        <div id="roleUserHint" class="hint">Select the new role for this account.</div>
+      </div>
+
+      <button class="close" type="button" onclick="closeModal('roleModal')">×</button>
+
+    </div>
+
+    <input type="hidden" id="roleUserId">
+
+    <div class="field">
+      <label>Role *</label>
+      <select id="roleSelect" class="input">
+        <option value="admin">Admin</option>
+        <option value="city_admin">City Admin</option>
+        <option value="owner">Owner</option>
+        <option value="renter">Renter</option>
+        <option value="job_seeker">Job Seeker</option>
+        <option value="employer">Employer</option>
+        <option value="super_admin">Super Admin</option>
+      </select>
+      <div class="hint">Changing away from City Admin automatically removes that user's city assignments.</div>
+    </div>
+
+    <div class="form-actions">
+      <button type="button" class="btn light" onclick="closeModal('roleModal')">Cancel</button>
+      <button type="button" id="roleSaveBtn" class="btn primary" onclick="saveUserRole()">Save Role</button>
+    </div>
+
+  </div>
+
+</div>
+
+
+<div id="rejectModal" class="modal">
+
+  <div class="modalbox">
+
+    <div class="modalhead">
+
+      <div>
+        <h3>Reject Property</h3>
+        <div class="hint">
+          Provide a reason so the owner/admin knows what must be corrected.
+        </div>
+      </div>
+
+      <button
+        class="close"
+        onclick="closeModal('rejectModal')"
+      >
+        ×
+      </button>
+
+    </div>
+
+
+    <input type="hidden" id="rejectPropertyId">
+
+    <div class="field">
+
+      <label>Rejection reason *</label>
+
+      <textarea
+        id="rejectionReason"
+        class="input"
+        rows="5"
+        placeholder="Enter rejection reason..."
+      ></textarea>
+
+    </div>
+
+
+    <div class="form-actions">
+
+      <button
+        class="btn light"
+        onclick="closeModal('rejectModal')"
+      >
+        Cancel
+      </button>
+
+      <button
+        class="btn danger"
+        onclick="confirmRejectProperty()"
+      >
+        ✕ Reject Property
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<div id="toast" class="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let me = null;
+let profile = null;
+
+let locations = [];
+let users = [];
+let properties = [];
+let jobs = [];
+let applications = [];
+let assignments = [];
+let applicationPage = 1;
+const APPLICATION_PAGE_SIZE = 25;
+
+let active = 'home';
+
+let selectedPropertyFiles = [];
+let propertyPhotoMap = {};
+let currentGalleryPhotos = [];
+
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ = id => document.getElementById(id);
+
+const esc = value =>
+  EEDB.esc(value == null ? '' : String(value));
+
+const go = section => {
+
+  active = section;
+
+  document
+    .querySelectorAll('.section')
+    .forEach(x =>
+      x.classList.toggle('active', x.id === section)
+    );
+
+  document
+    .querySelectorAll('[data-go]')
+    .forEach(x =>
+      x.classList.toggle('active', x.dataset.go === section)
+    );
+
+  const titles = {
+    home:'Admin Dashboard',
+    properties:'Property Management',
+    jobs:'Job Management',
+    applications:'Applications',
+    users:'User Management',
+    locations:'Locations',
+    cityadmins:'City Admins'
+  };
+
+  $('pageTitle').textContent =
+    titles[section] || 'Admin Dashboard';
+
+  if(section === 'properties') renderProperties();
+  if(section === 'jobs') renderJobs();
+  if(section === 'applications') renderApplications();
+  if(section === 'users') renderUsers();
+  if(section === 'locations') renderLocations();
+  if(section === 'cityadmins') renderCityAdmins();
+
+  $('side').classList.remove('open');
+};
+
+
+document
+  .querySelectorAll('[data-go]')
+  .forEach(button => {
+
+    button.addEventListener('click', () =>
+      go(button.dataset.go)
+    );
+
+  });
+
+
+$('menu').onclick = () =>
+  $('side').classList.toggle('open');
+
+
+$('logoutBtn').onclick = async () => {
+
+  await EEDB.client.auth.signOut();
+
+  location.href = 'index.html';
+
+};
+
+
+/* =========================================================
+   MODALS
+========================================================= */
+
+function openModal(id){
+  $(id).classList.add('show');
+}
+
+function closeModal(id){
+  $(id).classList.remove('show');
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+let toastTimer;
+
+function toast(message,type='success'){
+
+  const t = $('toast');
+
+  t.textContent = message;
+
+  t.className =
+    'toast show ' +
+    (type === 'error' ? 'error' : 'success');
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    t.className = 'toast';
+  },3500);
+}
+
+
+/* =========================================================
+   BADGE
+========================================================= */
+
+function badge(status){
+
+  const classes = {
+
+    published:'b-green',
+    active:'b-green',
+
+    approved:'b-blue',
+
+    pending:'b-orange',
+    pending_review:'b-orange',
+
+    rejected:'b-red',
+    closed:'b-red',
+    hidden:'b-red',
+
+    sold:'b-purple',
+    rented:'b-purple',
+
+    super_admin:'b-purple',
+    admin:'b-blue',
+    city_admin:'b-blue',
+    owner:'b-green',
+    renter:'b-orange',
+    job_seeker:'b-purple',
+    employer:'b-green'
+
+  };
+
+  return `
+    <span class="badge ${classes[status] || 'b-gray'}">
+      ${esc(String(status || '—').replaceAll('_',' '))}
+    </span>
+  `;
+}
+
+
+/* =========================================================
+   LISTING CHIP
+========================================================= */
+
+function listingChip(type,featured){
+
+  const isRent = type === 'rent';
+
+  return `
+    <span class="type-chip ${isRent?'type-rent':'type-sell'}">
+      ${isRent?'🏠 Rent':'💰 Sale'}
+    </span>
+
+    ${
+      featured
+      ?
+      `<div class="feature-chip">★ FEATURED</div>`
+      :
+      ''
+    }
+  `;
+}
+
+
+/* =========================================================
+   CITY ACCESS
+========================================================= */
+
+function currentCityAllowed(cityId){
+
+  if(!cityId) return false;
+
+  if(EEDB.normalizeRole(profile?.role) !== 'city_admin'){
+    return true;
+  }
+
+  return assignments.some(
+    a =>
+      a.admin_id === me.id &&
+      a.city_id === cityId
+  );
+}
+
+
+/* =========================================================
+   LOAD DASHBOARD
+========================================================= */
+
+async function loadAll(){
+
+  try{
+
+    const session = await EEDB.sessionProfile();
+
+    me = session.user;
+    profile = session.profile;
+
+    if(
+      !me ||
+      !profile ||
+      !EEDB.isAdminRole(profile.role)
+    ){
+
+      location.href = 'index.html';
+      return;
+
+    }
+
+
+    $('userName').textContent =
+      profile.full_name ||
+      me.email ||
+      'Admin';
+
+    $('userRole').textContent =
+      String(profile.role || '')
+        .replaceAll('_',' ')
+        .toUpperCase();
+
+    $('avatar').textContent =
+      (profile.full_name || 'A')
+        .slice(0,1)
+        .toUpperCase();
+
+
+    /* CITY ADMIN VISIBILITY */
+
+    if(profile.role !== 'super_admin'){
+
+      $('cityAdminNav').classList.add('hidden');
+
+      $('cityAdminPanel').classList.add('hidden');
+
+      $('cityAdminLocked').classList.remove('hidden');
+
+    }
+
+
+    /* LOCATIONS */
+
+    locations = await EEDB.locations();
+    if(profile.role==='super_admin') { const allLoc=await EEDB.client.from('locations').select('id,parent_id,name,type,is_active,created_at').order('name'); if(!allLoc.error) locations=allLoc.data||[]; }
+
+
+    /* DATA */
+
+    const results = await Promise.all([
+
+      EEDB.client
+        .from('profiles')
+        .select(
+          'id,full_name,phone,role,created_at,is_active'
+        )
+        .order('created_at',{ascending:false}),
+
+      EEDB.client
+        .from('properties')
+        .select('*')
+        .order('created_at',{ascending:false}),
+
+      EEDB.client
+        .from('jobs')
+        .select('*')
+        .order('created_at',{ascending:false}),
+
+      EEDB.client
+        .from('job_applications')
+        .select('*')
+        .order('created_at',{ascending:false}),
+
+      EEDB.client
+        .from('admin_city_assignments')
+        .select('*')
+
+    ]);
+
+
+    results.forEach(result => {
+
+      if(result.error){
+        throw result.error;
+      }
+
+    });
+
+
+    users =
+      results[0].data || [];
+
+    properties =
+      results[1].data || [];
+
+    jobs =
+      results[2].data || [];
+
+    applications =
+      results[3].data || [];
+
+    assignments =
+      results[4].data || [];
+
+
+    populatePeople();
+
+    refreshStats();
+
+    renderProperties();
+
+    renderJobs();
+
+    renderApplications();
+
+    renderUsers();
+
+    renderLocations();
+
+    renderCityAdmins();
+
+    setupCascades();
+
+    await preloadPropertyPhotos();
+
+
+  }catch(error){
+
+    console.error(error);
+
+    toast(
+      error.message ||
+      'Failed to load dashboard',
+      'error'
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function refreshStats(){
+
+  $('sProperties').textContent =
+    properties.length;
+
+  $('sJobs').textContent =
+    jobs.length;
+
+  $('sApps').textContent =
+    applications.length;
+
+  $('sUsers').textContent =
+    users.length;
+
+}
+
+
+/* =========================================================
+   PEOPLE
+========================================================= */
+
+function populatePeople(){
+
+  const owners =
+    users.filter(
+      u => u.role === 'owner'
+    );
+
+
+  const employers =
+    users.filter(
+      u =>
+        [
+          'employer',
+          'owner',
+          'admin',
+          'city_admin'
+        ].includes(u.role)
+    );
+
+
+  $('propertyOwner').innerHTML =
+    '<option value="">Admin listing — no owner</option>' +
+
+    owners.map(u => `
+
+      <option value="${esc(u.id)}">
+        ${esc(u.full_name || u.phone || u.id)}
+      </option>
+
+    `).join('');
+
+
+  $('jobEmployer').innerHTML =
+    '<option value="">Admin-posted job — no employer account</option>' +
+
+    employers.map(u => `
+
+      <option value="${esc(u.id)}">
+        ${esc(u.full_name || u.phone || u.id)}
+      </option>
+
+    `).join('');
+
+
+  const cities =
+    locations
+      .filter(x => x.type === 'city')
+      .sort(
+        (a,b) =>
+          a.name.localeCompare(b.name)
+      );
+
+
+  $('caCity').innerHTML =
+    '<option value="">Select city</option>' +
+
+    cities.map(c => `
+
+      <option value="${esc(c.id)}">
+        ${esc(c.name)}
+      </option>
+
+    `).join('');
+
+
+  $('caUser').innerHTML =
+    '<option value="">Select user</option>' +
+
+    users
+      .filter(u => u.role !== 'super_admin')
+      .map(u => `
+
+        <option value="${esc(u.id)}">
+          ${esc(
+            u.full_name ||
+            u.phone ||
+            u.id
+          )}
+          — ${esc(u.role)}
+        </option>
+
+      `).join('');
+
+}
+
+
+/* =========================================================
+   LOCATION CASCADES
+========================================================= */
+
+function setupCascades(){
+
+  const sets = [
+
+    [
+      'prRegion',
+      'prZone',
+      'prCity',
+      'prWoreda',
+      'prArea',
+      'propertyLocation'
+    ],
+
+    [
+      'jbRegion',
+      'jbZone',
+      'jbCity',
+      'jbWoreda',
+      'jbArea',
+      'jobLocation'
+    ]
+
+  ];
+
+
+  for(const set of sets){
+
+    const elements = {
+
+      region:$(set[0]),
+      zone:$(set[1]),
+      city:$(set[2]),
+      woreda:$(set[3]),
+      area:$(set[4])
+
+    };
+
+
+    EEDB.cascade(
+      locations,
+      {},
+      elements,
+      () => {
+
+        const ids =
+          EEDB.getSelectedIds(elements);
+
+        $(set[5]).value =
+          EEDB.locationText(
+            locations,
+            ids
+          );
+
+      }
+    );
+
+  }
+
+}
+
+
+/* =========================================================
+   PROPERTY PHOTO URL
+========================================================= */
+
+function storageUrl(path){
+
+  if(!path) return '';
+
+  try{
+
+    const result =
+      EEDB.client
+        .storage
+        .from('property-images')
+        .getPublicUrl(path);
+
+    return result?.data?.publicUrl || '';
+
+  }catch(e){
+
+    return '';
+
+  }
+
+}
+
+
+/* =========================================================
+   LOAD PROPERTY PHOTOS
+========================================================= */
+
+async function preloadPropertyPhotos(){
+
+  propertyPhotoMap = {};
+
+  if(!properties.length) return;
+
+
+  const ids =
+    properties.map(p => p.id);
+
+
+  try{
+
+    const result =
+      await EEDB.client
+        .from('property_images')
+        .select(
+          'id,property_id,owner_id,storage_path,display_order,created_at'
+        )
+        .in('property_id',ids)
+        .order('display_order',{ascending:true});
+
+
+    if(result.error){
+
+      console.warn(
+        'property_images:',
+        result.error.message
+      );
+
+      return;
+
+    }
+
+
+    (result.data || []).forEach(photo => {
+
+      if(!propertyPhotoMap[photo.property_id]){
+        propertyPhotoMap[photo.property_id] = [];
+      }
+
+      propertyPhotoMap[photo.property_id].push({
+
+        ...photo,
+
+        url:storageUrl(
+          photo.storage_path
+        )
+
+      });
+
+    });
+
+
+    renderProperties();
+
+  }catch(error){
+
+    console.warn(error);
+
+  }
+
+}
+
+
+/* =========================================================
+   PROPERTY THUMBNAIL
+========================================================= */
+
+function propertyThumb(property){
+
+  const photos =
+    propertyPhotoMap[property.id] || [];
+
+  const first =
+    photos[0]?.url;
+
+
+  if(first){
+
+    return `
+      <img
+        class="property-thumb"
+        src="${esc(first)}"
+        alt="${esc(property.title)}"
+        loading="lazy"
+      >
+    `;
+
+  }
+
+
+  return `
+    <div class="property-thumb placeholder">
+      🏠
+    </div>
+  `;
+
+}
+
+
+/* =========================================================
+   RENDER PROPERTIES
+========================================================= */
+
+function renderProperties(){
+
+  const search =
+    ($('propSearch')?.value || '')
+      .toLowerCase()
+      .trim();
+
+  const status =
+    $('propStatusFilter')?.value || '';
+
+  const type =
+    $('propTypeFilter')?.value || '';
+
+
+  const list =
+    properties
+      .filter(p => {
+
+        const matchesSearch =
+          !search ||
+          (p.title || '')
+            .toLowerCase()
+            .includes(search) ||
+          (p.location || '')
+            .toLowerCase()
+            .includes(search);
+
+        const matchesStatus =
+          !status ||
+          p.status === status;
+
+        const matchesType =
+          !type ||
+          p.listing_type === type;
+
+        const matchesCity =
+          profile?.role !== 'city_admin' ||
+          currentCityAllowed(p.city_id);
+
+        return (
+          matchesSearch &&
+          matchesStatus &&
+          matchesType &&
+          matchesCity
+        );
+
+      });
+
+
+
+  if(!list.length){
+
+    $('propRows').innerHTML = `
+      <tr>
+        <td colspan="6" class="empty">
+          No properties found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  $('propRows').innerHTML =
+    list.map(p => {
+
+      const photos =
+        propertyPhotoMap[p.id] || [];
+
+      return `
+
+        <tr>
+
+          <td>
+
+            <div class="property-preview">
+
+              ${propertyThumb(p)}
+
+              <div class="property-title">
+
+                <b>
+                  ${esc(p.title || 'Untitled property')}
+                </b>
+
+                <small>
+                  ${p.bedrooms ?? 0} bedroom${Number(p.bedrooms) === 1 ? '' : 's'}
+                  · ${photos.length} photo${photos.length === 1 ? '' : 's'}
+                </small>
+
+                ${
+                  p.is_featured
+                  ?
+                  `<div class="feature-chip">★ FEATURED</div>`
+                  :
+                  ''
+                }
+
+              </div>
+
+            </div>
+
+          </td>
+
+
+          <td>
+            ${listingChip(
+              p.listing_type,
+              false
+            )}
+          </td>
+
+
+          <td>
+            <span class="price">
+              ${EEDB.fmtMoney(p.price)}
+            </span>
+          </td>
+
+
+          <td>
+            ${esc(p.location || '—')}
+          </td>
+
+
+          <td>
+            ${badge(p.status)}
+          </td>
+
+
+          <td>
+
+            <div class="mini-actions">
+
+              <button
+                class="btn light"
+                onclick="viewProperty('${esc(p.id)}')"
+              >
+                👁 View
+              </button>
+
+
+              <button
+                class="btn light"
+                onclick="editProperty('${esc(p.id)}')"
+              >
+                ✎ Edit
+              </button>
+
+
+              ${
+                ['pending_review','approved']
+                  .includes(p.status)
+                ?
+                `
+                  <button
+                    class="btn success"
+                    onclick="approveProperty('${esc(p.id)}')"
+                  >
+                    ✓ Approve
+                  </button>
+
+                  <button
+                    class="btn danger"
+                    onclick="openReject('${esc(p.id)}')"
+                  >
+                    ✕ Reject
+                  </button>
+                `
+                :
+                ''
+              }
+
+
+              ${
+                p.is_featured
+                ?
+                `
+                  <button
+                    class="btn unfeature-btn"
+                    onclick="toggleFeatured('${esc(p.id)}',false)"
+                  >
+                    ★ Unfeature
+                  </button>
+                `
+                :
+                `
+                  <button
+                    class="btn feature-btn"
+                    onclick="toggleFeatured('${esc(p.id)}',true)"
+                  >
+                    ☆ Feature
+                  </button>
+                `
+              }
+
+
+              <button
+                class="btn danger"
+                onclick="deleteProperty('${esc(p.id)}')"
+              >
+                🗑
+              </button>
+
+            </div>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join('');
+
+}
+
+
+/* =========================================================
+   PROPERTY FORM RESET
+========================================================= */
+
+function resetProperty(){
+
+  $('propertyId').value = '';
+
+  $('propertyModalTitle').textContent =
+    'Add Property';
+
+
+  $('propertyOwner').value = '';
+
+  $('propertyTitle').value = '';
+
+  $('propertyListingType').value = '';
+
+  $('propertyPrice').value = '';
+
+  $('propertyBedrooms').value = 0;
+
+  $('propertyStatus').value =
+    'pending_review';
+
+  $('propertyFeatured').checked = false;
+  $('propertyFeaturedUntil').value = '';
+
+  $('propertyLocation').value = '';
+
+  $('propertyDescription').value = '';
+
+
+  selectedPropertyFiles = [];
+
+  renderPhotoPreviews();
+
+
+  setupCascades();
+
+}
+
+
+/* =========================================================
+   OPEN PROPERTY FORM
+========================================================= */
+
+function openPropertyForm(){
+
+  resetProperty();
+
+  openModal('propertyModal');
+
+}
+
+
+/* =========================================================
+   PHOTO FILE SELECT
+========================================================= */
+
+$('propertyPhotos').addEventListener(
+  'change',
+  event => {
+
+    const files =
+      Array.from(
+        event.target.files || []
+      );
+
+
+    if(!files.length) return;
+
+
+    const combined =
+      [
+        ...selectedPropertyFiles,
+        ...files
+      ];
+
+
+    if(combined.length > 5){
+
+      toast(
+        'Maximum 5 photos are allowed.',
+        'error'
+      );
+
+      $('propertyPhotos').value = '';
+
+      return;
+
+    }
+
+
+    const invalid =
+      combined.find(file => {
+
+        const allowed = [
+          'image/jpeg',
+          'image/png',
+          'image/webp'
+        ];
+
+        return (
+          !allowed.includes(file.type) ||
+          file.size > 5 * 1024 * 1024
+        );
+
+      });
+
+
+    if(invalid){
+
+      toast(
+        `${invalid.name} is invalid. Use JPG, PNG or WEBP under 5 MB.`,
+        'error'
+      );
+
+      $('propertyPhotos').value = '';
+
+      return;
+
+    }
+
+
+    selectedPropertyFiles =
+      combined;
+
+
+    $('propertyPhotos').value = '';
+
+    renderPhotoPreviews();
+
+  }
+);
+
+
+/* =========================================================
+   PHOTO PREVIEWS
+========================================================= */
+
+function renderPhotoPreviews(){
+
+  const grid =
+    $('photoPreviewGrid');
+
+  if(!selectedPropertyFiles.length){
+
+    grid.innerHTML = '';
+
+    $('photoUploadHint').textContent =
+      'No new photos selected yet.';
+
+    return;
+
+  }
+
+
+  $('photoUploadHint').textContent =
+    `${selectedPropertyFiles.length}/5 photos selected.`;
+
+
+  grid.innerHTML =
+    selectedPropertyFiles
+      .map((file,index) => {
+
+        const url =
+          URL.createObjectURL(file);
+
+        return `
+
+          <div class="photo-preview">
+
+            <img
+              src="${url}"
+              alt="Selected property photo ${index+1}"
+            >
+
+            <button
+              type="button"
+              class="photo-remove"
+              onclick="removeSelectedPhoto(${index})"
+            >
+              ×
+            </button>
+
+          </div>
+
+        `;
+
+      }).join('');
+
+}
+
+
+/* =========================================================
+   REMOVE SELECTED PHOTO
+========================================================= */
+
+function removeSelectedPhoto(index){
+
+  selectedPropertyFiles.splice(
+    index,
+    1
+  );
+
+  renderPhotoPreviews();
+
+}
+
+
+/* =========================================================
+   EDIT PROPERTY
+========================================================= */
+
+async function editProperty(id){
+
+  const property =
+    properties.find(
+      x => x.id === id
+    );
+
+  if(!property) return;
+
+
+  resetProperty();
+
+
+  $('propertyModalTitle').textContent =
+    'Edit Property';
+
+
+  $('propertyId').value =
+    property.id;
+
+  $('propertyOwner').value =
+    property.owner_id || '';
+
+  $('propertyTitle').value =
+    property.title || '';
+
+  $('propertyListingType').value =
+    property.listing_type || '';
+
+  $('propertyPrice').value =
+    property.price || '';
+
+  $('propertyBedrooms').value = property.bedrooms ?? '';
+
+  $('propertyStatus').value =
+    property.status || 'pending_review';
+
+  $('propertyFeatured').checked = !!property.is_featured;
+  $('propertyFeaturedUntil').value = property.featured_until ? new Date(property.featured_until).toISOString().slice(0,16) : '';
+
+  $('propertyDescription').value =
+    property.description || '';
+
+
+  const elements = {
+
+    region:$('prRegion'),
+    zone:$('prZone'),
+    city:$('prCity'),
+    woreda:$('prWoreda'),
+    area:$('prArea')
+
+  };
+
+
+  EEDB.cascade(
+    locations,
+    {
+      region:property.region_id,
+      zone:property.zone_id,
+      city:property.city_id,
+      woreda:property.woreda_id,
+      area:property.area_id
+    },
+    elements,
+    () => {
+
+      $('propertyLocation').value =
+        EEDB.locationText(
+          locations,
+          EEDB.getSelectedIds(elements)
+        );
+
+    }
+  );
+
+
+  const existingPhotos =
+    propertyPhotoMap[property.id] || [];
+
+
+  if(existingPhotos.length){
+
+    $('photoUploadHint').innerHTML =
+      `${existingPhotos.length} existing photo${existingPhotos.length===1?'':'s'} · New photos can also be added.`;
+
+  }
+
+
+  openModal('propertyModal');
+
+}
+
+
+/* =========================================================
+   UPLOAD PROPERTY PHOTOS
+========================================================= */
+
+async function uploadPropertyPhotos(propertyId){
+
+  if(!selectedPropertyFiles.length){
+    return [];
+  }
+
+
+  const existing =
+    propertyPhotoMap[propertyId] || [];
+
+
+  const startOrder =
+    existing.length;
+
+
+  const uploaded = [];
+
+
+  for(
+    let i = 0;
+    i < selectedPropertyFiles.length;
+    i++
+  ){
+
+    const file =
+      selectedPropertyFiles[i];
+
+
+    const extension =
+      file.name
+        .split('.')
+        .pop()
+        .toLowerCase();
+
+
+    const path =
+      `${propertyId}/${Date.now()}_${i}_${crypto.randomUUID()}.${extension}`;
+
+
+    const upload =
+      await EEDB.client
+        .storage
+        .from('property-images')
+        .upload(
+          path,
+          file,
+          {
+            cacheControl:'3600',
+            upsert:false,
+            contentType:file.type
+          }
+        );
+
+
+    if(upload.error){
+
+      throw upload.error;
+
+    }
+
+
+    const insert =
+      await EEDB.client
+        .from('property_images')
+        .insert({
+
+          property_id:propertyId,
+
+          owner_id:
+            properties.find(p => p.id === propertyId)?.owner_id || me.id,
+
+          storage_path:path,
+
+          display_order:
+            startOrder + i
+
+        });
+
+
+    if(insert.error){
+
+      /* Try removing orphaned storage file */
+
+      await EEDB.client
+        .storage
+        .from('property-images')
+        .remove([path]);
+
+      throw insert.error;
+
+    }
+
+
+    uploaded.push(path);
+
+  }
+
+
+  return uploaded;
+
+}
+
+
+/* =========================================================
+   SAVE PROPERTY
+========================================================= */
+
+$('propertyForm').onsubmit =
+  async event => {
+
+    event.preventDefault();
+
+
+    const ids =
+      EEDB.getSelectedIds({
+
+        region:$('prRegion'),
+        zone:$('prZone'),
+        city:$('prCity'),
+        woreda:$('prWoreda'),
+        area:$('prArea')
+
+      });
+
+
+    if(!ids.region_id || !ids.city_id){
+
+      toast(
+        'Please select Region and City.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    if(
+      profile.role === 'city_admin' &&
+      !currentCityAllowed(ids.city_id)
+    ){
+
+      toast(
+        'You can only manage your assigned city.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    const title =
+      $('propertyTitle')
+        .value
+        .trim();
+
+
+    const listingType =
+      $('propertyListingType').value;
+
+
+    const price =
+      Number(
+        $('propertyPrice').value
+      );
+
+
+    if(!title){
+
+      toast(
+        'Property title is required.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    if(!listingType){
+
+      toast(
+        'Please select listing type.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    if(!price || price < 1){
+
+      toast(
+        'Please enter a valid price.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    const payload = {
+
+      owner_id:
+        $('propertyOwner').value || null,
+
+      title,
+
+      listing_type:
+        listingType,
+
+      price,
+
+      location:
+        EEDB.locationText(
+          locations,
+          ids
+        ),
+
+      bedrooms:
+        Number(
+          $('propertyBedrooms').value || 0
+        ),
+
+      description:
+        $('propertyDescription')
+          .value
+          .trim() || null,
+
+      status:
+        $('propertyStatus').value,
+
+      is_featured:
+        $('propertyFeatured').checked,
+
+      featured_until:
+        $('propertyFeatured').checked && $('propertyFeaturedUntil').value ? new Date($('propertyFeaturedUntil').value).toISOString() : null,
+
+      region_id:
+        ids.region_id,
+
+      zone_id:
+        ids.zone_id,
+
+      city_id:
+        ids.city_id,
+
+      woreda_id:
+        ids.woreda_id,
+
+      area_id:
+        ids.area_id,
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const saveButton =
+      $('propertySaveBtn');
+
+
+    saveButton.disabled = true;
+
+    saveButton.textContent =
+      'Saving...';
+
+
+    try{
+
+      const id =
+        $('propertyId').value;
+
+
+      let propertyId =
+        id;
+
+
+      if(id){
+
+        const result =
+          await EEDB.client
+            .from('properties')
+            .update(payload)
+            .eq('id',id);
+
+
+        if(result.error){
+          throw result.error;
+        }
+
+
+      }else{
+
+        const result =
+          await EEDB.client
+            .from('properties')
+            .insert(payload)
+            .select('id')
+            .single();
+
+
+        if(result.error){
+          throw result.error;
+        }
+
+
+        propertyId =
+          result.data.id;
+
+      }
+
+
+      /* Upload selected photos */
+
+      if(selectedPropertyFiles.length){
+
+        await uploadPropertyPhotos(
+          propertyId
+        );
+
+      }
+
+
+      toast(
+        id
+        ? 'Property updated successfully.'
+        : 'Property created successfully.',
+        'success'
+      );
+
+
+      closeModal('propertyModal');
+
+
+      selectedPropertyFiles = [];
+
+      await reloadProperties();
+
+
+    }catch(error){
+
+      console.error(error);
+
+      toast(
+        error.message ||
+        'Could not save property.',
+        'error'
+      );
+
+    }finally{
+
+      saveButton.disabled = false;
+
+      saveButton.textContent =
+        '💾 Save Property';
+
+    }
+
+  };
+
+
+/* =========================================================
+   RELOAD PROPERTIES
+========================================================= */
+
+async function reloadProperties(){
+
+  const result =
+    await EEDB.client
+      .from('properties')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  properties =
+    result.data || [];
+
+
+  refreshStats();
+
+  await preloadPropertyPhotos();
+
+  renderProperties();
+
+}
+
+
+/* =========================================================
+   APPROVE PROPERTY
+========================================================= */
+
+async function approveProperty(id){
+
+  const property =
+    properties.find(
+      p => p.id === id
+    );
+
+  if(!property) return;
+
+
+  if(
+    profile.role === 'city_admin' &&
+    !currentCityAllowed(property.city_id)
+  ){
+
+    toast(
+      'You can only manage your assigned city.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  if(
+    !confirm(
+      `Approve "${property.title}" and publish it?`
+    )
+  ){
+
+    return;
+
+  }
+
+
+  const result =
+    await EEDB.client
+      .from('properties')
+      .update({
+
+        status:'published',
+
+        reviewed_by:
+          me.id,
+
+        reviewed_at:
+          new Date().toISOString(),
+
+        rejection_reason:
+          null,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'Property approved and published.',
+    'success'
+  );
+
+
+  await reloadProperties();
+
+}
+
+
+/* =========================================================
+   OPEN REJECT
+========================================================= */
+
+function openReject(id){
+
+  const property =
+    properties.find(
+      p => p.id === id
+    );
+
+  if(!property) return;
+
+
+  $('rejectPropertyId').value =
+    id;
+
+  $('rejectionReason').value =
+    property.rejection_reason || '';
+
+
+  openModal('rejectModal');
+
+}
+
+
+/* =========================================================
+   CONFIRM REJECT
+========================================================= */
+
+async function confirmRejectProperty(){
+
+  const id =
+    $('rejectPropertyId').value;
+
+
+  const reason =
+    $('rejectionReason')
+      .value
+      .trim();
+
+
+  if(!reason){
+
+    toast(
+      'Please enter a rejection reason.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  const result =
+    await EEDB.client
+      .from('properties')
+      .update({
+
+        status:'rejected',
+
+        reviewed_by:
+          me.id,
+
+        reviewed_at:
+          new Date().toISOString(),
+
+        rejection_reason:
+          reason,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  closeModal('rejectModal');
+
+  toast(
+    'Property rejected.',
+    'success'
+  );
+
+
+  await reloadProperties();
+
+}
+
+
+/* =========================================================
+   FEATURE / UNFEATURE
+========================================================= */
+
+async function toggleFeatured(id,featured){
+
+  const result =
+    await EEDB.client
+      .from('properties')
+      .update({
+
+        is_featured:
+          featured,
+
+        featured_until:
+          featured
+          ? null
+          : null,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    featured
+    ? 'Property marked as Featured.'
+    : 'Property removed from Featured.',
+    'success'
+  );
+
+
+  await reloadProperties();
+
+}
+
+
+/* =========================================================
+   DELETE PROPERTY
+========================================================= */
+
+async function deleteProperty(id){
+
+  const property =
+    properties.find(
+      p => p.id === id
+    );
+
+
+  if(!property) return;
+
+
+  if(
+    !confirm(
+      `Delete "${property.title}"?\n\nThis action cannot be undone.`
+    )
+  ){
+
+    return;
+
+  }
+
+
+  /* Delete photo records/storage first */
+
+  const photos =
+    propertyPhotoMap[id] || [];
+
+
+  if(photos.length){
+
+    const paths =
+      photos
+        .map(p => p.storage_path)
+        .filter(Boolean);
+
+
+    if(paths.length){
+
+      await EEDB.client
+        .storage
+        .from('property-images')
+        .remove(paths);
+
+    }
+
+
+    await EEDB.client
+      .from('property_images')
+      .delete()
+      .eq('property_id',id);
+
+  }
+
+
+  const result =
+    await EEDB.client
+      .from('properties')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'Property deleted.',
+    'success'
+  );
+
+
+  await reloadProperties();
+
+}
+
+
+/* =========================================================
+   VIEW PROPERTY
+========================================================= */
+
+async function viewProperty(id){
+
+  const property =
+    properties.find(
+      p => p.id === id
+    );
+
+  if(!property) return;
+
+
+  let photos =
+    propertyPhotoMap[id] || [];
+
+
+  /* Refresh photos for current property */
+
+  try{
+
+    const result =
+      await EEDB.client
+        .from('property_images')
+        .select(
+          'id,property_id,owner_id,storage_path,display_order,created_at'
+        )
+        .eq('property_id',id)
+        .order('display_order',{ascending:true});
+
+
+    if(!result.error){
+
+      photos =
+        (result.data || []).map(photo => ({
+
+          ...photo,
+
+          url:
+            storageUrl(
+              photo.storage_path
+            )
+
+        }));
+
+      propertyPhotoMap[id] =
+        photos;
+
+    }
+
+  }catch(e){
+
+    console.warn(e);
+
+  }
+
+
+  currentGalleryPhotos =
+    photos;
+
+
+  const owner =
+    users.find(
+      u => u.id === property.owner_id
+    );
+
+
+  const gallery =
+    photos.length
+    ?
+    `
+
+      <div>
+
+        <img
+          id="galleryMain"
+          class="gallery-main"
+          src="${esc(photos[0].url)}"
+          alt="${esc(property.title)}"
+        >
+
+        <div class="gallery-thumbs">
+
+          ${photos.map((photo,index) => `
+
+            <img
+              class="gallery-thumb ${index===0?'active':''}"
+              src="${esc(photo.url)}"
+              alt="Property photo ${index+1}"
+              onclick="changeGalleryPhoto(${index})"
+            >
+
+          `).join('')}
+
+        </div>
+
+      </div>
+
+    `
+    :
+    `
+
+      <div
+        style="
+          height:220px;
+          border-radius:18px;
+          background:#F2F4F7;
+          display:grid;
+          place-items:center;
+          color:#98A2B3;
+          font-size:13px;
+          margin-bottom:15px
+        "
+      >
+        🏠 No property photos
+      </div>
+
+    `;
+
+
+  const rejection =
+    property.status === 'rejected' &&
+    property.rejection_reason
+    ?
+    `
+      <div class="danger-note" style="margin-bottom:14px">
+        <b>Rejection reason:</b><br>
+        ${esc(property.rejection_reason)}
+      </div>
+    `
+    :
+    '';
+
+
+  showDetail(
+    '🏠 Property Details',
+    `
+
+      ${gallery}
+
+      ${rejection}
+
+      <div class="detail-grid">
+
+        <div>
+          <b>Property</b>
+          <span>
+            ${esc(property.title || '—')}
+          </span>
+        </div>
+
+        <div>
+          <b>Listing</b>
+          <span>
+            ${property.listing_type === 'rent'
+              ? '🏠 For Rent'
+              : '💰 For Sale'}
+          </span>
+        </div>
+
+        <div>
+          <b>Price</b>
+          <span>
+            ${EEDB.fmtMoney(property.price)}
+          </span>
+        </div>
+
+        <div>
+          <b>Status</b>
+          <span>
+            ${badge(property.status)}
+          </span>
+        </div>
+
+        <div>
+          <b>Bedrooms</b>
+          <span>
+            ${property.bedrooms ?? 0}
+          </span>
+        </div>
+
+        <div>
+          <b>Featured</b>
+          <span>
+            ${EEDB.isFeaturedNow(property)
+              ? '★ Featured'
+              : 'Not Featured'}
+          </span>
+        </div>
+
+        <div class="wide">
+          <b>Location</b>
+          <span>
+            ${esc(property.location || '—')}
+          </span>
+        </div>
+
+        <div>
+          <b>Owner</b>
+          <span>
+            ${esc(
+              owner?.full_name ||
+              owner?.phone ||
+              (
+                property.owner_id
+                ? 'Account'
+                : 'Admin Listing'
+              )
+            )}
+          </span>
+        </div>
+
+        <div>
+          <b>Created</b>
+          <span>
+            ${property.created_at
+              ? new Date(property.created_at)
+                  .toLocaleString()
+              : '—'}
+          </span>
+        </div>
+
+        <div class="wide">
+          <b>Description</b>
+          <span>
+            ${esc(
+              property.description ||
+              'No description'
+            )}
+          </span>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+
+        ${
+          ['pending_review','approved']
+            .includes(property.status)
+          ?
+          `
+            <button
+              class="btn success"
+              onclick="closeModal('detailModal');approveProperty('${esc(property.id)}')"
+            >
+              ✓ Approve
+            </button>
+
+            <button
+              class="btn danger"
+              onclick="closeModal('detailModal');openReject('${esc(property.id)}')"
+            >
+              ✕ Reject
+            </button>
+          `
+          :
+          ''
+        }
+
+        <button
+          class="btn ${
+            property.is_featured
+            ? 'unfeature-btn'
+            : 'feature-btn'
+          }"
+          onclick="
+            closeModal('detailModal');
+            toggleFeatured(
+              '${esc(property.id)}',
+              ${!property.is_featured}
+            )
+          "
+        >
+          ${property.is_featured
+            ? '★ Unfeature'
+            : '☆ Feature'}
+        </button>
+
+        <button
+          class="btn primary"
+          onclick="
+            closeModal('detailModal');
+            editProperty('${esc(property.id)}')
+          "
+        >
+          ✎ Edit
+        </button>
+
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   GALLERY CHANGE
+========================================================= */
+
+function changeGalleryPhoto(index){
+
+  const photo =
+    currentGalleryPhotos[index];
+
+  if(!photo) return;
+
+
+  const main =
+    $('galleryMain');
+
+  if(main){
+
+    main.src =
+      photo.url;
+
+  }
+
+
+  document
+    .querySelectorAll('.gallery-thumb')
+    .forEach((thumb,i) =>
+      thumb.classList.toggle(
+        'active',
+        i === index
+      )
+    );
+
+}
+
+
+/* =========================================================
+   DETAIL MODAL
+========================================================= */
+
+function showDetail(title,html){
+
+  $('detailTitle').textContent =
+    title;
+
+  $('detailBody').innerHTML =
+    html;
+
+  openModal('detailModal');
+
+}
+
+
+/* =========================================================
+   JOB RENDER
+========================================================= */
+
+function renderJobs(){
+
+  const search =
+    ($('jobSearch')?.value || '')
+      .toLowerCase()
+      .trim();
+
+  const status =
+    $('jobStatusFilter')?.value || '';
+
+  const type =
+    $('jobTypeFilter')?.value || '';
+
+
+  const list =
+    jobs.filter(j => {
+
+      const matchesSearch =
+        !search ||
+        (j.title || '')
+          .toLowerCase()
+          .includes(search) ||
+        (j.company_name || '')
+          .toLowerCase()
+          .includes(search);
+
+
+      const matchesStatus =
+        !status ||
+        j.status === status;
+
+
+      const matchesType =
+        !type ||
+        j.job_type === type;
+
+
+      const matchesCity =
+        profile?.role !== 'city_admin' ||
+        currentCityAllowed(j.city_id);
+
+
+      return (
+        matchesSearch &&
+        matchesStatus &&
+        matchesType &&
+        matchesCity
+      );
+
+    });
+
+
+
+  if(!list.length){
+
+    $('jobRows').innerHTML = `
+      <tr>
+        <td colspan="6" class="empty">
+          No jobs found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  $('jobRows').innerHTML =
+    list.map(j => `
+
+      <tr>
+
+        <td>
+          <b>${esc(j.title || 'Untitled')}</b>
+          <br>
+          <small>
+            ${esc(j.category || '')}
+          </small>
+        </td>
+
+        <td>
+          ${esc(j.company_name || '—')}
+        </td>
+
+        <td>
+          ${esc(j.location || EEDB.locationText(locations,{region_id:j.region_id,zone_id:j.zone_id,city_id:j.city_id,woreda_id:j.woreda_id,area_id:j.area_id}) || '—')}
+        </td>
+
+        <td>
+          ${esc(
+            String(j.job_type || '—')
+              .replaceAll('_',' ')
+          )}
+        </td>
+
+        <td>
+          ${badge(j.status)}
+        </td>
+
+        <td>
+
+          <div class="mini-actions">
+
+            <button
+              class="btn light"
+              onclick="viewJob('${esc(j.id)}')"
+            >
+              👁 View
+            </button>
+
+            ${
+              j.status === 'pending'
+              ?
+              `
+                <button
+                  class="btn success"
+                  onclick="approveJob('${esc(j.id)}')"
+                >
+                  ✓ Publish
+                </button>
+
+                <button
+                  class="btn danger"
+                  onclick="rejectJob('${esc(j.id)}')"
+                >
+                  ✕ Reject
+                </button>
+              `
+              :
+              ''
+            }
+
+            <button
+              class="btn danger"
+              onclick="deleteJob('${esc(j.id)}')"
+            >
+              🗑
+            </button>
+
+          </div>
+
+        </td>
+
+      </tr>
+
+    `).join('');
+
+}
+
+
+/* =========================================================
+   JOB FORM
+========================================================= */
+
+function resetJob(){
+
+  [
+    'jobTitle',
+    'jobCompany',
+    'jobCategory',
+    'jobSalary',
+    'jobPhone',
+    'jobEmail',
+    'jobDeadline',
+    'jobLocation',
+    'jobDescription'
+  ].forEach(
+    id => $(id).value = ''
+  );
+
+
+  $('jobEmployer').value = '';
+
+  $('jobType').value = '';
+
+  $('jobStatus').value = 'pending';
+
+
+  setupCascades();
+
+}
+
+
+function openJobForm(){
+
+  resetJob();
+
+  openModal('jobModal');
+
+}
+
+
+/* =========================================================
+   SAVE JOB
+========================================================= */
+
+$('jobForm').onsubmit =
+  async event => {
+
+    event.preventDefault();
+
+
+    const ids =
+      EEDB.getSelectedIds({
+
+        region:$('jbRegion'),
+        zone:$('jbZone'),
+        city:$('jbCity'),
+        woreda:$('jbWoreda'),
+        area:$('jbArea')
+
+      });
+
+
+    if(!ids.region_id || !ids.city_id){
+
+      toast(
+        'Please select Region and City.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    if(
+      profile.role === 'city_admin' &&
+      !currentCityAllowed(ids.city_id)
+    ){
+
+      toast(
+        'You can only manage your assigned city.',
+        'error'
+      );
+
+      return;
+
+    }
+
+
+    const payload = {
+
+      employer_id:
+        $('jobEmployer').value || null,
+
+      title:
+        $('jobTitle').value.trim(),
+
+      description:
+        $('jobDescription').value.trim(),
+
+      category:
+        $('jobCategory').value.trim() || null,
+
+      job_type:
+        $('jobType').value || null,
+
+      salary:
+        $('jobSalary').value
+        ? Number($('jobSalary').value)
+        : null,
+
+      region_id:
+        ids.region_id,
+
+      zone_id:
+        ids.zone_id,
+
+      city_id:
+        ids.city_id,
+
+      woreda_id:
+        ids.woreda_id,
+
+      area_id:
+        ids.area_id,
+
+      company_name:
+        $('jobCompany').value.trim(),
+
+      contact_phone:
+        $('jobPhone').value.trim() || null,
+
+      contact_email:
+        $('jobEmail').value.trim() || null,
+
+      application_deadline:
+        $('jobDeadline').value || null,
+
+      status:
+        $('jobStatus').value,
+
+      posted_by:
+        me.id,
+
+      posting_method:
+        'admin',
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    try{
+
+      const result =
+        await EEDB.client
+          .from('jobs')
+          .insert(payload);
+
+
+      if(result.error){
+        throw result.error;
+      }
+
+
+      toast(
+        'Job saved successfully.',
+        'success'
+      );
+
+
+      closeModal('jobModal');
+
+      await reloadJobs();
+
+
+    }catch(error){
+
+      toast(
+        error.message ||
+        'Could not create job.',
+        'error'
+      );
+
+    }
+
+  };
+
+
+/* =========================================================
+   RELOAD JOBS
+========================================================= */
+
+async function reloadJobs(){
+
+  const result =
+    await EEDB.client
+      .from('jobs')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  jobs =
+    result.data || [];
+
+
+  refreshStats();
+
+  renderJobs();
+
+  renderApplications();
+
+}
+
+
+/* =========================================================
+   VIEW JOB
+========================================================= */
+
+function viewJob(id){
+
+  const job =
+    jobs.find(
+      j => j.id === id
+    );
+
+  if(!job) return;
+
+
+  showDetail(
+    '💼 Job Details',
+    `
+
+      <div class="detail-grid">
+
+        <div>
+          <b>Job Title</b>
+          <span>
+            ${esc(job.title || '—')}
+          </span>
+        </div>
+
+        <div>
+          <b>Company</b>
+          <span>
+            ${esc(job.company_name || '—')}
+          </span>
+        </div>
+
+        <div>
+          <b>Job Type</b>
+          <span>
+            ${esc(
+              String(job.job_type || '—')
+                .replaceAll('_',' ')
+            )}
+          </span>
+        </div>
+
+        <div>
+          <b>Status</b>
+          <span>
+            ${badge(job.status)}
+          </span>
+        </div>
+
+        <div>
+          <b>Salary</b>
+          <span>
+            ${
+              job.salary == null
+              ? '—'
+              : EEDB.fmtMoney(job.salary)
+            }
+          </span>
+        </div>
+
+        <div>
+          <b>Deadline</b>
+          <span>
+            ${esc(
+              job.application_deadline || '—'
+            )}
+          </span>
+        </div>
+
+        <div class="wide">
+          <b>Location</b>
+          <span>
+            ${esc(job.location || EEDB.locationText(locations,{region_id:job.region_id,zone_id:job.zone_id,city_id:job.city_id,woreda_id:job.woreda_id,area_id:job.area_id}) || '—')}
+          </span>
+        </div>
+
+        <div>
+          <b>Contact phone</b>
+          <span>
+            ${esc(job.contact_phone || '—')}
+          </span>
+        </div>
+
+        <div>
+          <b>Contact email</b>
+          <span>
+            ${esc(job.contact_email || '—')}
+          </span>
+        </div>
+
+        <div class="wide">
+          <b>Description</b>
+          <span>
+            ${esc(job.description || '—')}
+          </span>
+        </div>
+
+      </div>
+
+    `
+  );
+
+}
+
+
+/* =========================================================
+   APPROVE JOB
+========================================================= */
+
+async function approveJob(id){
+
+  const result =
+    await EEDB.client
+      .from('jobs')
+      .update({
+
+        status:'published',
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'Job saved successfully.',
+    'success'
+  );
+
+
+  await reloadJobs();
+
+}
+
+
+/* =========================================================
+   REJECT JOB
+========================================================= */
+
+async function rejectJob(id){
+
+  if(
+    !confirm(
+      'Reject this job?'
+    )
+  ) return;
+
+
+  const result =
+    await EEDB.client
+      .from('jobs')
+      .update({
+
+        status:'rejected',
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'Job rejected.',
+    'success'
+  );
+
+
+  await reloadJobs();
+
+}
+
+
+/* =========================================================
+   DELETE JOB
+========================================================= */
+
+async function deleteJob(id){
+
+  if(
+    !confirm(
+      'Delete this job permanently?'
+    )
+  ) return;
+
+
+  const result =
+    await EEDB.client
+      .from('jobs')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'Job deleted.',
+    'success'
+  );
+
+
+  await reloadJobs();
+
+}
+
+
+/* =========================================================
+   APPLICATIONS
+========================================================= */
+
+function renderApplications(){
+
+  const appSearch=($('appSearch')?.value||'').toLowerCase().trim(); const appStatus=$('appStatusFilter')?.value||'';
+  const list = applications.filter(a => {
+      const job=jobs.find(j=>j.id===a.job_id);
+      const user=users.find(u=>u.id===a.applicant_id);
+      const text=((job?.title||'')+' '+(user?.full_name||'')+' '+(user?.phone||'')).toLowerCase();
+      const matchSearch=!appSearch||text.includes(appSearch);
+      const matchStatus=!appStatus||a.status===appStatus;
+      return matchSearch && matchStatus && (profile?.role !== 'city_admin' || currentCityAllowed(job?.city_id));
+    });
+
+  const totalPages=Math.max(1,Math.ceil(list.length/APPLICATION_PAGE_SIZE));
+  if(applicationPage>totalPages) applicationPage=totalPages;
+  const pageRows=list.slice((applicationPage-1)*APPLICATION_PAGE_SIZE,applicationPage*APPLICATION_PAGE_SIZE);
+
+
+
+  if(!list.length){
+
+    $('appRows').innerHTML = `
+      <tr>
+        <td colspan="5" class="empty">
+          No applications found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  $('appRows').innerHTML =
+    pageRows.map(a => {
+
+      const job =
+        jobs.find(
+          x => x.id === a.job_id
+        );
+
+      const user =
+        users.find(
+          x => x.id === a.applicant_id
+        );
+
+
+      return `
+
+        <tr>
+
+          <td>
+            ${esc(
+              job?.title ||
+              a.job_id ||
+              '—'
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              user?.full_name ||
+              user?.phone ||
+              a.applicant_id ||
+              '—'
+            )}
+          </td>
+
+          <td>
+            ${badge(a.status)}
+          </td>
+
+          <td>
+            ${
+              a.created_at
+              ?
+              new Date(a.created_at)
+                .toLocaleDateString()
+              :
+              '—'
+            }
+          </td>
+
+          <td>
+
+            <button class="btn light" onclick="viewApplication('${esc(a.id)}')">👁 View</button> <button class="btn light" onclick="updateApplication('${esc(a.id)}')">Update</button> <button class="btn danger" onclick="deleteApplication('${esc(a.id)}')">🗑</button>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    }).join('');
+
+  $('appPagination').innerHTML=totalPages>1 ? `<button class="btn light" ${applicationPage<=1?'disabled':''} onclick="applicationPage--;renderApplications()">←</button><span>Page ${applicationPage} of ${totalPages}</span><button class="btn light" ${applicationPage>=totalPages?'disabled':''} onclick="applicationPage++;renderApplications()">→</button>` : `<span>${list.length} application${list.length===1?'':'s'}</span>`;
+
+}
+
+
+function viewApplication(id){ const a=applications.find(x=>x.id===id); if(!a)return; const job=jobs.find(j=>j.id===a.job_id); const user=users.find(u=>u.id===a.applicant_id); showDetail('📄 Application Detail', `<p><b>Job:</b> ${esc(job?.title||a.job_id||'—')}</p><p><b>Applicant:</b> ${esc(user?.full_name||'—')}</p><p><b>Phone:</b> ${esc(user?.phone||'—')}</p><p><b>Status:</b> ${esc(a.status||'pending')}</p><p><b>Applied:</b> ${esc(a.created_at?new Date(a.created_at).toLocaleString():'—')}</p><p><b>Cover message:</b> ${esc(a.cover_message||'—')}</p><p><b>CV:</b> ${a.cv_url?'<a href="'+esc(a.cv_url)+'" target="_blank" rel="noopener">Open CV</a>':'No CV'}</p>`); }
+
+/* =========================================================
+   UPDATE APPLICATION
+========================================================= */
+
+async function updateApplication(id){
+
+  const application =
+    applications.find(
+      a => a.id === id
+    );
+
+  if(!application) return;
+
+
+  const value =
+    prompt(
+      'Enter status: pending, reviewing, shortlisted, accepted, rejected, withdrawn',
+      application.status || 'pending'
+    );
+
+
+  if(!value) return;
+
+
+  const allowed = [
+    'pending',
+    'reviewing',
+    'shortlisted',
+    'accepted',
+    'rejected',
+    'withdrawn'
+  ];
+
+
+  if(!allowed.includes(value)){
+
+    toast(
+      'Invalid application status.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  const result =
+    await EEDB.client
+      .from('job_applications')
+      .update({
+
+        status:value,
+
+        updated_at:
+          new Date().toISOString()
+
+      })
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'Application updated.',
+    'success'
+  );
+
+
+  await reloadApplications();
+
+}
+
+
+async function deleteApplication(id){ if(!confirm('Remove this application?'))return; const r=await EEDB.client.from('job_applications').delete().eq('id',id); if(r.error){toast(r.error.message,'error');return;} toast('Application removed.','success'); await reloadApplications(); }
+
+/* =========================================================
+   RELOAD APPLICATIONS
+========================================================= */
+
+async function reloadApplications(){
+
+  const result =
+    await EEDB.client
+      .from('job_applications')
+      .select('*')
+      .order('created_at',{ascending:false});
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  applications =
+    result.data || [];
+
+
+  refreshStats();
+
+  renderApplications();
+
+}
+
+
+/* =========================================================
+   USERS
+========================================================= */
+
+function renderUsers(){
+
+  const search =
+    ($('userSearch')?.value || '')
+      .toLowerCase()
+      .trim();
+
+  const role =
+    $('userRoleFilter')?.value || '';
+
+
+  const list =
+    users.filter(u => {
+
+      const matchesSearch =
+        !search ||
+        (u.full_name || '')
+          .toLowerCase()
+          .includes(search) ||
+        (u.phone || '')
+          .toLowerCase()
+          .includes(search);
+
+
+      const matchesRole =
+        !role ||
+        u.role === role;
+
+
+      return (
+        matchesSearch &&
+        matchesRole
+      );
+
+    });
+
+
+
+  if(!list.length){
+
+    $('userRows').innerHTML = `
+      <tr>
+        <td colspan="5" class="empty">
+          No users found.
+        </td>
+      </tr>
+    `;
+
+    return;
+
+  }
+
+
+  $('userRows').innerHTML =
+    list.map(u => `
+
+      <tr>
+
+        <td>
+          <b>
+            ${esc(
+              u.full_name || '—'
+            )}
+          </b>
+        </td>
+
+        <td>
+          ${esc(u.phone || '—')}
+        </td>
+
+        <td>
+          ${badge(u.role)}
+        </td>
+
+        <td>
+          ${
+            u.created_at
+            ?
+            new Date(u.created_at)
+              .toLocaleDateString()
+            :
+            '—'
+          }
+        </td>
+
+        <td>
+
+          ${profile.role === 'super_admin' && u.id !== me.id ? `<button class="btn light" onclick="openRoleModal('${esc(u.id)}')">Change Role</button> <button class="btn ${u.is_active===false?'success':'danger'}" onclick="toggleUserActive('${esc(u.id)}')">${u.is_active===false?'Activate':'Disable'}</button>` : '—'}
+
+        </td>
+
+      </tr>
+
+    `).join('');
+
+}
+
+
+async function toggleUserActive(id){ if(profile?.role!=='super_admin'||id===me?.id)return; const u=users.find(x=>x.id===id); const r=await EEDB.client.from('profiles').update({is_active:u?.is_active===false}).eq('id',id); if(r.error){toast(r.error.message,'error');return;} toast(u?.is_active===false?'User activated.':'User disabled.','success'); await reloadUsers(); }
+
+/* =========================================================
+   LOCATIONS
+========================================================= */
+
+function renderLocations(){
+
+  const map =
+    new Map(
+      locations.map(
+        x => [x.id,x]
+      )
+    );
+
+
+  const view=filteredLocations();
+  $('locRows').innerHTML =
+    view.length
+    ?
+    view.map(l => `
+
+      <tr>
+
+        <td>
+          <b>${esc(l.name)}</b>
+        </td>
+
+        <td>
+          ${badge(l.type)}
+        </td>
+
+        <td>
+          ${esc(
+            map.get(l.parent_id)?.name ||
+            '—'
+          )}
+        </td>
+
+        <td>${l.is_active ? '✓ Yes' : 'No'}</td><td>${profile?.role==='super_admin' ? `<button class="btn light" onclick="editLocation('${esc(l.id)}')">Edit</button> <button class="btn light" onclick="toggleLocation('${esc(l.id)}')">${l.is_active?'Deactivate':'Activate'}</button> <button class="btn danger" onclick="deleteLocation('${esc(l.id)}')">Delete</button>` : '—'}</td>
+      </tr>
+
+    `).join('')
+    :
+    `
+      <tr>
+        <td colspan="4" class="empty">
+          No active locations.
+        </td>
+      </tr>
+    `;
+
+}
+
+
+async function reloadAllLocations(){
+  const r=await EEDB.client.from('locations').select('id,parent_id,name,type,is_active,created_at').order('name'); if(r.error){toast(r.error.message,'error');return;} locations=r.data||[]; renderLocations(); setupCascades(); }
+function filteredLocations(){ const q=($('locSearch')?.value||'').toLowerCase().trim(); const t=$('locTypeFilter')?.value||''; return locations.filter(l=>(!q||l.name.toLowerCase().includes(q))&&(!t||l.type===t)); }
+async function addLocation(){ if(profile?.role!=='super_admin') return toast('Only Super Admin can manage locations.','error'); const name=prompt('Location name:'); if(!name?.trim())return; const type=prompt('Type: region, zone, city, woreda, area'); if(!['region','zone','city','woreda','area'].includes((type||'').trim().toLowerCase()))return toast('Invalid type.','error'); const typeN=type.trim().toLowerCase(); let parent_id=null; if(typeN!=='region'){ const opts=locations.filter(l=>l.is_active && ((typeN==='zone'&&l.type==='region')||(typeN==='city'&&['region','zone'].includes(l.type))||(typeN==='woreda'&&l.type==='city')||(typeN==='area'&&['woreda','city'].includes(l.type)))); const shown=opts.slice(0,50); const hint=shown.map((l,i)=>(i+1)+'. '+l.name).join('\n'); const parent=prompt('Choose parent number:\n'+hint); const idx=Number(parent)-1; parent_id=Number.isInteger(idx)&&idx>=0&&idx<shown.length?shown[idx].id:null; if(!parent_id)return toast('Invalid parent selection.','error'); } const r=await EEDB.client.from('locations').insert({name:name.trim(),type:typeN,parent_id,is_active:true}); if(r.error)toast(r.error.message,'error'); else {toast('Location added.','success');await reloadAllLocations();} }
+async function editLocation(id){ const l=locations.find(x=>x.id===id); if(!l)return; const name=prompt('Location name:',l.name); if(!name?.trim())return; const r=await EEDB.client.from('locations').update({name:name.trim()}).eq('id',id); if(r.error)toast(r.error.message,'error'); else {toast('Location updated.','success');await reloadAllLocations();} }
+async function toggleLocation(id){ const l=locations.find(x=>x.id===id); if(!l)return; const r=await EEDB.client.from('locations').update({is_active:!l.is_active}).eq('id',id); if(r.error)toast(r.error.message,'error'); else {toast(l.is_active?'Location deactivated.':'Location activated.','success');await reloadAllLocations();} }
+async function deleteLocation(id){ if(!confirm('Delete this location? Child/referenced locations may prevent deletion.'))return; const r=await EEDB.client.from('locations').delete().eq('id',id); if(r.error)toast(r.error.message,'error'); else {toast('Location deleted.','success');await reloadAllLocations();} }
+
+/* =========================================================
+   CITY ADMINS
+========================================================= */
+
+function renderCityAdmins(){
+
+  if(profile?.role !== 'super_admin'){
+    return;
+  }
+
+
+  const rows =
+    assignments.map(a => {
+
+      const user =
+        users.find(
+          x => x.id === a.admin_id
+        );
+
+      const city =
+        locations.find(
+          x => x.id === a.city_id
+        );
+
+
+      return `
+
+        <tr>
+
+          <td>
+            ${esc(
+              user?.full_name ||
+              user?.phone ||
+              a.admin_id
+            )}
+          </td>
+
+          <td>
+            ${esc(
+              city?.name ||
+              a.city_id
+            )}
+          </td>
+
+          <td>
+
+            <button
+              class="btn danger"
+              onclick="removeAssignment('${esc(a.id)}')"
+            >
+              Remove
+            </button>
+
+          </td>
+
+        </tr>
+
+      `;
+
+    });
+
+
+  $('caRows').innerHTML =
+    rows.length
+    ?
+    rows.join('')
+    :
+    `
+      <tr>
+        <td colspan="3" class="empty">
+          No city-admin assignments.
+        </td>
+      </tr>
+    `;
+
+}
+
+
+/* =========================================================
+   PROMOTE USER
+========================================================= */
+
+function openRoleModal(id){
+
+  if(profile?.role !== 'super_admin' || !id || id === me?.id){
+    return;
+  }
+
+  const user = users.find(u => u.id === id);
+
+  $('roleUserId').value = id;
+  $('roleSelect').value = user?.role || 'owner';
+  $('roleUserHint').textContent = user
+    ? `${user.full_name || user.phone || 'User'} · current role: ${user.role || 'unknown'}`
+    : 'Select the new role for this account.';
+
+  openModal('roleModal');
+}
+
+
+async function saveUserRole(){
+
+  if(profile?.role !== 'super_admin'){
+    return;
+  }
+
+  const id = $('roleUserId').value;
+  const nextRole = $('roleSelect').value;
+
+  const allowedRoles = [
+    'super_admin',
+    'admin',
+    'city_admin',
+    'owner',
+    'renter',
+    'job_seeker',
+    'employer'
+  ];
+
+  if(!id || id === me?.id || !allowedRoles.includes(nextRole)){
+    toast('Select a valid user role.', 'error');
+    return;
+  }
+
+  const currentUser = users.find(u => u.id === id);
+  const saveButton = $('roleSaveBtn');
+  saveButton.disabled = true;
+  saveButton.textContent = 'Saving...';
+
+  try{
+
+    const result = await EEDB.client
+      .from('profiles')
+      .update({ role: nextRole })
+      .eq('id', id);
+
+    if(result.error) throw result.error;
+
+    if(nextRole !== 'city_admin'){
+      const cleanup = await EEDB.client
+        .from('admin_city_assignments')
+        .delete()
+        .eq('admin_id', id);
+
+      if(cleanup.error) throw cleanup.error;
+    }
+
+    closeModal('roleModal');
+
+    toast(
+      `${currentUser?.full_name || 'User'} role changed to ${nextRole}.`,
+      'success'
+    );
+
+    await reloadUsers();
+    await reloadAssignments();
+
+  }catch(error){
+
+    console.error(error);
+    toast(error.message || 'Unable to change role.', 'error');
+
+  }finally{
+
+    saveButton.disabled = false;
+    saveButton.textContent = 'Save Role';
+
+  }
+}
+
+
+/* =========================================================
+   RELOAD USERS
+========================================================= */
+
+async function reloadUsers(){
+
+  const result =
+    await EEDB.client
+      .from('profiles')
+      .select(
+        'id,full_name,phone,role,created_at,is_active'
+      )
+      .order('created_at',{ascending:false});
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  users =
+    result.data || [];
+
+
+  populatePeople();
+
+  refreshStats();
+
+  renderUsers();
+
+}
+
+
+/* =========================================================
+   ASSIGN CITY ADMIN
+========================================================= */
+
+async function assignCityAdmin(){
+
+  if(profile.role !== 'super_admin'){
+    return;
+  }
+
+
+  const userId =
+    $('caUser').value;
+
+  const cityId =
+    $('caCity').value;
+
+
+  if(!userId || !cityId){
+
+    toast(
+      'Select user and city.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  const roleUpdate =
+    await EEDB.client
+      .from('profiles')
+      .update({
+        role:'city_admin'
+      })
+      .eq('id',userId);
+
+
+  if(roleUpdate.error){
+
+    toast(
+      roleUpdate.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  const exists =
+    assignments.some(
+      a =>
+        a.admin_id === userId &&
+        a.city_id === cityId
+    );
+
+
+  if(exists){
+
+    toast(
+      'This City Admin is already assigned to this city.',
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  const insert =
+    await EEDB.client
+      .from('admin_city_assignments')
+      .insert({
+
+        admin_id:userId,
+
+        city_id:cityId
+
+      });
+
+
+  if(insert.error){
+
+    toast(
+      insert.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'City Admin assigned successfully.',
+    'success'
+  );
+
+
+  await reloadAssignments();
+
+}
+
+
+/* =========================================================
+   RELOAD ASSIGNMENTS
+========================================================= */
+
+async function reloadAssignments(){
+
+  const result =
+    await EEDB.client
+      .from('admin_city_assignments')
+      .select('*');
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  assignments =
+    result.data || [];
+
+
+  renderCityAdmins();
+
+}
+
+
+/* =========================================================
+   REMOVE ASSIGNMENT
+========================================================= */
+
+async function removeAssignment(id){
+
+  if(profile.role !== 'super_admin'){
+    return;
+  }
+
+
+  if(
+    !confirm(
+      'Remove this city assignment?'
+    )
+  ) return;
+
+
+  const result =
+    await EEDB.client
+      .from('admin_city_assignments')
+      .delete()
+      .eq('id',id);
+
+
+  if(result.error){
+
+    toast(
+      result.error.message,
+      'error'
+    );
+
+    return;
+
+  }
+
+
+  toast(
+    'City assignment removed.',
+    'success'
+  );
+
+
+  await reloadAssignments();
+
+}
+
+
+/* =========================================================
+   FILTER EVENTS
+========================================================= */
+
+$('locSearch')?.addEventListener('input',renderLocations); $('locTypeFilter')?.addEventListener('change',renderLocations); $('appSearch')?.addEventListener('input',()=>{applicationPage=1;renderApplications()}); $('appStatusFilter')?.addEventListener('change',()=>{applicationPage=1;renderApplications()});
+
+$('propSearch').oninput =
+  renderProperties;
+
+$('propStatusFilter').onchange =
+  renderProperties;
+
+$('propTypeFilter').onchange =
+  renderProperties;
+
+
+$('jobSearch').oninput =
+  renderJobs;
+
+$('jobStatusFilter').onchange =
+  renderJobs;
+
+$('jobTypeFilter').onchange =
+  renderJobs;
+
+
+$('userSearch').oninput =
+  renderUsers;
+
+$('userRoleFilter').onchange =
+  renderUsers;
+
+
+/* =========================================================
+   CLOSE MODAL WHEN CLICKING BACKDROP
+========================================================= */
+
+document
+  .querySelectorAll('.modal')
+  .forEach(modal => {
+
+    modal.addEventListener(
+      'click',
+      event => {
+
+        if(event.target === modal){
+
+          modal.classList.remove('show');
+
+        }
+
+      }
+    );
+
+  });
+
+
+/* =========================================================
+   START
+========================================================= */
+
+loadAll();
+
+</script>
+
+</body>
+</html>

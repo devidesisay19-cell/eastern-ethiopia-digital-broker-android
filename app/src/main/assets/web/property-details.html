@@ -1,0 +1,2149 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Property Details | Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background: #f5f7fb;
+    color: #172033;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+header {
+    background: #0f766e;
+    color: white;
+    padding: 15px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.back-btn {
+    border: none;
+    background: rgba(255,255,255,0.15);
+    color: white;
+
+    padding: 9px 14px;
+    border-radius: 10px;
+
+    cursor: pointer;
+    font-weight: 700;
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.container {
+    width: min(1100px, 94%);
+    margin: 25px auto 50px;
+}
+
+/* =========================
+   LOADING
+========================= */
+
+.loading {
+    text-align: center;
+    padding: 70px 20px;
+    font-size: 18px;
+    color: #64748b;
+}
+
+.spinner {
+    width: 38px;
+    height: 38px;
+
+    border: 4px solid #dbeafe;
+    border-top-color: #0f766e;
+
+    border-radius: 50%;
+
+    margin: 0 auto 15px;
+
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* =========================
+   ERROR
+========================= */
+
+.error-box {
+    display: none;
+
+    background: #fee2e2;
+    color: #991b1b;
+
+    padding: 18px;
+    border-radius: 12px;
+
+    text-align: center;
+}
+
+/* =========================
+   GALLERY
+========================= */
+
+.gallery {
+    background: white;
+    border-radius: 18px;
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.08);
+
+    margin-bottom: 25px;
+}
+
+.main-photo-container {
+    position: relative;
+    background: #111827;
+
+    height: 500px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.main-photo {
+    width: 100%;
+    height: 100%;
+
+    object-fit: cover;
+
+    cursor: pointer;
+}
+
+.photo-nav {
+    position: absolute;
+
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: rgba(0,0,0,0.55);
+    color: white;
+
+    font-size: 25px;
+    font-weight: bold;
+
+    cursor: pointer;
+}
+
+.photo-prev {
+    left: 15px;
+}
+
+.photo-next {
+    right: 15px;
+}
+
+.photo-counter {
+    position: absolute;
+
+    right: 15px;
+    bottom: 15px;
+
+    background: rgba(0,0,0,0.65);
+    color: white;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 14px;
+}
+
+.thumbnails {
+    display: flex;
+
+    gap: 10px;
+
+    padding: 12px;
+
+    overflow-x: auto;
+}
+
+.thumbnail {
+    width: 85px;
+    height: 65px;
+
+    flex-shrink: 0;
+
+    object-fit: cover;
+
+    border-radius: 8px;
+
+    cursor: pointer;
+
+    border: 3px solid transparent;
+}
+
+.thumbnail.active {
+    border-color: #0f766e;
+}
+
+/* =========================
+   PROPERTY INFO
+========================= */
+
+.property-card {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.07);
+
+    margin-bottom: 20px;
+}
+
+.title-row {
+    display: flex;
+
+    justify-content: space-between;
+    gap: 15px;
+
+    align-items: flex-start;
+}
+
+.property-title {
+    font-size: 30px;
+    font-weight: 800;
+}
+
+.featured {
+    background: #f59e0b;
+    color: white;
+
+    padding: 7px 12px;
+
+    border-radius: 20px;
+
+    font-size: 12px;
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.price {
+    color: #0f766e;
+
+    font-size: 27px;
+
+    font-weight: 800;
+
+    margin: 15px 0;
+}
+
+.meta {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+}
+
+.meta-item {
+    background: #f1f5f9;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+
+    color: #334155;
+
+    font-weight: 600;
+}
+
+.description-title {
+    font-size: 20px;
+
+    margin-bottom: 10px;
+}
+
+.description {
+    color: #475569;
+
+    line-height: 1.7;
+
+    white-space: pre-line;
+}
+
+/* =========================
+   CONTACT SECTION
+========================= */
+
+.contact-section {
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 30px rgba(0,0,0,0.07);
+
+    margin-bottom: 20px;
+}
+
+.contact-section-title {
+    font-size: 22px;
+
+    font-weight: 800;
+
+    margin-bottom: 6px;
+}
+
+.contact-section-subtitle {
+    color: #64748b;
+
+    font-size: 14px;
+
+    margin-bottom: 18px;
+
+    line-height: 1.5;
+}
+
+.contact-list {
+    display: grid;
+
+    gap: 14px;
+}
+
+.contact-card {
+    border: 1px solid #e2e8f0;
+
+    border-radius: 15px;
+
+    padding: 18px;
+
+    background: #f8fafc;
+}
+
+.contact-card-header {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+
+    margin-bottom: 14px;
+}
+
+.contact-avatar {
+    width: 52px;
+    height: 52px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: #ccfbf1;
+
+    color: #0f766e;
+
+    font-size: 21px;
+
+    font-weight: 800;
+}
+
+.contact-card-info {
+    min-width: 0;
+}
+
+.contact-role {
+    color: #0f766e;
+
+    font-size: 13px;
+
+    font-weight: 800;
+
+    text-transform: uppercase;
+
+    margin-bottom: 3px;
+}
+
+.contact-name {
+    font-size: 18px;
+
+    font-weight: 800;
+
+    color: #172033;
+
+    word-break: break-word;
+}
+
+.contact-phone {
+    color: #64748b;
+
+    font-size: 14px;
+
+    margin-top: 3px;
+}
+
+.contact-buttons {
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+}
+
+.contact-btn {
+    border: none;
+
+    padding: 13px;
+
+    border-radius: 11px;
+
+    color: white;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    text-decoration: none;
+
+    text-align: center;
+
+    display: block;
+}
+
+.call-btn {
+    background: #2563eb;
+}
+
+.whatsapp-btn {
+    background: #16a34a;
+}
+
+.no-contact {
+    padding: 15px;
+
+    border-radius: 12px;
+
+    background: #fff7ed;
+
+    color: #9a3412;
+
+    font-size: 14px;
+
+    line-height: 1.5;
+}
+
+/* =========================
+   FULLSCREEN
+========================= */
+
+.lightbox {
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    background: rgba(0,0,0,0.94);
+
+    z-index: 1000;
+
+    align-items: center;
+    justify-content: center;
+}
+
+.lightbox img {
+    max-width: 95%;
+    max-height: 90%;
+
+    object-fit: contain;
+}
+
+.close-lightbox {
+    position: absolute;
+
+    top: 20px;
+    right: 25px;
+
+    color: white;
+
+    font-size: 35px;
+
+    cursor: pointer;
+}
+
+.lightbox-prev,
+.lightbox-next {
+    position: absolute;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    width: 50px;
+    height: 50px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,0.15);
+
+    color: white;
+
+    font-size: 28px;
+
+    cursor: pointer;
+}
+
+.lightbox-prev {
+    left: 20px;
+}
+
+.lightbox-next {
+    right: 20px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 700px) {
+
+    .container {
+        width: 96%;
+        margin-top: 15px;
+    }
+
+    .main-photo-container {
+        height: 300px;
+    }
+
+    .property-title {
+        font-size: 23px;
+    }
+
+    .price {
+        font-size: 23px;
+    }
+
+    .property-card,
+    .contact-section {
+        padding: 18px;
+    }
+
+    .contact-buttons {
+        grid-template-columns: 1fr;
+    }
+
+    .title-row {
+        flex-direction: column;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<header>
+
+    <div class="logo">
+        Eastern Ethiopia Digital Broker
+    </div>
+
+    <button
+        class="back-btn"
+        onclick="goBack()"
+    >
+        ← Back
+    </button>
+
+</header>
+
+
+<main class="container">
+
+    <!-- LOADING -->
+
+    <div
+        id="loading"
+        class="loading"
+    >
+
+        <div class="spinner"></div>
+
+        Loading property...
+
+    </div>
+
+
+    <!-- ERROR -->
+
+    <div
+        id="errorBox"
+        class="error-box"
+    >
+        Property could not be loaded.
+    </div>
+
+
+    <!-- CONTENT -->
+
+    <div
+        id="propertyContent"
+        style="display:none;"
+    >
+
+        <!-- =========================
+             GALLERY
+        ========================== -->
+
+        <section class="gallery">
+
+            <div class="main-photo-container">
+
+                <img
+                    id="mainPhoto"
+                    class="main-photo"
+                    src=""
+                    alt="Property photo"
+                >
+
+                <button
+                    id="prevButton"
+                    class="photo-nav photo-prev"
+                    onclick="previousPhoto()"
+                >
+                    ‹
+                </button>
+
+                <button
+                    id="nextButton"
+                    class="photo-nav photo-next"
+                    onclick="nextPhoto()"
+                >
+                    ›
+                </button>
+
+                <div
+                    id="photoCounter"
+                    class="photo-counter"
+                >
+                    1 / 1
+                </div>
+
+            </div>
+
+
+            <div
+                id="thumbnails"
+                class="thumbnails"
+            ></div>
+
+        </section>
+
+
+        <!-- =========================
+             PROPERTY INFORMATION
+        ========================== -->
+
+        <section class="property-card">
+
+            <div class="title-row">
+
+                <h1
+                    id="propertyTitle"
+                    class="property-title"
+                >
+                    Property
+                </h1>
+
+                <span
+                    id="featuredBadge"
+                    class="featured"
+                    style="display:none;"
+                >
+                    ⭐ FEATURED
+                </span>
+
+            </div>
+
+
+            <div
+                id="propertyPrice"
+                class="price"
+            >
+                -
+            </div>
+
+
+            <div class="meta">
+
+                <div
+                    id="propertyLocation"
+                    class="meta-item"
+                >
+                    📍 -
+                </div>
+
+                <div
+                    id="propertyBedrooms"
+                    class="meta-item"
+                >
+                    🛏️ -
+                </div>
+
+                <div
+                    id="propertyType"
+                    class="meta-item"
+                >
+                    🏷️ -
+                </div>
+
+            </div>
+
+
+            <h2 class="description-title">
+                Description
+            </h2>
+
+            <p
+                id="propertyDescription"
+                class="description"
+            >
+                -
+            </p>
+
+        </section>
+
+
+        <!-- =========================
+             BROKER CONTACTS
+        ========================== -->
+
+        <section class="contact-section">
+
+            <div class="contact-section-title">
+                📞 Contact
+            </div>
+
+            <div class="contact-section-subtitle">
+                For this property, you can contact the City Admin
+                responsible for this city or contact the Eastern
+                Ethiopia Digital Broker Super Admin directly.
+            </div>
+
+            <div
+                id="contactList"
+                class="contact-list"
+            ></div>
+
+        </section>
+
+    </div>
+
+<div id="propertyReviewInfo" style="margin:6px 0 14px;color:#64748b;font-size:13px"></div>
+<button id="sharePropertyBtn" type="button" class="primary-btn" style="margin:12px 0">↗ Share Property</button>
+</main>
+
+
+<!-- =========================
+     LIGHTBOX
+========================= -->
+
+<div
+    id="lightbox"
+    class="lightbox"
+>
+
+    <span
+        class="close-lightbox"
+        onclick="closeLightbox()"
+    >
+        ×
+    </span>
+
+    <button
+        class="lightbox-prev"
+        onclick="previousPhoto()"
+    >
+        ‹
+    </button>
+
+    <img
+        id="lightboxImage"
+        src=""
+        alt="Property photo"
+    >
+
+    <button
+        class="lightbox-next"
+        onclick="nextPhoto()"
+    >
+        ›
+    </button>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE CONFIG
+===================================================== */
+
+const supabaseUrl =
+    "https://ubkfrpkapqnlaiscrxim.supabase.co";
+
+const supabaseAnonKey =
+    "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE";
+
+const supabaseClient =
+    window.supabase.createClient(
+        supabaseUrl,
+        supabaseAnonKey
+    );
+
+
+/* =====================================================
+   CONSTANTS
+===================================================== */
+
+const STORAGE_BUCKET =
+    "property-images";
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let photos = [];
+
+let currentPhotoIndex = 0;
+
+let property = null;
+
+let contacts = [];
+
+
+/* =====================================================
+   GET PROPERTY ID
+===================================================== */
+
+const urlParams =
+    new URLSearchParams(
+        window.location.search
+    );
+
+const propertyId =
+    urlParams.get("id");
+
+
+/* =====================================================
+   INITIAL LOAD
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function () {
+
+        if (!propertyId) {
+
+            showError(
+                "Property ID is missing."
+            );
+
+            return;
+        }
+
+        await loadProperty();
+
+    }
+);
+
+
+/* =====================================================
+   LOAD PROPERTY
+===================================================== */
+
+async function loadProperty() {
+
+    try {
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+
+            .from("properties")
+
+            .select(`
+                id,
+                owner_id,
+                title,
+                listing_type,
+                price,
+                location,
+                bedrooms,
+                description,
+                status,
+                is_featured,
+                featured_until,
+                updated_at,
+                reviewed_by,
+                reviewed_at,
+                rejection_reason,
+                created_at,
+                region_id,
+                zone_id,
+                city_id,
+                woreda_id,
+                area_id
+            `)
+
+            .eq(
+                "id",
+                propertyId
+            )
+
+            .single();
+
+
+        if (error) {
+
+            console.error(
+                "Property error:",
+                error
+            );
+
+            throw error;
+        }
+
+
+        if (!data) {
+
+            throw new Error(
+                "Property not found."
+            );
+
+        }
+
+
+        if(!['published','approved','active'].includes(data.status)){ throw new Error('This property is not currently available to the public.'); }
+        property = data;
+
+
+        /* =========================
+           LOAD IMAGES
+        ========================= */
+
+        await loadPropertyImages();
+
+
+        /* =========================
+           LOAD CONTACTS
+        ========================= */
+
+        await loadPropertyContacts();
+
+
+        /* =========================
+           DISPLAY
+        ========================= */
+
+        displayProperty();
+
+
+        hideLoading();
+
+
+    } catch (error) {
+
+        console.error(
+            "Property loading error:",
+            error
+        );
+
+        showError(
+            "Unable to load this property."
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD PROPERTY CONTACTS
+===================================================== */
+
+async function loadPropertyContacts() {
+
+    contacts = [];
+
+    /*
+       The public page does NOT directly read profiles
+       or admin_city_assignments.
+
+       Instead it calls the secure RPC created in
+       Supabase SQL.
+    */
+
+    if (!property.city_id) {
+
+        console.warn(
+            "Property has no city_id."
+        );
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } = await supabaseClient.rpc(
+        "get_property_contacts",
+        {
+            p_city_id: property.city_id
+        }
+    );
+
+
+    if (error) {
+
+        console.error(
+            "Contact RPC error:",
+            error
+        );
+
+        contacts = [];
+
+        return;
+
+    }
+
+
+    contacts = Array.isArray(data) ? data : [];
+    if(property.owner_id){ const owner=await supabaseClient.rpc('get_property_owner_contact',{p_owner_id:property.owner_id}); if(!owner.error && Array.isArray(owner.data)) contacts=[...owner.data,...contacts]; }
+
+}
+
+
+/* =====================================================
+   LOAD PROPERTY IMAGES
+===================================================== */
+
+async function loadPropertyImages() {
+
+    const {
+        data,
+        error
+    } = await supabaseClient
+
+        .from("property_images")
+
+        .select(`
+            id,
+            storage_path,
+            display_order
+        `)
+
+        .eq(
+            "property_id",
+            property.id
+        )
+
+        .order(
+            "display_order",
+            {
+                ascending: true
+            }
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Image error:",
+            error
+        );
+
+        throw error;
+    }
+
+
+    photos = [];
+
+
+    if (data && data.length > 0) {
+
+        data.forEach(
+            function (image) {
+
+                const result =
+                    supabaseClient
+                        .storage
+                        .from(
+                            STORAGE_BUCKET
+                        )
+                        .getPublicUrl(
+                            image.storage_path
+                        );
+
+
+                if (
+                    result &&
+                    result.data &&
+                    result.data.publicUrl
+                ) {
+
+                    photos.push({
+                        id: image.id,
+                        url:
+                            result.data.publicUrl,
+                        display_order:
+                            image.display_order
+                    });
+
+                }
+
+            }
+        );
+
+    }
+
+
+    /*
+       If no photos exist,
+       use placeholder.
+    */
+
+    if (photos.length === 0) {
+
+        photos.push({
+            id: "placeholder",
+            url:
+                "https://placehold.co/1200x800?text=No+Photo",
+            display_order: 0
+        });
+
+    }
+
+}
+
+
+/* =====================================================
+   DISPLAY PROPERTY
+===================================================== */
+
+function displayProperty() {
+
+    document.getElementById(
+        "propertyTitle"
+    ).textContent =
+        property.title ||
+        "Untitled Property";
+
+
+    document.getElementById(
+        "propertyPrice"
+    ).textContent =
+        formatPrice(
+            property.price
+        );
+
+
+    document.getElementById(
+        "propertyLocation"
+    ).textContent =
+        "📍 " +
+        (
+            property.location ||
+            "Location unavailable"
+        );
+
+
+    document.getElementById(
+        "propertyBedrooms"
+    ).textContent =
+        "🛏️ " +
+        (
+            property.bedrooms ??
+            0
+        ) +
+        " Bedrooms";
+
+
+    document.getElementById(
+        "propertyType"
+    ).textContent =
+        "🏷️ " +
+        formatListingType(
+            property.listing_type
+        );
+
+
+    document.getElementById(
+        "propertyDescription"
+    ).textContent =
+        property.description ||
+        "No description provided.";
+    const meta=document.getElementById('propertyReviewInfo'); if(meta){ meta.textContent = property.rejection_reason ? 'Review note: '+property.rejection_reason : (property.reviewed_at ? 'Reviewed: '+new Date(property.reviewed_at).toLocaleString() : (property.updated_at ? 'Last updated: '+new Date(property.updated_at).toLocaleString() : '')); }
+
+
+    /* =========================
+       FEATURED
+    ========================= */
+
+    const featuredActive = property.is_featured === true && (!property.featured_until || new Date(property.featured_until).getTime() > Date.now());
+    if (featuredActive) {
+
+        document.getElementById(
+            "featuredBadge"
+        ).style.display =
+            "inline-block";
+
+    }
+
+
+    /* =========================
+       CONTACTS
+    ========================= */
+
+    displayContacts();
+
+
+    /* =========================
+       GALLERY
+    ========================= */
+
+    renderGallery();
+
+}
+
+
+function shareCurrentProperty(){ const url=window.location.href; if(navigator.share){navigator.share({title:property?.title||'Property',text:'Eastern Ethiopia Digital Broker property',url}).catch(()=>{});return;} if(navigator.clipboard){navigator.clipboard.writeText(url).then(()=>alert('Property link copied.')).catch(()=>window.prompt('Copy property link:',url));} else window.prompt('Copy property link:',url); }
+
+/* =====================================================
+   DISPLAY CONTACTS
+===================================================== */
+
+function displayContacts() {
+
+    const contactList =
+        document.getElementById(
+            "contactList"
+        );
+
+
+    contactList.innerHTML = "";
+
+
+    /*
+       Separate City Admin and Super Admin.
+    */
+
+    const cityAdmins =
+        contacts.filter(
+            function (contact) {
+
+                return contact.role ===
+                    "city_admin";
+
+            }
+        );
+
+
+    const superAdmins =
+        contacts.filter(
+            function (contact) {
+
+                return contact.role ===
+                    "super_admin";
+
+            }
+        );
+
+
+    /* =================================================
+       CITY ADMIN
+    ================================================= */
+
+    cityAdmins.forEach(
+        function (contact) {
+
+            contactList.appendChild(
+                createContactCard(
+                    contact,
+                    "🏙️ City Admin"
+                )
+            );
+
+        }
+    );
+
+
+    /* =================================================
+       SUPER ADMIN
+    ================================================= */
+
+    superAdmins.forEach(
+        function (contact) {
+
+            contactList.appendChild(
+                createContactCard(
+                    contact,
+                    "🛡️ Super Admin"
+                )
+            );
+
+        }
+    );
+
+
+    /* =================================================
+       NO CITY ADMIN
+    ================================================= */
+
+    if (cityAdmins.length === 0) {
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+        message.className =
+            "no-contact";
+
+        message.textContent =
+            "No City Admin is currently assigned to this property's city. You can still contact the Super Admin below.";
+
+        contactList.appendChild(
+            message
+        );
+
+    }
+
+
+    /* =================================================
+       NO CONTACT AT ALL
+    ================================================= */
+
+    if (
+        cityAdmins.length === 0 &&
+        superAdmins.length === 0
+    ) {
+
+        contactList.innerHTML = "";
+
+        const message =
+            document.createElement(
+                "div"
+            );
+
+        message.className =
+            "no-contact";
+
+        message.textContent =
+            "No broker contact is currently available for this property.";
+
+        contactList.appendChild(
+            message
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   CREATE CONTACT CARD
+===================================================== */
+
+function createContactCard(
+    contact,
+    roleLabel
+) {
+
+    const card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "contact-card";
+
+
+    const header =
+        document.createElement(
+            "div"
+        );
+
+    header.className =
+        "contact-card-header";
+
+
+    const avatar =
+        document.createElement(
+            "div"
+        );
+
+    avatar.className =
+        "contact-avatar";
+
+
+    const name =
+        contact.full_name ||
+        "Broker Contact";
+
+
+    avatar.textContent =
+        name
+            .charAt(0)
+            .toUpperCase();
+
+
+    const info =
+        document.createElement(
+            "div"
+        );
+
+    info.className =
+        "contact-card-info";
+
+
+    const role =
+        document.createElement(
+            "div"
+        );
+
+    role.className =
+        "contact-role";
+
+    role.textContent =
+        roleLabel;
+
+
+    const nameElement =
+        document.createElement(
+            "div"
+        );
+
+    nameElement.className =
+        "contact-name";
+
+    nameElement.textContent =
+        name;
+
+
+    const phoneElement =
+        document.createElement(
+            "div"
+        );
+
+    phoneElement.className =
+        "contact-phone";
+
+    phoneElement.textContent =
+        contact.phone ||
+        "Phone unavailable";
+
+
+    info.appendChild(
+        role
+    );
+
+    info.appendChild(
+        nameElement
+    );
+
+    info.appendChild(
+        phoneElement
+    );
+
+
+    header.appendChild(
+        avatar
+    );
+
+    header.appendChild(
+        info
+    );
+
+
+    card.appendChild(
+        header
+    );
+
+
+    /*
+       Contact buttons
+    */
+
+    if (contact.phone) {
+
+        const buttons =
+            document.createElement(
+                "div"
+            );
+
+        buttons.className =
+            "contact-buttons";
+
+
+        /* =========================
+           CALL
+        ========================= */
+
+        const call =
+            document.createElement(
+                "a"
+            );
+
+        call.className =
+            "contact-btn call-btn";
+
+        call.href =
+            "tel:" +
+            contact.phone;
+
+        call.textContent =
+            "📞 Call";
+
+
+        /* =========================
+           WHATSAPP
+        ========================= */
+
+        const whatsapp =
+            document.createElement(
+                "a"
+            );
+
+        whatsapp.className =
+            "contact-btn whatsapp-btn";
+
+        const number =
+            normalizePhoneForWhatsApp(
+                contact.phone
+            );
+
+
+        whatsapp.href =
+            "https://wa.me/" +
+            number +
+            "?text=" +
+            encodeURIComponent(
+                "Hello, I am interested in this property: " +
+                (
+                    property.title ||
+                    ""
+                )
+            );
+
+
+        whatsapp.target =
+            "_blank";
+
+        whatsapp.rel =
+            "noopener noreferrer";
+
+        whatsapp.textContent =
+            "💬 WhatsApp";
+
+
+        buttons.appendChild(
+            call
+        );
+
+        buttons.appendChild(
+            whatsapp
+        );
+
+
+        card.appendChild(
+            buttons
+        );
+
+    }
+
+
+    return card;
+
+}
+
+
+/* =====================================================
+   NORMALIZE WHATSAPP NUMBER
+===================================================== */
+
+function normalizePhoneForWhatsApp(
+    phone
+) {
+
+    let number =
+        String(phone)
+            .trim()
+            .replace(
+                /[^\d+]/g,
+                ""
+            );
+
+
+    /*
+       Ethiopia:
+
+       0912345678
+       →
+       251912345678
+    */
+
+    if (
+        number.startsWith("0")
+    ) {
+
+        number =
+            "251" +
+            number.substring(1);
+
+    }
+
+
+    if (
+        number.startsWith("+")
+    ) {
+
+        number =
+            number.substring(1);
+
+    }
+
+
+    /*
+       If already starts with 251,
+       leave it unchanged.
+    */
+
+    return number;
+
+}
+
+
+/* =====================================================
+   RENDER GALLERY
+===================================================== */
+
+function renderGallery() {
+
+    const thumbnails =
+        document.getElementById(
+            "thumbnails"
+        );
+
+
+    thumbnails.innerHTML = "";
+
+
+    currentPhotoIndex = 0;
+
+
+    updateMainPhoto();
+
+
+    photos.forEach(
+        function (photo, index) {
+
+            const image =
+                document.createElement(
+                    "img"
+                );
+
+
+            image.src =
+                photo.url;
+
+            image.className =
+                "thumbnail";
+
+
+            image.alt =
+                "Property photo " +
+                (index + 1);
+
+
+            image.onclick =
+                function () {
+
+                    currentPhotoIndex =
+                        index;
+
+                    updateMainPhoto();
+
+                };
+
+
+            thumbnails.appendChild(
+                image
+            );
+
+        }
+    );
+
+
+    updateNavigation();
+
+}
+
+
+/* =====================================================
+   UPDATE MAIN PHOTO
+===================================================== */
+
+function updateMainPhoto() {
+
+    if (!photos.length) {
+        return;
+    }
+
+
+    const photo =
+        photos[
+            currentPhotoIndex
+        ];
+
+
+    document.getElementById(
+        "mainPhoto"
+    ).src =
+        photo.url;
+
+
+    document.getElementById(
+        "photoCounter"
+    ).textContent =
+        (
+            currentPhotoIndex + 1
+        ) +
+        " / " +
+        photos.length;
+
+
+    const thumbnails =
+        document.querySelectorAll(
+            ".thumbnail"
+        );
+
+
+    thumbnails.forEach(
+        function (thumbnail, index) {
+
+            thumbnail.classList.toggle(
+                "active",
+                index ===
+                    currentPhotoIndex
+            );
+
+        }
+    );
+
+
+    updateNavigation();
+
+}
+
+
+/* =====================================================
+   UPDATE NAVIGATION
+===================================================== */
+
+function updateNavigation() {
+
+    const show =
+        photos.length > 1;
+
+
+    document.getElementById(
+        "prevButton"
+    ).style.display =
+        show
+            ? "block"
+            : "none";
+
+
+    document.getElementById(
+        "nextButton"
+    ).style.display =
+        show
+            ? "block"
+            : "none";
+
+}
+
+
+/* =====================================================
+   NEXT PHOTO
+===================================================== */
+
+function nextPhoto() {
+
+    if (photos.length <= 1) {
+        return;
+    }
+
+
+    currentPhotoIndex =
+        (
+            currentPhotoIndex + 1
+        ) %
+        photos.length;
+
+
+    updateMainPhoto();
+
+
+    updateLightboxImage();
+
+}
+
+
+/* =====================================================
+   PREVIOUS PHOTO
+===================================================== */
+
+function previousPhoto() {
+
+    if (photos.length <= 1) {
+        return;
+    }
+
+
+    currentPhotoIndex =
+        (
+            currentPhotoIndex -
+            1 +
+            photos.length
+        ) %
+        photos.length;
+
+
+    updateMainPhoto();
+
+
+    updateLightboxImage();
+
+}
+
+
+/* =====================================================
+   MAIN PHOTO CLICK
+===================================================== */
+
+document.getElementById(
+    "mainPhoto"
+).addEventListener(
+    "click",
+    function () {
+
+        if (!photos.length) {
+            return;
+        }
+
+
+        updateLightboxImage();
+
+
+        document.getElementById(
+            "lightbox"
+        ).style.display =
+            "flex";
+
+    }
+);
+
+
+/* =====================================================
+   UPDATE LIGHTBOX
+===================================================== */
+
+function updateLightboxImage() {
+
+    if (!photos.length) {
+        return;
+    }
+
+
+    document.getElementById(
+        "lightboxImage"
+    ).src =
+        photos[
+            currentPhotoIndex
+        ].url;
+
+}
+
+
+/* =====================================================
+   CLOSE LIGHTBOX
+===================================================== */
+
+function closeLightbox() {
+
+    document.getElementById(
+        "lightbox"
+    ).style.display =
+        "none";
+
+}
+
+
+/* =====================================================
+   KEYBOARD NAVIGATION
+===================================================== */
+
+document.addEventListener(
+    "keydown",
+    function (event) {
+
+        if (
+            document.getElementById(
+                "lightbox"
+            ).style.display !==
+            "flex"
+        ) {
+
+            return;
+
+        }
+
+
+        if (
+            event.key ===
+            "ArrowRight"
+        ) {
+
+            nextPhoto();
+
+        }
+
+
+        if (
+            event.key ===
+            "ArrowLeft"
+        ) {
+
+            previousPhoto();
+
+        }
+
+
+        if (
+            event.key ===
+            "Escape"
+        ) {
+
+            closeLightbox();
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   FORMAT PRICE
+===================================================== */
+
+function formatPrice(price) {
+
+    if (
+        price === null ||
+        price === undefined ||
+        price === ""
+    ) {
+
+        return "Price unavailable";
+
+    }
+
+
+    const number =
+        Number(price);
+
+
+    if (
+        Number.isNaN(number)
+    ) {
+
+        return price + " ETB";
+
+    }
+
+
+    return number.toLocaleString(
+        "en-US"
+    ) +
+    " ETB";
+
+}
+
+
+/* =====================================================
+   FORMAT LISTING TYPE
+===================================================== */
+
+function formatListingType(
+    type
+) {
+
+    if (!type) {
+        return "Property";
+    }
+
+
+    const raw=String(type||'').toLowerCase().trim();
+    const value=(raw==='sell'||raw==='sale')?'For Sale':raw==='rent'?'For Rent':raw.replace(/_/g,' ');
+
+
+    return value
+        .charAt(0)
+        .toUpperCase() +
+        value
+            .slice(1);
+
+}
+
+
+/* =====================================================
+   LOADING / ERROR
+===================================================== */
+
+function hideLoading() {
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+
+    document.getElementById(
+        "propertyContent"
+    ).style.display =
+        "block";
+
+}
+
+
+function showError(
+    message
+) {
+
+    document.getElementById(
+        "loading"
+    ).style.display =
+        "none";
+
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    box.textContent =
+        message;
+
+
+    box.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   BACK
+===================================================== */
+
+function goBack() {
+
+    if (
+        window.history.length > 1
+    ) {
+
+        window.history.back();
+
+    } else {
+
+        window.location.href =
+            "index.html";
+
+    }
+
+}
+
+</script>
+
+</body>
+
+</html>

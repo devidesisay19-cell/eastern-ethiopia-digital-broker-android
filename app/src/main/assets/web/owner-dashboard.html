@@ -1,0 +1,5895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#155EEF">
+
+<title>Owner Dashboard | Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0
+}
+
+:root{
+    --p:#155EEF;
+    --pd:#0B4ACB;
+    --pl:#EEF4FF;
+    --bg:#F5F7FB;
+    --card:#fff;
+    --text:#101828;
+    --muted:#667085;
+    --line:#E4E7EC;
+    --soft:#F8FAFC;
+
+    --green:#12B76A;
+    --gbg:#ECFDF3;
+
+    --orange:#F79009;
+    --obg:#FFFAEB;
+
+    --red:#F04438;
+    --rbg:#FEF3F2;
+
+    --purple:#7F56D9;
+    --pb:#F9F5FF;
+
+    --shadow:0 10px 35px rgba(16,24,40,.08);
+    --shadow2:0 20px 65px rgba(16,24,40,.18);
+
+    --radius:18px;
+}
+
+html{
+    scroll-behavior:smooth
+}
+
+body{
+    font-family:Inter,Arial,sans-serif;
+    background:var(--bg);
+    color:var(--text);
+    min-height:100vh
+}
+
+button,
+input,
+select,
+textarea{
+    font:inherit
+}
+
+button{
+    cursor:pointer
+}
+
+button:disabled{
+    opacity:.55;
+    cursor:not-allowed
+}
+
+.hidden{
+    display:none!important
+}
+
+/* =========================
+   LOGIN
+========================= */
+
+#loginPage{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+
+    background:
+        radial-gradient(circle at 0 0,#DCE9FF,transparent 36%),
+        radial-gradient(circle at 100% 100%,#E8F0FF,transparent 38%),
+        #F7FAFF;
+}
+
+.login-card{
+    width:100%;
+    max-width:440px;
+    background:#fff;
+    border:1px solid #fff;
+    border-radius:28px;
+    padding:32px 24px;
+    box-shadow:var(--shadow2)
+}
+
+.logo{
+    width:72px;
+    height:72px;
+    margin:0 auto 18px;
+    border-radius:22px;
+
+    background:linear-gradient(135deg,#155EEF,#4C8DFF);
+
+    display:grid;
+    place-items:center;
+
+    color:#fff;
+    font-size:31px;
+    font-weight:900;
+
+    box-shadow:0 12px 28px rgba(21,94,239,.25)
+}
+
+.login-card h1{
+    text-align:center;
+    font-size:22px
+}
+
+.login-card .sub{
+    text-align:center;
+    color:var(--muted);
+    font-size:13px;
+    margin:7px 0 26px
+}
+
+/* =========================
+   FORM
+========================= */
+
+.field{
+    margin-bottom:14px
+}
+
+.field label{
+    display:block;
+    color:#344054;
+    font-size:12px;
+    font-weight:800;
+    margin-bottom:7px
+}
+
+input,
+select,
+textarea{
+    width:100%;
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:12px 13px;
+    background:#fff;
+    color:var(--text);
+    outline:0;
+    font-size:13px;
+    transition:.2s
+}
+
+input:focus,
+select:focus,
+textarea:focus{
+    border-color:var(--p);
+    box-shadow:0 0 0 4px rgba(21,94,239,.09)
+}
+
+select:disabled{
+    background:#F2F4F7;
+    color:#98A2B3;
+    cursor:not-allowed
+}
+
+textarea{
+    min-height:120px;
+    resize:vertical
+}
+
+.btn{
+    border:0;
+    border-radius:12px;
+    padding:11px 15px;
+    font-size:12px;
+    font-weight:850;
+
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:7px;
+
+    transition:.2s
+}
+
+.primary{
+    background:var(--p);
+    color:#fff;
+    box-shadow:0 6px 18px rgba(21,94,239,.2)
+}
+
+.primary:hover{
+    background:var(--pd)
+}
+
+.secondary{
+    background:#F2F4F7;
+    color:#344054
+}
+
+.danger{
+    background:var(--rbg);
+    color:#B42318
+}
+
+.success{
+    background:var(--gbg);
+    color:#067647
+}
+
+.full{
+    width:100%
+}
+
+/* =========================
+   APP
+========================= */
+
+#app{
+    display:none;
+    min-height:100vh
+}
+
+.topbar{
+    height:68px;
+
+    position:sticky;
+    top:0;
+    z-index:40;
+
+    background:rgba(255,255,255,.94);
+    backdrop-filter:blur(14px);
+
+    border-bottom:1px solid var(--line);
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+
+    padding:0 22px
+}
+
+.brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    min-width:0
+}
+
+.brand-icon{
+    width:41px;
+    height:41px;
+    border-radius:12px;
+
+    background:linear-gradient(135deg,#155EEF,#4C8DFF);
+
+    display:grid;
+    place-items:center;
+
+    color:#fff;
+    font-weight:900
+}
+
+.brand strong{
+    display:block;
+    font-size:14px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis
+}
+
+.brand span{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:2px
+}
+
+.user-area{
+    display:flex;
+    align-items:center;
+    gap:9px
+}
+
+.avatar{
+    width:35px;
+    height:35px;
+    border-radius:50%;
+
+    display:grid;
+    place-items:center;
+
+    background:var(--pl);
+    color:var(--p);
+
+    font-weight:900;
+    font-size:12px
+}
+
+.user-name{
+    font-size:12px;
+    font-weight:800;
+    max-width:130px;
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap
+}
+
+.logout{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:10px;
+    padding:8px 11px;
+    font-size:11px;
+    font-weight:800
+}
+
+/* =========================
+   MAIN
+========================= */
+
+.main{
+    max-width:1450px;
+    margin:auto;
+    padding:24px 22px 55px
+}
+
+.hero{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:18px;
+    margin-bottom:20px
+}
+
+.hero h2{
+    font-size:27px
+}
+
+.hero p{
+    color:var(--muted);
+    font-size:13px;
+    margin-top:6px
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:13px;
+    margin-bottom:20px
+}
+
+.stat{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:17px;
+    padding:17px;
+    box-shadow:0 2px 8px rgba(16,24,40,.04)
+}
+
+.stat .num{
+    font-size:27px;
+    font-weight:900;
+    margin-top:12px
+}
+
+.stat small{
+    color:var(--muted);
+    font-size:11px
+}
+
+.stat .ico{
+    width:38px;
+    height:38px;
+    border-radius:11px;
+    background:var(--pl);
+    color:var(--p);
+
+    display:grid;
+    place-items:center;
+
+    font-weight:900
+}
+
+/* =========================
+   PROFILE
+========================= */
+
+.profile,
+.toolbar{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:17px;
+    padding:17px;
+    margin-bottom:18px;
+    box-shadow:0 2px 8px rgba(16,24,40,.04)
+}
+
+.section-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom:13px
+}
+
+.section-head h3{
+    font-size:15px
+}
+
+.section-head span{
+    color:var(--muted);
+    font-size:10px
+}
+
+.profile-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:10px
+}
+
+.info{
+    background:var(--soft);
+    border:1px solid #EEF2F6;
+    border-radius:11px;
+    padding:11px
+}
+
+.info small{
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+    margin-bottom:4px
+}
+
+.info strong{
+    font-size:12px;
+    word-break:break-word
+}
+
+/* =========================
+   TOOLBAR
+========================= */
+
+.toolbar-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr 1fr auto;
+    gap:9px
+}
+
+.search{
+    position:relative
+}
+
+.search span{
+    position:absolute;
+    left:12px;
+    top:50%;
+    transform:translateY(-50%);
+    color:#98A2B3
+}
+
+.search input{
+    padding-left:36px
+}
+
+/* =========================
+   PROPERTY CARDS
+========================= */
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px
+}
+
+.card{
+    background:#fff;
+    border:1px solid var(--line);
+    border-radius:17px;
+    overflow:hidden;
+    box-shadow:0 2px 9px rgba(16,24,40,.05);
+    transition:.2s
+}
+
+.card:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--shadow)
+}
+
+.media{
+    height:205px;
+    background:#EEF2F6;
+    position:relative;
+    overflow:hidden
+}
+
+.media img{
+    width:100%;
+    height:100%;
+    object-fit:cover
+}
+
+.media-empty{
+    height:100%;
+    display:grid;
+    place-items:center;
+    text-align:center;
+    color:#98A2B3;
+    font-size:11px
+}
+
+.media-empty b{
+    display:block;
+    font-size:32px;
+    margin-bottom:5px
+}
+
+.pill{
+    position:absolute;
+    top:10px;
+    padding:5px 8px;
+    border-radius:999px;
+    font-size:9px;
+    font-weight:900;
+    background:rgba(255,255,255,.95)
+}
+
+.featured{
+    left:10px;
+    color:#B54708
+}
+
+.type{
+    right:10px;
+    background:rgba(16,24,40,.8);
+    color:#fff
+}
+
+.card-body{
+    padding:15px
+}
+
+.title{
+    font-size:15px;
+    font-weight:850;
+    line-height:1.35
+}
+
+.loc{
+    font-size:11px;
+    color:var(--muted);
+    margin-top:6px;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis
+}
+
+.price{
+    font-size:18px;
+    color:var(--p);
+    font-weight:900;
+    margin-top:10px
+}
+
+.meta{
+    display:flex;
+    gap:10px;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:9px;
+    flex-wrap:wrap
+}
+
+.badges{
+    display:flex;
+    gap:5px;
+    flex-wrap:wrap;
+    margin-top:10px
+}
+
+.badge{
+    padding:5px 8px;
+    border-radius:999px;
+    font-size:9px;
+    font-weight:900
+}
+
+.pending{
+    background:var(--obg);
+    color:#B54708
+}
+
+.published{
+    background:var(--gbg);
+    color:#067647
+}
+
+.rejected{
+    background:var(--rbg);
+    color:#B42318
+}
+
+.rent{
+    background:var(--pl);
+    color:#175CD3
+}
+
+.sell{
+    background:var(--pb);
+    color:#6941C6
+}
+
+.feat{
+    background:#FFF0D6;
+    color:#B54708
+}
+
+.actions{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:6px;
+    margin-top:14px
+}
+
+.action{
+    border:1px solid var(--line);
+    background:#fff;
+    border-radius:9px;
+    padding:8px 4px;
+    font-size:10px;
+    font-weight:800;
+    color:#344054
+}
+
+.action.del{
+    color:#B42318
+}
+
+/* =========================
+   EMPTY / LOADING
+========================= */
+
+.empty,
+.loading{
+    background:#fff;
+    border:1px dashed #CBD5E1;
+    border-radius:17px;
+    padding:55px 20px;
+    text-align:center;
+    color:var(--muted);
+    grid-column:1/-1
+}
+
+.empty b{
+    display:block;
+    color:var(--text);
+    font-size:15px
+}
+
+.empty p{
+    font-size:11px;
+    margin-top:6px
+}
+
+.empty .big{
+    font-size:30px;
+    margin-bottom:10px
+}
+
+.spinner{
+    width:32px;
+    height:32px;
+    margin:0 auto 12px;
+
+    border:3px solid #E4E7EC;
+    border-top-color:var(--p);
+    border-radius:50%;
+
+    animation:spin .8s linear infinite
+}
+
+@keyframes spin{
+    to{
+        transform:rotate(360deg)
+    }
+}
+
+/* =========================
+   MODALS
+========================= */
+
+.modal{
+    position:fixed;
+    inset:0;
+    z-index:100;
+
+    background:rgba(16,24,40,.64);
+
+    display:none;
+    align-items:center;
+    justify-content:center;
+
+    padding:14px;
+
+    backdrop-filter:blur(4px)
+}
+
+.modal.show{
+    display:flex
+}
+
+.modal-box{
+    width:100%;
+    max-width:900px;
+    max-height:94vh;
+    overflow:auto;
+
+    background:#fff;
+    border-radius:21px;
+
+    box-shadow:var(--shadow2)
+}
+
+.modal-head{
+    position:sticky;
+    top:0;
+    z-index:5;
+
+    background:#fff;
+    border-bottom:1px solid var(--line);
+
+    padding:15px 18px;
+
+    display:flex;
+    align-items:center;
+    justify-content:space-between
+}
+
+.modal-head h3{
+    font-size:16px
+}
+
+.close{
+    border:0;
+    background:#F2F4F7;
+    border-radius:9px;
+    width:34px;
+    height:34px;
+    font-size:20px
+}
+
+.modal-body{
+    padding:18px
+}
+
+.modal-foot{
+    position:sticky;
+    bottom:0;
+
+    background:#fff;
+    border-top:1px solid var(--line);
+
+    padding:12px 18px;
+
+    display:flex;
+    justify-content:flex-end;
+    gap:8px
+}
+
+/* =========================
+   PROPERTY FORM
+========================= */
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px
+}
+
+.full-field{
+    grid-column:1/-1
+}
+
+.req{
+    color:var(--red)
+}
+
+.location-note{
+    background:#EEF4FF;
+    border:1px solid #D6E4FF;
+    border-radius:12px;
+    padding:10px;
+    font-size:10px;
+    color:#175CD3;
+    margin-bottom:12px
+}
+
+.location-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:10px
+}
+
+/* =========================
+   PHOTO UPLOAD
+========================= */
+
+.upload{
+    border:2px dashed #CBD5E1;
+    background:#F8FAFC;
+    border-radius:15px;
+    padding:19px;
+    text-align:center
+}
+
+.upload .camera{
+    font-size:28px
+}
+
+.upload strong{
+    display:block;
+    font-size:13px;
+    margin-top:6px
+}
+
+.upload small{
+    display:block;
+    color:var(--muted);
+    font-size:10px;
+    margin-top:4px
+}
+
+.photo-btn{
+    display:inline-flex;
+    margin-top:10px;
+    background:var(--p);
+    color:#fff;
+    border-radius:10px;
+    padding:10px 14px;
+    font-size:11px;
+    font-weight:850;
+    cursor:pointer
+}
+
+.photo-btn input{
+    display:none
+}
+
+.count{
+    font-size:10px;
+    color:var(--muted);
+    margin-top:8px
+}
+
+.photo-grid{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:8px;
+    margin-top:11px
+}
+
+.photo{
+    position:relative;
+    height:88px;
+    border-radius:10px;
+    overflow:hidden;
+    border:1px solid var(--line)
+}
+
+.photo img{
+    width:100%;
+    height:100%;
+    object-fit:cover
+}
+
+.remove{
+    position:absolute;
+    right:4px;
+    top:4px;
+
+    border:0;
+    border-radius:50%;
+
+    width:23px;
+    height:23px;
+
+    background:rgba(16,24,40,.78);
+    color:#fff
+}
+
+.existing{
+    margin-top:16px
+}
+
+.existing h4{
+    font-size:12px;
+    margin-bottom:8px
+}
+
+/* =========================
+   VIEW
+========================= */
+
+.gallery{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+    margin-bottom:16px
+}
+
+.gallery img{
+    width:100%;
+    height:165px;
+    object-fit:cover;
+    border-radius:10px;
+    border:1px solid var(--line)
+}
+
+.detail-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:9px
+}
+
+.detail{
+    background:var(--soft);
+    border:1px solid #EEF2F6;
+    border-radius:10px;
+    padding:11px
+}
+
+.detail.full{
+    grid-column:1/-1
+}
+
+.detail small{
+    display:block;
+    color:var(--muted);
+    font-size:9px;
+    margin-bottom:4px
+}
+
+.detail strong{
+    font-size:11px;
+    line-height:1.45;
+    word-break:break-word
+}
+
+/* =========================
+   TOAST
+========================= */
+
+#toast{
+    position:fixed;
+    left:50%;
+    bottom:20px;
+    z-index:500;
+
+    max-width:92%;
+
+    padding:11px 15px;
+
+    border-radius:11px;
+
+    background:#101828;
+    color:#fff;
+
+    font-size:11px;
+    font-weight:750;
+    text-align:center;
+
+    opacity:0;
+
+    transform:translate(-50%,90px);
+
+    pointer-events:none;
+
+    transition:.25s;
+
+    box-shadow:var(--shadow)
+}
+
+#toast.show{
+    opacity:1;
+    transform:translate(-50%,0)
+}
+
+#toast.success{
+    background:#067647
+}
+
+#toast.error{
+    background:#B42318
+}
+
+#toast.warning{
+    background:#B54708
+}
+
+/* =========================
+   RESPONSIVE
+========================= */
+
+@media(max-width:1100px){
+
+    .grid{
+        grid-template-columns:repeat(2,1fr)
+    }
+
+    .stats{
+        grid-template-columns:repeat(2,1fr)
+    }
+}
+
+@media(max-width:800px){
+
+    .main{
+        padding:19px 13px 45px
+    }
+
+    .topbar{
+        padding:0 13px
+    }
+
+    .hero{
+        flex-direction:column;
+        align-items:flex-start
+    }
+
+    .hero-action,
+    .hero-action .btn{
+        width:100%
+    }
+
+    .toolbar-grid{
+        grid-template-columns:1fr
+    }
+
+    .profile-grid{
+        grid-template-columns:1fr
+    }
+
+    .form-grid,
+    .location-grid{
+        grid-template-columns:1fr
+    }
+
+    .full-field{
+        grid-column:auto
+    }
+
+    .gallery{
+        grid-template-columns:repeat(2,1fr)
+    }
+
+    .detail-grid{
+        grid-template-columns:1fr
+    }
+
+    .detail.full{
+        grid-column:auto
+    }
+}
+
+@media(max-width:650px){
+
+    .brand span,
+    .user-name,
+    .avatar{
+        display:none
+    }
+
+    .brand strong{
+        font-size:12px;
+        max-width:175px
+    }
+
+    .hero h2{
+        font-size:22px
+    }
+
+    .stats{
+        gap:8px
+    }
+
+    .stat{
+        padding:13px
+    }
+
+    .stat .num{
+        font-size:22px
+    }
+
+    .grid{
+        grid-template-columns:1fr
+    }
+
+    .media{
+        height:220px
+    }
+
+    .photo-grid{
+        grid-template-columns:repeat(3,1fr)
+    }
+
+    .modal{
+        padding:0;
+        align-items:flex-end
+    }
+
+    .modal-box{
+        max-height:96vh;
+        border-radius:20px 20px 0 0
+    }
+
+    .modal-foot{
+        padding-bottom:max(12px,env(safe-area-inset-bottom))
+    }
+}
+
+@media(max-width:390px){
+
+    .stats{
+        grid-template-columns:1fr
+    }
+
+    .photo-grid{
+        grid-template-columns:repeat(2,1fr)
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- =========================
+     LOGIN
+========================= -->
+
+<section id="loginPage">
+
+    <div class="login-card">
+
+        <div class="logo">E</div>
+
+        <h1>
+            Eastern Ethiopia Digital Broker
+        </h1>
+
+        <div class="sub">
+            Secure Owner Dashboard
+        </div>
+
+        <div class="field">
+            <label>Email Address</label>
+
+            <input
+                id="loginEmail"
+                type="email"
+                placeholder="Enter your email"
+                autocomplete="email"
+            >
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+
+            <input
+                id="loginPassword"
+                type="password"
+                placeholder="Enter your password"
+                autocomplete="current-password"
+            >
+        </div>
+
+        <button
+            class="btn primary full"
+            id="loginBtn"
+            onclick="login()"
+        >
+            Login to Dashboard
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- =========================
+     APP
+========================= -->
+
+<div id="app">
+
+<header class="topbar">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            E
+        </div>
+
+        <div>
+            <strong>
+                Eastern Ethiopia Digital Broker
+            </strong>
+
+            <span>
+                Professional Property Marketplace • Owner
+            </span>
+        </div>
+
+    </div>
+
+    <div class="user-area">
+
+        <div
+            class="avatar"
+            id="avatar"
+        >
+            O
+        </div>
+
+        <span
+            class="user-name"
+            id="topName"
+        >
+            Owner
+        </span>
+
+        <button
+            class="logout"
+            onclick="logout()"
+        >
+            Logout
+        </button>
+
+    </div>
+
+</header>
+
+
+<main class="main">
+
+<!-- HERO -->
+
+<section class="hero">
+
+    <div>
+
+        <h2>
+            Welcome,
+            <span id="welcomeName">
+                Owner
+            </span>
+            👋
+        </h2>
+
+        <p>
+            Manage listings, photos, location and approval status
+            from one professional workspace.
+        </p>
+
+    </div>
+
+    <div class="hero-action">
+
+        <button
+            class="btn primary"
+            onclick="openAddModal()"
+        >
+            ＋ Add New Property
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- STATS -->
+
+<section class="stats">
+
+    <div class="stat">
+
+        <div class="ico">
+            🏠
+        </div>
+
+        <div
+            class="num"
+            id="totalCount"
+        >
+            0
+        </div>
+
+        <small>
+            Total Properties
+        </small>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="ico">
+            ⏳
+        </div>
+
+        <div
+            class="num"
+            id="pendingCount"
+        >
+            0
+        </div>
+
+        <small>
+            Pending Review
+        </small>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="ico">
+            ✓
+        </div>
+
+        <div
+            class="num"
+            id="publishedCount"
+        >
+            0
+        </div>
+
+        <small>
+            Published
+        </small>
+
+    </div>
+
+
+    <div class="stat">
+
+        <div class="ico">
+            !
+        </div>
+
+        <div
+            class="num"
+            id="rejectedCount"
+        >
+            0
+        </div>
+
+        <small>
+            Rejected
+        </small>
+
+    </div>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<section class="profile">
+
+    <div class="section-head">
+
+        <h3>
+            Owner Information
+        </h3>
+
+        <span>
+            Account details
+        </span>
+
+    </div>
+
+    <div class="profile-grid">
+
+        <div class="info">
+
+            <small>
+                Full Name
+            </small>
+
+            <strong id="profileName">
+                Loading...
+            </strong>
+
+        </div>
+
+
+        <div class="info">
+
+            <small>
+                Phone Number
+            </small>
+
+            <strong id="profilePhone">
+                Loading...
+            </strong>
+
+        </div>
+
+
+        <div class="info">
+
+            <small>
+                Account ID
+            </small>
+
+            <strong id="profileId">
+                Loading...
+            </strong>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- TOOLBAR -->
+
+<section class="toolbar">
+
+    <div class="toolbar-grid">
+
+        <div class="search">
+
+            <span>
+                🔍
+            </span>
+
+            <input
+                id="searchInput"
+                type="search"
+                placeholder="Search title, location..."
+                oninput="renderProperties()"
+            >
+
+        </div>
+
+
+        <select
+            id="statusFilter"
+            onchange="renderProperties()"
+        >
+
+            <option value="">
+                All Status
+            </option>
+
+            <option value="pending_review">
+                Pending Review
+            </option>
+
+            <option value="published">
+                Published
+            </option>
+
+            <option value="rejected">
+                Rejected
+            </option>
+
+            <option value="active">
+                Active
+            </option>
+
+            <option value="sold">
+                Sold
+            </option>
+
+            <option value="rented">
+                Rented
+            </option>
+
+            <option value="hidden">
+                Hidden
+            </option>
+
+        </select>
+
+
+        <select
+            id="typeFilter"
+            onchange="renderProperties()"
+        >
+
+            <option value="">
+                All Listing Types
+            </option>
+
+            <option value="rent">
+                Rent
+            </option>
+
+            <option value="sell">
+                Sell
+            </option>
+
+        </select>
+
+
+        <button
+            class="btn secondary"
+            onclick="loadProperties()"
+        >
+            ↻ Refresh
+        </button>
+
+    </div>
+
+</section>
+
+
+<!-- PROPERTY CONTAINER -->
+
+<section id="propertyContainer">
+
+    <div class="loading">
+
+        <div class="spinner"></div>
+
+        Loading your properties...
+
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- =========================
+     PROPERTY MODAL
+========================= -->
+
+<div
+    class="modal"
+    id="propertyModal"
+>
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+    <h3 id="modalTitle">
+        Add New Property
+    </h3>
+
+    <button
+        class="close"
+        onclick="closeModal('propertyModal')"
+    >
+        ×
+    </button>
+
+</div>
+
+
+<div class="modal-body">
+
+<form id="propertyForm">
+
+<input
+    type="hidden"
+    id="editingId"
+>
+
+
+<div class="form-grid">
+
+
+<!-- TITLE -->
+
+<div class="field">
+
+<label>
+    Property Title
+    <span class="req">*</span>
+</label>
+
+<input
+    id="propertyTitle"
+    required
+    placeholder="e.g. Modern 2 Bedroom House"
+>
+
+</div>
+
+
+<!-- TYPE -->
+
+<div class="field">
+
+<label>
+    Listing Type
+    <span class="req">*</span>
+</label>
+
+<select
+    id="listingType"
+    required
+>
+
+<option value="">
+    Select Type
+</option>
+
+<option value="rent">
+    Rent
+</option>
+
+<option value="sell">
+    Sell
+</option>
+
+</select>
+
+</div>
+
+
+<!-- PRICE -->
+
+<div class="field">
+
+<label>
+    Price (ETB)
+    <span class="req">*</span>
+</label>
+
+<input
+    id="propertyPrice"
+    type="number"
+    min="0"
+    step="0.01"
+    required
+    placeholder="Enter price in ETB"
+>
+
+</div>
+
+
+<!-- BEDROOM -->
+
+<div class="field">
+
+<label>
+    Bedrooms
+</label>
+
+<input
+    id="bedrooms"
+    type="number"
+    min="0"
+    step="1"
+    placeholder="e.g. 2"
+>
+
+</div>
+
+
+<!-- LOCATION -->
+
+<div class="full-field">
+
+<div class="location-note">
+
+📍 Choose location from the database cascade.
+
+<br>
+
+<b>
+Area / Kebele is optional.
+</b>
+
+<br>
+
+Photo upload does not depend on Area.
+
+</div>
+
+
+<div class="location-grid">
+
+
+<!-- REGION -->
+
+<div class="field">
+
+<label>
+    Region
+    <span class="req">*</span>
+</label>
+
+<select id="regionSelect">
+
+<option value="">
+    Loading regions...
+</option>
+
+</select>
+
+</div>
+
+
+<!-- ZONE -->
+
+<div class="field">
+
+<label>
+    Zone
+</label>
+
+<select
+    id="zoneSelect"
+    disabled
+>
+
+<option value="">
+    Select Region first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- CITY -->
+
+<div class="field">
+
+<label>
+    City / Town
+    <span class="req">*</span>
+</label>
+
+<select
+    id="citySelect"
+    disabled
+>
+
+<option value="">
+    Select Region first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- WOREDA -->
+
+<div class="field">
+
+<label>
+    Woreda
+</label>
+
+<select
+    id="woredaSelect"
+    disabled
+>
+
+<option value="">
+    Select City first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- AREA -->
+
+<div class="field">
+
+<label>
+    Area / Kebele
+</label>
+
+<select
+    id="areaSelect"
+    disabled
+>
+
+<option value="">
+    Select Woreda first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- LOCATION SUMMARY -->
+
+<div class="field">
+
+<label>
+    Location Summary
+    <span class="req">*</span>
+</label>
+
+<input
+    id="propertyLocation"
+    required
+    placeholder="Auto-generated or add detail"
+>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- DESCRIPTION -->
+
+<div class="field full-field">
+
+<label>
+    Description
+</label>
+
+<textarea
+    id="description"
+    placeholder="Describe house, facilities, water, electricity, parking, nearby places..."
+></textarea>
+
+</div>
+
+
+<!-- PHOTOS -->
+
+<div class="field full-field">
+
+<label>
+    Property Photos
+</label>
+
+<div class="upload">
+
+<div class="camera">
+    📷
+</div>
+
+<strong>
+    Upload attractive property photos
+</strong>
+
+<small>
+    JPG / PNG / WEBP • max 5MB each • up to 15 photos
+</small>
+
+<label class="photo-btn">
+
+    Select Photos
+
+    <input
+        id="photoInput"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+    >
+
+</label>
+
+<div
+    class="count"
+    id="photoCount"
+>
+    No new photos selected
+</div>
+
+</div>
+
+
+<div
+    class="photo-grid"
+    id="previewGrid"
+></div>
+
+
+<div
+    class="existing"
+    id="existingSection"
+    style="display:none"
+>
+
+<h4>
+    Existing Photos
+</h4>
+
+<div
+    class="photo-grid"
+    id="existingGrid"
+></div>
+
+</div>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="modal-foot">
+
+<button
+    class="btn secondary"
+    onclick="closeModal('propertyModal')"
+>
+    Cancel
+</button>
+
+<button
+    class="btn primary"
+    id="saveBtn"
+    onclick="saveProperty()"
+>
+    Submit for Review
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     VIEW MODAL
+========================= -->
+
+<div
+    class="modal"
+    id="viewModal"
+>
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+<h3>
+    Property Details
+</h3>
+
+<button
+    class="close"
+    onclick="closeModal('viewModal')"
+>
+    ×
+</button>
+
+</div>
+
+<div
+    class="modal-body"
+    id="viewContent"
+></div>
+
+</div>
+
+</div>
+
+
+<!-- =========================
+     REJECTION MODAL
+========================= -->
+
+<div
+    class="modal"
+    id="rejectModal"
+>
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+<h3>
+    Admin Rejection Reason
+</h3>
+
+<button
+    class="close"
+    onclick="closeModal('rejectModal')"
+>
+    ×
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<div
+    class="detail"
+    style="background:#FEF3F2;border-color:#FECACA"
+>
+
+<small>
+    Admin message
+</small>
+
+<strong
+    id="rejectText"
+    style="color:#B42318"
+></strong>
+
+</div>
+
+<p
+    style="font-size:11px;color:#667085;margin-top:10px"
+>
+    Edit the property and submit it again.
+    It will return to Pending Review.
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+
+<div id="toast"></div>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE CONFIG
+========================================================= */
+
+const SUPABASE_URL =
+    "https://ubkfrpkapqnlaiscrxim.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE";
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY,
+        {
+            auth:{
+                persistSession:true,
+                autoRefreshToken:true,
+                detectSessionInUrl:true
+            }
+        }
+    );
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let properties = [];
+
+let selectedFiles = [];
+
+let existingPhotos = [];
+
+let saving = false;
+
+let toastTimer = null;
+
+
+/* =========================================================
+   DOM READY
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    () => {
+
+        /* PHOTO INPUT */
+
+        const photoInput =
+            document.getElementById("photoInput");
+
+        if(photoInput){
+
+            photoInput.addEventListener(
+                "change",
+                handlePhotos
+            );
+
+        }
+
+
+        /* =================================================
+           REGION CHANGE
+        ================================================= */
+
+        document
+            .getElementById("regionSelect")
+            .addEventListener(
+                "change",
+                async function(){
+
+                    const regionId =
+                        this.value;
+
+                    resetSelects([
+                        "zoneSelect",
+                        "citySelect",
+                        "woredaSelect",
+                        "areaSelect"
+                    ]);
+
+
+                    if(!regionId){
+
+                        updateLocationText();
+
+                        return;
+                    }
+
+
+                    /*
+                     * Load zones under selected region.
+                     */
+
+                    await loadLocations(
+                        "zone",
+                        regionId,
+                        "zoneSelect",
+                        "Select Zone"
+                    );
+
+
+                    /*
+                     * Also load direct cities/towns
+                     * whose parent is the region.
+                     *
+                     * This is important for special
+                     * administration structures such as
+                     * Eastern Ethiopia.
+                     */
+
+                    await loadLocations(
+                        "city",
+                        regionId,
+                        "citySelect",
+                        "Select City / Town"
+                    );
+
+
+                    updateLocationText();
+
+                }
+            );
+
+
+        /* =================================================
+           ZONE CHANGE
+        ================================================= */
+
+        document
+            .getElementById("zoneSelect")
+            .addEventListener(
+                "change",
+                async function(){
+
+                    const zoneId =
+                        this.value;
+
+
+                    resetSelects([
+                        "citySelect",
+                        "woredaSelect",
+                        "areaSelect"
+                    ]);
+
+
+                    if(!zoneId){
+
+                        /*
+                         * If zone is cleared, reload direct
+                         * region cities.
+                         */
+
+                        const regionId =
+                            document.getElementById(
+                                "regionSelect"
+                            ).value;
+
+                        if(regionId){
+
+                            await loadLocations(
+                                "city",
+                                regionId,
+                                "citySelect",
+                                "Select City / Town"
+                            );
+
+                        }
+
+                        updateLocationText();
+
+                        return;
+                    }
+
+
+                    /*
+                     * IMPORTANT FIX:
+                     *
+                     * City must be loaded using zone_id
+                     * when a zone is selected.
+                     */
+
+                    await loadLocations(
+                        "city",
+                        zoneId,
+                        "citySelect",
+                        "Select City / Town"
+                    );
+
+
+                    updateLocationText();
+
+                }
+            );
+
+
+        /* =================================================
+           CITY CHANGE
+        ================================================= */
+
+        document
+            .getElementById("citySelect")
+            .addEventListener(
+                "change",
+                async function(){
+
+                    const cityId =
+                        this.value;
+
+                    resetSelects([
+                        "woredaSelect",
+                        "areaSelect"
+                    ]);
+
+
+                    if(!cityId){
+
+                        updateLocationText();
+
+                        return;
+                    }
+
+
+                    await loadLocations(
+                        "woreda",
+                        cityId,
+                        "woredaSelect",
+                        "Select Woreda"
+                    );
+
+
+                    updateLocationText();
+
+                }
+            );
+
+
+        /* =================================================
+           WOREDA CHANGE
+        ================================================= */
+
+        document
+            .getElementById("woredaSelect")
+            .addEventListener(
+                "change",
+                async function(){
+
+                    const woredaId =
+                        this.value;
+
+                    resetSelects([
+                        "areaSelect"
+                    ]);
+
+
+                    if(!woredaId){
+
+                        updateLocationText();
+
+                        return;
+                    }
+
+
+                    await loadLocations(
+                        "area",
+                        woredaId,
+                        "areaSelect",
+                        "Select Area / Kebele"
+                    );
+
+
+                    updateLocationText();
+
+                }
+            );
+
+
+        /* =================================================
+           AREA CHANGE
+        ================================================= */
+
+        document
+            .getElementById("areaSelect")
+            .addEventListener(
+                "change",
+                updateLocationText
+            );
+
+
+        checkSession();
+
+    }
+);
+
+
+/* =========================================================
+   SESSION
+========================================================= */
+
+async function checkSession(){
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.auth.getUser();
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        if(!data.user){
+
+            showLogin();
+
+            return;
+
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        await startDashboard();
+
+    }
+    catch(e){
+
+        console.error(
+            "Session error:",
+            e
+        );
+
+        showLogin();
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function login(){
+
+    if(saving){
+
+        return;
+
+    }
+
+
+    const email =
+        document
+            .getElementById("loginEmail")
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+
+    if(!email || !password){
+
+        toast(
+            "Enter email and password.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    const button =
+        document.getElementById(
+            "loginBtn"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Logging in...";
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient.auth.signInWithPassword({
+            email,
+            password
+        });
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        await startDashboard();
+
+    }
+    catch(e){
+
+        console.error(e);
+
+        toast(
+            e.message || "Login failed.",
+            "error"
+        );
+
+    }
+    finally{
+
+        button.disabled = false;
+
+        button.textContent =
+            "Login to Dashboard";
+
+    }
+
+}
+
+
+/* =========================================================
+   START DASHBOARD
+========================================================= */
+
+async function startDashboard(){
+
+    if(!currentUser){
+
+        return;
+
+    }
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("profiles")
+        .select(
+            "id,full_name,phone,role"
+        )
+        .eq(
+            "id",
+            currentUser.id
+        )
+        .maybeSingle();
+
+
+    if(error){
+
+        throw error;
+
+    }
+
+
+    if(
+        !data ||
+        String(data.role || "")
+            .toLowerCase() !== "owner"
+    ){
+
+        await supabaseClient.auth.signOut();
+
+        currentUser = null;
+
+        showLogin();
+
+        toast(
+            "This account is not an owner account.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    currentProfile =
+        data;
+
+
+    document
+        .getElementById("loginPage")
+        .style.display = "none";
+
+
+    document
+        .getElementById("app")
+        .style.display = "block";
+
+
+    setProfile();
+
+
+    /*
+     * Load all active regions.
+     */
+
+    await loadLocations(
+        "region",
+        null,
+        "regionSelect",
+        "Select Region"
+    );
+
+
+    await loadProperties();
+
+}
+
+
+/* =========================================================
+   PROFILE
+========================================================= */
+
+function setProfile(){
+
+    const name =
+        currentProfile?.full_name ||
+        currentUser.user_metadata?.full_name ||
+        "Owner";
+
+
+    document
+        .getElementById("profileName")
+        .textContent = name;
+
+
+    document
+        .getElementById("profilePhone")
+        .textContent =
+            currentProfile?.phone ||
+            "Not available";
+
+
+    document
+        .getElementById("profileId")
+        .textContent =
+            currentUser.id;
+
+
+    document
+        .getElementById("welcomeName")
+        .textContent = name;
+
+
+    document
+        .getElementById("topName")
+        .textContent = name;
+
+
+    document
+        .getElementById("avatar")
+        .textContent =
+            initials(name);
+
+}
+
+
+/* =========================================================
+   LOCATION LOADER
+========================================================= */
+
+async function loadLocations(
+    type,
+    parentId,
+    selectId,
+    placeholder
+){
+
+    const select =
+        document.getElementById(
+            selectId
+        );
+
+
+    if(!select){
+
+        return;
+
+    }
+
+
+    /*
+     * Show loading state.
+     */
+
+    select.innerHTML =
+        "<option value=''>Loading...</option>";
+
+    select.disabled = true;
+
+
+    try{
+
+        let query =
+            supabaseClient
+                .from("locations")
+                .select(
+                    "id,name,type,parent_id"
+                )
+                .eq(
+                    "type",
+                    type
+                )
+                .eq(
+                    "is_active",
+                    true
+                )
+                .order(
+                    "name",
+                    {
+                        ascending:true
+                    }
+                );
+
+
+        /*
+         * Root level:
+         *
+         * parent_id IS NULL
+         *
+         * Child level:
+         *
+         * parent_id = selected UUID
+         */
+
+        if(parentId){
+
+            query =
+                query.eq(
+                    "parent_id",
+                    parentId
+                );
+
+        }
+        else{
+
+            query =
+                query.is(
+                    "parent_id",
+                    null
+                );
+
+        }
+
+
+        const {
+            data,
+            error
+        } =
+        await query;
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        select.innerHTML =
+            `<option value="">${esc(
+                placeholder
+            )}</option>`;
+
+
+        (data || []).forEach(
+            location => {
+
+                const option =
+                    document.createElement(
+                        "option"
+                    );
+
+
+                option.value =
+                    location.id;
+
+
+                option.textContent =
+                    location.name;
+
+
+                select.appendChild(
+                    option
+                );
+
+            }
+        );
+
+
+        select.disabled = false;
+
+
+        /*
+         * Keep disabled when there are
+         * no child locations.
+         */
+
+        if(!data || !data.length){
+
+            /*
+             * Region select must remain usable.
+             * Other selects can remain enabled so
+             * direct/manual selection is not blocked.
+             */
+
+            if(type !== "region"){
+
+                select.disabled = false;
+
+            }
+
+        }
+
+    }
+    catch(e){
+
+        console.error(
+            `Location load failed: ${type}`,
+            e
+        );
+
+
+        select.innerHTML =
+            "<option value=''>Unable to load</option>";
+
+        select.disabled = true;
+
+    }
+
+}
+
+
+/* =========================================================
+   RESET LOCATION SELECTS
+========================================================= */
+
+function resetSelects(ids){
+
+    ids.forEach(
+        id => {
+
+            const select =
+                document.getElementById(id);
+
+
+            if(!select){
+
+                return;
+
+            }
+
+
+            let text =
+                "Select...";
+
+
+            if(id === "zoneSelect"){
+
+                text =
+                    "Select Region first";
+
+            }
+
+            if(id === "citySelect"){
+
+                text =
+                    "Select Region first";
+
+            }
+
+            if(id === "woredaSelect"){
+
+                text =
+                    "Select City first";
+
+            }
+
+            if(id === "areaSelect"){
+
+                text =
+                    "Select Woreda first";
+
+            }
+
+
+            select.innerHTML =
+                `<option value="">${text}</option>`;
+
+
+            select.disabled = true;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   LOCATION SUMMARY
+========================================================= */
+
+function updateLocationText(){
+
+    const ids = [
+        "regionSelect",
+        "zoneSelect",
+        "citySelect",
+        "woredaSelect",
+        "areaSelect"
+    ];
+
+
+    const parts = [];
+
+
+    ids.forEach(
+        id => {
+
+            const select =
+                document.getElementById(id);
+
+
+            if(!select){
+
+                return;
+
+            }
+
+
+            const option =
+                select.selectedOptions?.[0];
+
+
+            if(!option){
+
+                return;
+
+            }
+
+
+            const text =
+                option.textContent.trim();
+
+
+            if(
+                text &&
+                ![
+                    "Select...",
+                    "Select Region first",
+                    "Select City first",
+                    "Select Woreda first",
+                    "Select Zone",
+                    "Select City / Town",
+                    "Select Woreda",
+                    "Select Area / Kebele",
+                    "Loading...",
+                    "Unable to load"
+                ].includes(text)
+            ){
+
+                parts.push(text);
+
+            }
+
+        }
+    );
+
+
+    const locationInput =
+        document.getElementById(
+            "propertyLocation"
+        );
+
+
+    if(
+        locationInput &&
+        parts.length
+    ){
+
+        /*
+         * Do not overwrite an already
+         * manually detailed location while
+         * no actual location selection changed.
+         */
+
+        locationInput.value =
+            parts.join(" → ");
+
+    }
+
+}
+
+
+/* =========================================================
+   LOAD PROPERTIES
+========================================================= */
+
+async function loadProperties(){
+
+    const container =
+        document.getElementById(
+            "propertyContainer"
+        );
+
+
+    container.innerHTML =
+        `
+        <div class="loading">
+            <div class="spinner"></div>
+            Loading your properties...
+        </div>
+        `;
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("properties")
+            .select(
+                `
+                id,
+                owner_id,
+                title,
+                listing_type,
+                price,
+                location,
+                bedrooms,
+                description,
+                status,
+                created_at,
+                reviewed_by,
+                reviewed_at,
+                rejection_reason,
+                updated_at,
+                is_featured,
+                featured_until,
+                region_id,
+                zone_id,
+                city_id,
+                woreda_id,
+                area_id
+                `
+            )
+            .eq(
+                "owner_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        properties =
+            data || [];
+
+
+        stats();
+
+
+        await renderProperties();
+
+    }
+    catch(e){
+
+        console.error(e);
+
+
+        container.innerHTML =
+            `
+            <div class="empty">
+
+                <div class="big">
+                    ⚠️
+                </div>
+
+                <b>
+                    Could not load properties
+                </b>
+
+                <p>
+                    ${esc(e.message)}
+                </p>
+
+                <button
+                    class="btn primary"
+                    style="margin-top:14px"
+                    onclick="loadProperties()"
+                >
+                    Try Again
+                </button>
+
+            </div>
+            `;
+
+    }
+
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function stats(){
+
+    document
+        .getElementById("totalCount")
+        .textContent =
+            properties.length;
+
+
+    document
+        .getElementById("pendingCount")
+        .textContent =
+            properties.filter(
+                x =>
+                    x.status ===
+                    "pending_review"
+            ).length;
+
+
+    document
+        .getElementById("publishedCount")
+        .textContent =
+            properties.filter(
+                x =>
+                    x.status ===
+                    "published"
+            ).length;
+
+
+    document
+        .getElementById("rejectedCount")
+        .textContent =
+            properties.filter(
+                x =>
+                    x.status ===
+                    "rejected"
+            ).length;
+
+}
+
+
+/* =========================================================
+   RENDER PROPERTIES
+========================================================= */
+
+async function renderProperties(){
+
+    const search =
+        document
+            .getElementById(
+                "searchInput"
+            )
+            .value
+            .toLowerCase()
+            .trim();
+
+
+    const status =
+        document
+            .getElementById(
+                "statusFilter"
+            )
+            .value;
+
+
+    const type =
+        document
+            .getElementById(
+                "typeFilter"
+            )
+            .value;
+
+
+    const list =
+        properties.filter(
+            p => {
+
+                const text =
+                    `
+                    ${p.title || ""}
+                    ${p.location || ""}
+                    ${p.description || ""}
+                    `
+                    .toLowerCase();
+
+
+                return (
+                    (!search ||
+                        text.includes(search))
+                    &&
+                    (!status ||
+                        p.status === status)
+                    &&
+                    (!type ||
+                        p.listing_type === type)
+                );
+
+            }
+        );
+
+
+    const container =
+        document.getElementById(
+            "propertyContainer"
+        );
+
+
+    if(!list.length){
+
+        container.innerHTML =
+            `
+            <div class="empty">
+
+                <div class="big">
+                    🏠
+                </div>
+
+                <b>
+                    No properties found
+                </b>
+
+                <p>
+                    Add your first property and
+                    submit it for admin review.
+                </p>
+
+                <button
+                    class="btn primary"
+                    style="margin-top:14px"
+                    onclick="openAddModal()"
+                >
+                    ＋ Add Property
+                </button>
+
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    container.innerHTML =
+        `
+        <div class="grid">
+
+            ${list.map(card).join("")}
+
+        </div>
+        `;
+
+
+    /*
+     * Load first image for each property.
+     */
+
+    for(
+        const property of list
+    ){
+
+        const url =
+            await firstImage(
+                property.id
+            );
+
+
+        const media =
+            document.getElementById(
+                "m-" + property.id
+            );
+
+
+        if(!media){
+
+            continue;
+
+        }
+
+
+        if(url){
+
+            media.innerHTML =
+                `
+                <img
+                    src="${escAttr(url)}"
+                    alt="${escAttr(
+                        property.title ||
+                        "Property"
+                    )}"
+                    loading="lazy"
+                >
+                `;
+
+        }
+        else{
+
+            media.innerHTML =
+                `
+                <div class="media-empty">
+
+                    <div>
+
+                        <b>
+                            🏠
+                        </b>
+
+                        No photo available
+
+                    </div>
+
+                </div>
+                `;
+
+        }
+
+
+        if(property.is_featured){
+
+            media.innerHTML +=
+                `
+                <span class="pill featured">
+                    ⭐ Featured
+                </span>
+                `;
+
+        }
+
+
+        media.innerHTML +=
+            `
+            <span class="pill type">
+                ${esc(
+                    cap(
+                        property.listing_type
+                    )
+                )}
+            </span>
+            `;
+
+    }
+
+}
+
+
+/* =========================================================
+   PROPERTY CARD
+========================================================= */
+
+function card(p){
+
+    const status =
+        p.status ||
+        "pending_review";
+
+
+    return `
+    <article class="card">
+
+        <div
+            class="media"
+            id="m-${p.id}"
+        >
+
+            <div class="media-empty">
+
+                <div>
+
+                    <b>
+                        ⌛
+                    </b>
+
+                    Loading...
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="title">
+                ${esc(
+                    p.title ||
+                    "Untitled Property"
+                )}
+            </div>
+
+
+            <div class="loc">
+
+                📍
+                ${esc(
+                    p.location ||
+                    "Location not specified"
+                )}
+
+            </div>
+
+
+            <div class="price">
+
+                ${price(p.price)}
+
+            </div>
+
+
+            <div class="meta">
+
+                ${
+                    p.bedrooms != null
+                    ?
+                    `
+                    <span>
+                        🛏
+                        ${p.bedrooms}
+                        bedrooms
+                    </span>
+                    `
+                    :
+                    ""
+                }
+
+
+                <span>
+                    📅
+                    ${shortDate(
+                        p.created_at
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="badges">
+
+                <span
+                    class="badge ${statusClass(status)}"
+                >
+                    ${esc(
+                        statusText(status)
+                    )}
+                </span>
+
+
+                <span
+                    class="badge ${
+                        p.listing_type === "rent"
+                        ? "rent"
+                        : "sell"
+                    }"
+                >
+                    ${esc(
+                        cap(
+                            p.listing_type
+                        )
+                    )}
+                </span>
+
+
+                ${
+                    p.is_featured
+                    ?
+                    `
+                    <span class="badge feat">
+                        ⭐ Featured
+                    </span>
+                    `
+                    :
+                    ""
+                }
+
+            </div>
+
+
+            ${
+                status === "rejected" &&
+                p.rejection_reason
+                ?
+                `
+                <button
+                    class="btn danger full"
+                    style="margin-top:10px;padding:8px;font-size:10px"
+                    onclick="showReject('${p.id}')"
+                >
+                    ⚠ View Rejection Reason
+                </button>
+                `
+                :
+                ""
+            }
+
+
+            <div class="actions">
+
+                <button
+                    class="action"
+                    onclick="viewProperty('${p.id}')"
+                >
+                    👁 View
+                </button>
+
+
+                <button
+                    class="action"
+                    onclick="editProperty('${p.id}')"
+                >
+                    ✏️ Edit
+                </button>
+
+
+                <button
+                    class="action del"
+                    onclick="deleteProperty('${p.id}')"
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
+
+        </div>
+
+    </article>
+    `;
+
+}
+
+
+/* =========================================================
+   FIRST IMAGE
+========================================================= */
+
+async function firstImage(id){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("property_images")
+        .select(
+            "storage_path"
+        )
+        .eq(
+            "property_id",
+            id
+        )
+        .order(
+            "display_order",
+            {
+                ascending:true
+            }
+        )
+        .limit(1);
+
+
+    if(
+        error ||
+        !data ||
+        !data.length
+    ){
+
+        return null;
+
+    }
+
+
+    return publicUrl(
+        data[0].storage_path
+    );
+
+}
+
+
+/* =========================================================
+   PUBLIC STORAGE URL
+========================================================= */
+
+function publicUrl(path){
+
+    if(!path){
+
+        return "";
+
+    }
+
+
+    return supabaseClient
+        .storage
+        .from("property-images")
+        .getPublicUrl(path)
+        .data
+        .publicUrl;
+
+}
+
+
+/* =========================================================
+   OPEN ADD MODAL
+========================================================= */
+
+function openAddModal(){
+
+    resetForm();
+
+
+    document
+        .getElementById(
+            "modalTitle"
+        )
+        .textContent =
+            "Add New Property";
+
+
+    document
+        .getElementById(
+            "saveBtn"
+        )
+        .textContent =
+            "Submit for Review";
+
+
+    document
+        .getElementById(
+            "propertyModal"
+        )
+        .classList
+        .add("show");
+
+}
+
+
+/* =========================================================
+   RESET FORM
+========================================================= */
+
+function resetForm(){
+
+    document
+        .getElementById(
+            "propertyForm"
+        )
+        .reset();
+
+
+    document
+        .getElementById(
+            "editingId"
+        )
+        .value = "";
+
+
+    selectedFiles = [];
+
+    existingPhotos = [];
+
+
+    document
+        .getElementById(
+            "photoCount"
+        )
+        .textContent =
+            "No new photos selected";
+
+
+    document
+        .getElementById(
+            "previewGrid"
+        )
+        .innerHTML = "";
+
+
+    document
+        .getElementById(
+            "existingSection"
+        )
+        .style.display =
+            "none";
+
+
+    resetSelects([
+        "zoneSelect",
+        "citySelect",
+        "woredaSelect",
+        "areaSelect"
+    ]);
+
+
+    /*
+     * Reload regions every time.
+     */
+
+    loadLocations(
+        "region",
+        null,
+        "regionSelect",
+        "Select Region"
+    );
+
+}
+
+
+/* =========================================================
+   PHOTO HANDLER
+========================================================= */
+
+function handlePhotos(e){
+
+    const files =
+        Array.from(
+            e.target.files || []
+        );
+
+
+    for(
+        const file of files
+    ){
+
+        if(
+            ![
+                "image/jpeg",
+                "image/png",
+                "image/webp"
+            ].includes(file.type)
+        ){
+
+            toast(
+                `${file.name}: only JPG, PNG or WEBP allowed.`,
+                "warning"
+            );
+
+            continue;
+
+        }
+
+
+        if(
+            file.size >
+            5 * 1024 * 1024
+        ){
+
+            toast(
+                `${file.name}: maximum 5MB.`,
+                "warning"
+            );
+
+            continue;
+
+        }
+
+
+        if(
+            selectedFiles.length >= 15
+        ){
+
+            toast(
+                "Maximum 15 photos allowed.",
+                "warning"
+            );
+
+            break;
+
+        }
+
+
+        selectedFiles.push(
+            file
+        );
+
+    }
+
+
+    /*
+     * Reset input so the same file
+     * can be selected again later.
+     */
+
+    e.target.value = "";
+
+
+    renderPhotos();
+
+}
+
+
+/* =========================================================
+   RENDER NEW PHOTOS
+========================================================= */
+
+function renderPhotos(){
+
+    document
+        .getElementById(
+            "photoCount"
+        )
+        .textContent =
+            selectedFiles.length
+            ?
+            `${selectedFiles.length} new photo(s) selected`
+            :
+            "No new photos selected";
+
+
+    document
+        .getElementById(
+            "previewGrid"
+        )
+        .innerHTML =
+            selectedFiles
+                .map(
+                    (file,index) => {
+
+                        const url =
+                            URL.createObjectURL(
+                                file
+                            );
+
+
+                        return `
+                        <div class="photo">
+
+                            <img
+                                src="${escAttr(url)}"
+                                alt=""
+                            >
+
+                            <button
+                                class="remove"
+                                onclick="removePhoto(${index})"
+                                type="button"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+                        `;
+
+                    }
+                )
+                .join("");
+
+}
+
+
+/* =========================================================
+   REMOVE NEW PHOTO
+========================================================= */
+
+function removePhoto(index){
+
+    if(
+        index < 0 ||
+        index >= selectedFiles.length
+    ){
+
+        return;
+
+    }
+
+
+    selectedFiles.splice(
+        index,
+        1
+    );
+
+
+    renderPhotos();
+
+}
+
+
+/* =========================================================
+   EDIT PROPERTY
+========================================================= */
+
+async function editProperty(id){
+
+    const property =
+        properties.find(
+            x =>
+                x.id === id
+        );
+
+
+    if(!property){
+
+        return;
+
+    }
+
+
+    resetForm();
+
+
+    document
+        .getElementById(
+            "editingId"
+        )
+        .value =
+            property.id;
+
+
+    document
+        .getElementById(
+            "modalTitle"
+        )
+        .textContent =
+            "Edit Property";
+
+
+    document
+        .getElementById(
+            "saveBtn"
+        )
+        .textContent =
+            "Update & Resubmit";
+
+
+    document
+        .getElementById(
+            "propertyTitle"
+        )
+        .value =
+            property.title || "";
+
+
+    document
+        .getElementById(
+            "listingType"
+        )
+        .value =
+            property.listing_type || "";
+
+
+    document
+        .getElementById(
+            "propertyPrice"
+        )
+        .value =
+            property.price ?? "";
+
+
+    document
+        .getElementById(
+            "bedrooms"
+        )
+        .value =
+            property.bedrooms ?? "";
+
+
+    document
+        .getElementById(
+            "propertyLocation"
+        )
+        .value =
+            property.location || "";
+
+
+    document
+        .getElementById(
+            "description"
+        )
+        .value =
+            property.description || "";
+
+
+    /*
+     * =====================================================
+     * EDIT LOCATION CASCADE
+     * =====================================================
+     *
+     * Important:
+     *
+     * 1. Load regions
+     * 2. Select existing region
+     * 3. Load zone under region
+     * 4. Load direct cities under region
+     * 5. If zone exists, load city under zone
+     * 6. Load woreda under city
+     * 7. Load area under woreda
+     *
+     * UUIDs are always used.
+     */
+
+
+    await loadLocations(
+        "region",
+        null,
+        "regionSelect",
+        "Select Region"
+    );
+
+
+    if(property.region_id){
+
+        document
+            .getElementById(
+                "regionSelect"
+            )
+            .value =
+                property.region_id;
+
+
+        await loadLocations(
+            "zone",
+            property.region_id,
+            "zoneSelect",
+            "Select Zone"
+        );
+
+
+        /*
+         * Direct region → city support.
+         * Needed for Eastern Ethiopia style
+         * administration structures.
+         */
+
+        await loadLocations(
+            "city",
+            property.region_id,
+            "citySelect",
+            "Select City / Town"
+        );
+
+    }
+
+
+    /*
+     * If the property has a zone,
+     * city must be loaded from that zone.
+     */
+
+    if(property.zone_id){
+
+        document
+            .getElementById(
+                "zoneSelect"
+            )
+            .value =
+                property.zone_id;
+
+
+        await loadLocations(
+            "city",
+            property.zone_id,
+            "citySelect",
+            "Select City / Town"
+        );
+
+    }
+
+
+    /*
+     * Select city.
+     */
+
+    if(property.city_id){
+
+        document
+            .getElementById(
+                "citySelect"
+            )
+            .value =
+                property.city_id;
+
+
+        await loadLocations(
+            "woreda",
+            property.city_id,
+            "woredaSelect",
+            "Select Woreda"
+        );
+
+    }
+
+
+    /*
+     * Select woreda.
+     */
+
+    if(property.woreda_id){
+
+        document
+            .getElementById(
+                "woredaSelect"
+            )
+            .value =
+                property.woreda_id;
+
+
+        await loadLocations(
+            "area",
+            property.woreda_id,
+            "areaSelect",
+            "Select Area / Kebele"
+        );
+
+    }
+
+
+    /*
+     * Select area only if it exists.
+     */
+
+    if(property.area_id){
+
+        document
+            .getElementById(
+                "areaSelect"
+            )
+            .value =
+                property.area_id;
+
+    }
+
+
+    /*
+     * Load existing photos.
+     */
+
+    await loadExisting(
+        property.id
+    );
+
+
+    document
+        .getElementById(
+            "propertyModal"
+        )
+        .classList
+        .add("show");
+
+}
+
+
+/* =========================================================
+   LOAD EXISTING PHOTOS
+========================================================= */
+
+async function loadExisting(id){
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("property_images")
+        .select(
+            "id,storage_path,display_order"
+        )
+        .eq(
+            "property_id",
+            id
+        )
+        .eq(
+            "owner_id",
+            currentUser.id
+        )
+        .order(
+            "display_order",
+            {
+                ascending:true
+            }
+        );
+
+
+    existingPhotos =
+        error
+        ?
+        []
+        :
+        (data || []);
+
+
+    const section =
+        document.getElementById(
+            "existingSection"
+        );
+
+
+    section.style.display =
+        existingPhotos.length
+        ?
+        "block"
+        :
+        "none";
+
+
+    document
+        .getElementById(
+            "existingGrid"
+        )
+        .innerHTML =
+            existingPhotos
+                .map(
+                    photo => {
+
+                        return `
+                        <div class="photo">
+
+                            <img
+                                src="${escAttr(
+                                    publicUrl(
+                                        photo.storage_path
+                                    )
+                                )}"
+                                alt=""
+                            >
+
+                            <button
+                                class="remove"
+                                style="background:rgba(180,35,24,.9)"
+                                onclick="deletePhoto('${photo.id}')"
+                                type="button"
+                            >
+                                ×
+                            </button>
+
+                        </div>
+                        `;
+
+                    }
+                )
+                .join("");
+
+}
+
+
+/* =========================================================
+   DELETE PHOTO
+========================================================= */
+
+async function deletePhoto(id){
+
+    const photo =
+        existingPhotos.find(
+            x =>
+                x.id === id
+        );
+
+
+    if(
+        !photo ||
+        !confirm(
+            "Delete this photo?"
+        )
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        /*
+         * Delete storage file.
+         */
+
+        const {
+            error:
+                storageError
+        } =
+        await supabaseClient
+            .storage
+            .from("property-images")
+            .remove([
+                photo.storage_path
+            ]);
+
+
+        if(storageError){
+
+            console.warn(
+                storageError
+            );
+
+        }
+
+
+        /*
+         * Delete DB record.
+         */
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("property_images")
+            .delete()
+            .eq(
+                "id",
+                id
+            )
+            .eq(
+                "owner_id",
+                currentUser.id
+            );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        existingPhotos =
+            existingPhotos.filter(
+                x =>
+                    x.id !== id
+            );
+
+
+        await loadExisting(
+            document
+                .getElementById(
+                    "editingId"
+                )
+                .value
+        );
+
+
+        toast(
+            "Photo deleted.",
+            "success"
+        );
+
+    }
+    catch(e){
+
+        console.error(e);
+
+        toast(
+            e.message ||
+            "Photo deletion failed.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   SAVE PROPERTY
+========================================================= */
+
+async function saveProperty(){
+
+    if(saving){
+
+        return;
+
+    }
+
+
+    const title =
+        document
+            .getElementById(
+                "propertyTitle"
+            )
+            .value
+            .trim();
+
+
+    const listingType =
+        document
+            .getElementById(
+                "listingType"
+            )
+            .value;
+
+
+    const priceValue =
+        document
+            .getElementById(
+                "propertyPrice"
+            )
+            .value;
+
+
+    const location =
+        document
+            .getElementById(
+                "propertyLocation"
+            )
+            .value
+            .trim();
+
+
+    const bedrooms =
+        document
+            .getElementById(
+                "bedrooms"
+            )
+            .value;
+
+
+    const description =
+        document
+            .getElementById(
+                "description"
+            )
+            .value
+            .trim();
+
+
+    const region =
+        document
+            .getElementById(
+                "regionSelect"
+            )
+            .value;
+
+
+    const zone =
+        document
+            .getElementById(
+                "zoneSelect"
+            )
+            .value;
+
+
+    const city =
+        document
+            .getElementById(
+                "citySelect"
+            )
+            .value;
+
+
+    const woreda =
+        document
+            .getElementById(
+                "woredaSelect"
+            )
+            .value;
+
+
+    const area =
+        document
+            .getElementById(
+                "areaSelect"
+            )
+            .value;
+
+
+    const editingId =
+        document
+            .getElementById(
+                "editingId"
+            )
+            .value;
+
+
+    /* VALIDATION */
+
+    if(!title){
+
+        toast(
+            "Property title is required.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        ![
+            "rent",
+            "sell"
+        ].includes(listingType)
+    ){
+
+        toast(
+            "Select Rent or Sell.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        priceValue === "" ||
+        Number(priceValue) < 0 ||
+        Number.isNaN(
+            Number(priceValue)
+        )
+    ){
+
+        toast(
+            "Enter a valid price.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if(!region){
+
+        toast(
+            "Please select Region.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if(!city){
+
+        toast(
+            "Please select City/Town.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    if(!location){
+
+        toast(
+            "Location summary is required.",
+            "warning"
+        );
+
+        return;
+
+    }
+
+
+    const saveButton =
+        document.getElementById(
+            "saveBtn"
+        );
+
+
+    saving = true;
+
+    saveButton.disabled = true;
+
+    saveButton.textContent =
+        editingId
+        ?
+        "Updating..."
+        :
+        "Submitting...";
+
+
+    try{
+
+        /*
+         * IMPORTANT:
+         *
+         * Keep original text location.
+         *
+         * We only update the UUID columns
+         * according to selected hierarchy.
+         */
+
+        const payload = {
+
+            title,
+
+            listing_type:
+                listingType,
+
+            price:
+                Number(priceValue),
+
+            location,
+
+            bedrooms:
+                bedrooms === ""
+                ?
+                null
+                :
+                Number(bedrooms),
+
+            description:
+                description || null,
+
+            region_id:
+                region || null,
+
+            zone_id:
+                zone || null,
+
+            city_id:
+                city || null,
+
+            woreda_id:
+                woreda || null,
+
+            area_id:
+                area || null,
+
+            status:
+                "pending_review",
+
+            reviewed_by:
+                null,
+
+            reviewed_at:
+                null,
+
+            rejection_reason:
+                null
+
+        };
+
+
+        let propertyId =
+            editingId;
+
+
+        /* =================================================
+           UPDATE
+        ================================================= */
+
+        if(editingId){
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .from("properties")
+                .update(
+                    payload
+                )
+                .eq(
+                    "id",
+                    editingId
+                )
+                .eq(
+                    "owner_id",
+                    currentUser.id
+                )
+                .select(
+                    "id"
+                )
+                .single();
+
+
+            if(error){
+
+                throw error;
+
+            }
+
+
+            propertyId =
+                data.id;
+
+        }
+
+
+        /* =================================================
+           INSERT
+        ================================================= */
+
+        else{
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .from("properties")
+                .insert({
+
+                    owner_id:
+                        currentUser.id,
+
+                    ...payload,
+
+                    is_featured:
+                        false
+
+                })
+                .select(
+                    "id"
+                )
+                .single();
+
+
+            if(error){
+
+                throw error;
+
+            }
+
+
+            propertyId =
+                data.id;
+
+        }
+
+
+        /*
+         * Upload new photos.
+         */
+
+        if(
+            selectedFiles.length
+        ){
+
+            await uploadPhotos(
+                propertyId
+            );
+
+        }
+
+
+        closeModal(
+            "propertyModal"
+        );
+
+
+        toast(
+            editingId
+            ?
+            "Property updated and resubmitted for review."
+            :
+            "Property submitted successfully for review.",
+            "success"
+        );
+
+
+        await loadProperties();
+
+    }
+    catch(e){
+
+        console.error(
+            "Save property error:",
+            e
+        );
+
+
+        toast(
+            e.message ||
+            "Failed to save property.",
+            "error"
+        );
+
+    }
+    finally{
+
+        saving = false;
+
+        saveButton.disabled =
+            false;
+
+        saveButton.textContent =
+            editingId
+            ?
+            "Update & Resubmit"
+            :
+            "Submit for Review";
+
+    }
+
+}
+
+
+/* =========================================================
+   UPLOAD PHOTOS
+========================================================= */
+
+async function uploadPhotos(
+    propertyId
+){
+
+    const rows = [];
+
+
+    /*
+     * Continue display order after
+     * existing photos.
+     */
+
+    const start =
+        existingPhotos.length;
+
+
+    for(
+        let i = 0;
+        i < selectedFiles.length;
+        i++
+    ){
+
+        const file =
+            selectedFiles[i];
+
+
+        const safeName =
+            sanitize(
+                file.name
+            );
+
+
+        const path =
+            `
+            ${currentUser.id}/
+            ${propertyId}/
+            ${Date.now()}-
+            ${createId()}-
+            ${safeName}
+            `
+            .replace(/\s+/g,"");
+
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .storage
+            .from("property-images")
+            .upload(
+                path,
+                file,
+                {
+                    cacheControl:
+                        "3600",
+
+                    upsert:
+                        false,
+
+                    contentType:
+                        file.type
+                }
+            );
+
+
+        if(error){
+
+            throw new Error(
+                "Photo upload failed: " +
+                error.message
+            );
+
+        }
+
+
+        rows.push({
+
+            property_id:
+                propertyId,
+
+            owner_id:
+                currentUser.id,
+
+            storage_path:
+                data.path,
+
+            display_order:
+                start + i
+
+        });
+
+    }
+
+
+    /*
+     * Insert image records.
+     */
+
+    if(rows.length){
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("property_images")
+            .insert(
+                rows
+            );
+
+
+        if(error){
+
+            /*
+             * Roll back uploaded storage files
+             * if database insert fails.
+             */
+
+            await supabaseClient
+                .storage
+                .from("property-images")
+                .remove(
+                    rows.map(
+                        x =>
+                            x.storage_path
+                    )
+                );
+
+
+            throw error;
+
+        }
+
+    }
+
+}
+
+
+/* =========================================================
+   VIEW PROPERTY
+========================================================= */
+
+async function viewProperty(id){
+
+    const property =
+        properties.find(
+            x =>
+                x.id === id
+        );
+
+
+    if(!property){
+
+        return;
+
+    }
+
+
+    const content =
+        document.getElementById(
+            "viewContent"
+        );
+
+
+    content.innerHTML =
+        `
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            Loading...
+
+        </div>
+        `;
+
+
+    document
+        .getElementById(
+            "viewModal"
+        )
+        .classList
+        .add("show");
+
+
+    const {
+        data,
+        error
+    } =
+    await supabaseClient
+        .from("property_images")
+        .select(
+            "storage_path"
+        )
+        .eq(
+            "property_id",
+            id
+        )
+        .order(
+            "display_order",
+            {
+                ascending:true
+            }
+        );
+
+
+    const photos =
+        error
+        ?
+        []
+        :
+        (data || []);
+
+
+    const gallery =
+        photos.length
+        ?
+        `
+        <div class="gallery">
+
+            ${
+                photos
+                    .map(
+                        photo =>
+                            `
+                            <img
+                                src="${escAttr(
+                                    publicUrl(
+                                        photo.storage_path
+                                    )
+                                )}"
+                                alt="Property photo"
+                                loading="lazy"
+                            >
+                            `
+                    )
+                    .join("")
+            }
+
+        </div>
+        `
+        :
+        `
+        <div
+            class="empty"
+            style="padding:25px;margin-bottom:15px"
+        >
+
+            <div class="big">
+                📷
+            </div>
+
+            <b>
+                No property photos
+            </b>
+
+        </div>
+        `;
+
+
+    content.innerHTML =
+        gallery +
+        `
+        <div class="detail-grid">
+
+            ${detail(
+                "Property Title",
+                property.title
+            )}
+
+            ${detail(
+                "Listing Type",
+                cap(property.listing_type)
+            )}
+
+            ${detail(
+                "Price",
+                price(property.price)
+            )}
+
+            ${detail(
+                "Location",
+                property.location
+            )}
+
+            ${detail(
+                "Bedrooms",
+                property.bedrooms ??
+                "Not specified"
+            )}
+
+            ${detail(
+                "Status",
+                statusText(
+                    property.status
+                )
+            )}
+
+            ${detail(
+                "Featured",
+                property.is_featured
+                ?
+                "Yes"
+                :
+                "No"
+            )}
+
+            ${detail(
+                "Region ID",
+                property.region_id
+            )}
+
+            ${detail(
+                "Zone ID",
+                property.zone_id
+            )}
+
+            ${detail(
+                "City ID",
+                property.city_id
+            )}
+
+            ${detail(
+                "Woreda ID",
+                property.woreda_id
+            )}
+
+            ${detail(
+                "Area ID",
+                property.area_id
+            )}
+
+            ${detail(
+                "Created",
+                date(
+                    property.created_at
+                )
+            )}
+
+            ${detail(
+                "Reviewed",
+                date(
+                    property.reviewed_at
+                )
+            )}
+
+            ${
+                property.rejection_reason
+                ?
+                detail(
+                    "Rejection Reason",
+                    property.rejection_reason,
+                    true
+                )
+                :
+                ""
+            }
+
+            ${detail(
+                "Description",
+                property.description ||
+                "No description provided.",
+                true
+            )}
+
+        </div>
+        `;
+
+}
+
+
+/* =========================================================
+   DETAIL HELPER
+========================================================= */
+
+function detail(
+    label,
+    value,
+    full = false
+){
+
+    return `
+    <div
+        class="detail ${
+            full
+            ?
+            "full"
+            :
+            ""
+        }"
+    >
+
+        <small>
+            ${esc(label)}
+        </small>
+
+        <strong>
+            ${esc(
+                value ??
+                "Not specified"
+            )}
+        </strong>
+
+    </div>
+    `;
+
+}
+
+
+/* =========================================================
+   REJECTION
+========================================================= */
+
+function showReject(id){
+
+    const property =
+        properties.find(
+            x =>
+                x.id === id
+        );
+
+
+    if(!property){
+
+        return;
+
+    }
+
+
+    document
+        .getElementById(
+            "rejectText"
+        )
+        .textContent =
+            property.rejection_reason ||
+            "No rejection reason provided.";
+
+
+    document
+        .getElementById(
+            "rejectModal"
+        )
+        .classList
+        .add("show");
+
+}
+
+
+/* =========================================================
+   DELETE PROPERTY
+========================================================= */
+
+async function deleteProperty(id){
+
+    const property =
+        properties.find(
+            x =>
+                x.id === id
+        );
+
+
+    if(
+        !property ||
+        !confirm(
+            `Delete "${property.title}" permanently?`
+        )
+    ){
+
+        return;
+
+    }
+
+
+    try{
+
+        /*
+         * Get property images.
+         */
+
+        const {
+            data:photos,
+            error:photoError
+        } =
+        await supabaseClient
+            .from("property_images")
+            .select(
+                "storage_path"
+            )
+            .eq(
+                "property_id",
+                id
+            )
+            .eq(
+                "owner_id",
+                currentUser.id
+            );
+
+
+        if(photoError){
+
+            throw photoError;
+
+        }
+
+
+        /*
+         * Remove storage files.
+         */
+
+        if(
+            photos &&
+            photos.length
+        ){
+
+            await supabaseClient
+                .storage
+                .from("property-images")
+                .remove(
+                    photos.map(
+                        x =>
+                            x.storage_path
+                    )
+                );
+
+        }
+
+
+        /*
+         * Remove image database rows.
+         */
+
+        const {
+            error:imageDeleteError
+        } =
+        await supabaseClient
+            .from("property_images")
+            .delete()
+            .eq(
+                "property_id",
+                id
+            )
+            .eq(
+                "owner_id",
+                currentUser.id
+            );
+
+
+        if(imageDeleteError){
+
+            throw imageDeleteError;
+
+        }
+
+
+        /*
+         * Delete property.
+         */
+
+        const {
+            error
+        } =
+        await supabaseClient
+            .from("properties")
+            .delete()
+            .eq(
+                "id",
+                id
+            )
+            .eq(
+                "owner_id",
+                currentUser.id
+            );
+
+
+        if(error){
+
+            throw error;
+
+        }
+
+
+        toast(
+            "Property deleted successfully.",
+            "success"
+        );
+
+
+        await loadProperties();
+
+    }
+    catch(e){
+
+        console.error(e);
+
+        toast(
+            e.message ||
+            "Delete failed.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+    await supabaseClient.auth.signOut();
+
+
+    currentUser = null;
+
+    currentProfile = null;
+
+    properties = [];
+
+
+    showLogin();
+
+}
+
+
+/* =========================================================
+   SHOW LOGIN
+========================================================= */
+
+function showLogin(){
+
+    document
+        .getElementById(
+            "app"
+        )
+        .style
+        .display =
+            "none";
+
+
+    document
+        .getElementById(
+            "loginPage"
+        )
+        .style
+        .display =
+            "flex";
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeModal(id){
+
+    const modal =
+        document.getElementById(id);
+
+
+    if(modal){
+
+        modal.classList.remove(
+            "show"
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   CLOSE MODAL BY OUTSIDE CLICK
+========================================================= */
+
+document.addEventListener(
+    "click",
+    function(e){
+
+        if(
+            e.target.classList.contains(
+                "modal"
+            )
+        ){
+
+            e.target.classList.remove(
+                "show"
+            );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   ESC KEY
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(e){
+
+        if(
+            e.key === "Escape"
+        ){
+
+            document
+                .querySelectorAll(
+                    ".modal.show"
+                )
+                .forEach(
+                    modal =>
+                        modal.classList.remove(
+                            "show"
+                        )
+                );
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+function statusClass(status){
+
+    if(
+        status === "published"
+    ){
+
+        return "published";
+
+    }
+
+
+    if(
+        status === "rejected"
+    ){
+
+        return "rejected";
+
+    }
+
+
+    return "pending";
+
+}
+
+
+function statusText(status){
+
+    const map = {
+
+        pending_review:
+            "Pending Review",
+
+        published:
+            "Published",
+
+        rejected:
+            "Rejected",
+
+        active:
+            "Active",
+
+        sold:
+            "Sold",
+
+        rented:
+            "Rented",
+
+        hidden:
+            "Hidden"
+
+    };
+
+
+    return (
+        map[status] ||
+        cap(
+            String(
+                status ||
+                "Unknown"
+            ).replaceAll(
+                "_",
+                " "
+            )
+        )
+    );
+
+}
+
+
+/* =========================================================
+   PRICE
+========================================================= */
+
+function price(value){
+
+    if(
+        value == null ||
+        value === ""
+    ){
+
+        return "Price not specified";
+
+    }
+
+
+    const number =
+        Number(value);
+
+
+    if(
+        Number.isNaN(number)
+    ){
+
+        return esc(value);
+
+    }
+
+
+    return (
+        new Intl.NumberFormat(
+            "en-US",
+            {
+                maximumFractionDigits:2
+            }
+        ).format(number)
+        +
+        " ETB"
+    );
+
+}
+
+
+/* =========================================================
+   DATE
+========================================================= */
+
+function date(value){
+
+    if(!value){
+
+        return "Not available";
+
+    }
+
+
+    const d =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+
+        return "Not available";
+
+    }
+
+
+    return d.toLocaleString(
+        "en-GB",
+        {
+            year:"numeric",
+            month:"short",
+            day:"2-digit",
+            hour:"2-digit",
+            minute:"2-digit"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   SHORT DATE
+========================================================= */
+
+function shortDate(value){
+
+    if(!value){
+
+        return "-";
+
+    }
+
+
+    const d =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            d.getTime()
+        )
+    ){
+
+        return "-";
+
+    }
+
+
+    return d.toLocaleDateString(
+        "en-GB",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+
+}
+
+
+/* =========================================================
+   CAPITALIZE
+========================================================= */
+
+function cap(value){
+
+    if(!value){
+
+        return "";
+
+    }
+
+
+    return (
+        String(value)
+            .charAt(0)
+            .toUpperCase()
+        +
+        String(value)
+            .slice(1)
+    );
+
+}
+
+
+/* =========================================================
+   INITIALS
+========================================================= */
+
+function initials(name){
+
+    const parts =
+        String(
+            name ||
+            "O"
+        )
+        .trim()
+        .split(/\s+/);
+
+
+    if(
+        parts.length > 1
+    ){
+
+        return (
+            parts[0][0] +
+            parts[parts.length - 1][0]
+        ).toUpperCase();
+
+    }
+
+
+    return parts[0][0]
+        .toUpperCase();
+
+}
+
+
+/* =========================================================
+   RANDOM ID
+========================================================= */
+
+function createId(){
+
+    return (
+        crypto?.randomUUID
+        ?
+        crypto.randomUUID()
+        :
+        Date.now() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .slice(2)
+    );
+
+}
+
+
+/* =========================================================
+   SAFE FILE NAME
+========================================================= */
+
+function sanitize(name){
+
+    return String(name)
+        .replace(
+            /[^a-zA-Z0-9._-]/g,
+            "_"
+        );
+
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function esc(value){
+
+    return String(
+        value ?? ""
+    ).replace(
+        /[&<>"']/g,
+        function(match){
+
+            return {
+
+                "&":
+                    "&amp;",
+
+                "<":
+                    "&lt;",
+
+                ">":
+                    "&gt;",
+
+                '"':
+                    "&quot;",
+
+                "'":
+                    "&#039;"
+
+            }[match];
+
+        }
+    );
+
+}
+
+
+function escAttr(value){
+
+    return esc(value);
+
+}
+
+
+/* =========================================================
+   TOAST
+========================================================= */
+
+function toast(
+    message,
+    type = ""
+){
+
+    const element =
+        document.getElementById(
+            "toast"
+        );
+
+
+    element.textContent =
+        message;
+
+
+    element.className =
+        "show " +
+        type;
+
+
+    clearTimeout(
+        toastTimer
+    );
+
+
+    toastTimer =
+        setTimeout(
+            function(){
+
+                element.className =
+                    "";
+
+            },
+            3500
+        );
+
+}
+
+</script>
+
+</body>
+</html>

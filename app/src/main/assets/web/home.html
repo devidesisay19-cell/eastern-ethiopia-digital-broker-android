@@ -1,0 +1,2292 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Eastern Ethiopia Digital Broker | Properties</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+
+    font-family:
+        Inter,
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #f8fafc,
+            #eef4ff
+        );
+
+    color: #172033;
+}
+
+
+/* ================= HEADER ================= */
+
+.header {
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background:
+        rgba(255,255,255,.96);
+
+    backdrop-filter:
+        blur(15px);
+
+    border-bottom:
+        1px solid #e5e7eb;
+
+    padding:
+        12px 18px;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.brand {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 10px;
+}
+
+.brand-icon {
+
+    width: 43px;
+    height: 43px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border-radius: 13px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color: white;
+
+    font-size: 21px;
+}
+
+.brand-text strong {
+
+    display: block;
+
+    font-size: 17px;
+}
+
+.brand-text span {
+
+    color: #64748b;
+
+    font-size: 11px;
+}
+
+.header-actions {
+
+    display: flex;
+
+    gap: 8px;
+}
+
+.header-btn {
+
+    border: none;
+
+    padding:
+        10px 13px;
+
+    border-radius: 10px;
+
+    font-weight: 800;
+
+    cursor: pointer;
+
+    background: #eff6ff;
+
+    color: #1d4ed8;
+}
+
+.login-btn {
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5
+        );
+
+    color: white;
+}
+
+
+/* ================= MAIN ================= */
+
+.main {
+
+    width: 100%;
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding:
+        22px 15px 60px;
+}
+
+
+/* ================= HERO ================= */
+
+.hero {
+
+    position: relative;
+
+    overflow: hidden;
+
+    border-radius: 25px;
+
+    padding:
+        38px 25px;
+
+    margin-bottom: 20px;
+
+    color: white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #1d4ed8,
+            #4338ca 55%,
+            #7c3aed
+        );
+
+    box-shadow:
+        0 18px 45px
+        rgba(37,99,235,.22);
+}
+
+.hero h1 {
+
+    margin:
+        0 0 9px;
+
+    font-size:
+        clamp(
+            28px,
+            6vw,
+            43px
+        );
+
+    line-height: 1.1;
+}
+
+.hero p {
+
+    margin: 0;
+
+    max-width: 720px;
+
+    color:
+        rgba(255,255,255,.87);
+
+    line-height: 1.6;
+
+    font-size: 14px;
+}
+
+
+/* ================= SEARCH ================= */
+
+.search-card {
+
+    background: white;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 19px;
+
+    padding: 16px;
+
+    margin-bottom: 20px;
+
+    box-shadow:
+        0 8px 28px
+        rgba(15,23,42,.06);
+}
+
+.search-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        2fr 1fr 1fr 1fr;
+
+    gap: 10px;
+}
+
+.search-grid input,
+.search-grid select {
+
+    width: 100%;
+
+    padding:
+        12px 13px;
+
+    border:
+        1px solid #d8dee8;
+
+    border-radius: 11px;
+
+    outline: none;
+
+    font-size: 14px;
+
+    background: white;
+}
+
+.search-grid input:focus,
+.search-grid select:focus {
+
+    border-color:
+        #2563eb;
+
+    box-shadow:
+        0 0 0 4px
+        rgba(37,99,235,.09);
+}
+
+
+/* ================= SECTION HEADER ================= */
+
+.section-header {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 15px;
+}
+
+.section-title {
+
+    margin: 0;
+
+    font-size: 23px;
+}
+
+.result-count {
+
+    color: #64748b;
+
+    font-size: 13px;
+}
+
+
+/* ================= PROPERTY GRID ================= */
+
+.properties-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(290px,1fr)
+        );
+
+    gap: 18px;
+}
+
+
+/* ================= PROPERTY CARD ================= */
+
+.property-card {
+
+    background: white;
+
+    border:
+        1px solid #e5e7eb;
+
+    border-radius: 19px;
+
+    overflow: hidden;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15,23,42,.06);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.property-card:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 14px 32px
+        rgba(15,23,42,.10);
+}
+
+.property-image-wrap {
+
+    position: relative;
+
+    height: 220px;
+
+    background: #e2e8f0;
+}
+
+.property-image {
+
+    width: 100%;
+
+    height: 100%;
+
+    object-fit: cover;
+
+    display: block;
+}
+
+.image-placeholder {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 52px;
+}
+
+.photo-count {
+
+    position: absolute;
+
+    right: 10px;
+    bottom: 10px;
+
+    padding:
+        6px 9px;
+
+    border-radius: 20px;
+
+    background:
+        rgba(15,23,42,.75);
+
+    color: white;
+
+    font-size: 11px;
+
+    font-weight: 800;
+}
+
+.type-badge {
+
+    position: absolute;
+
+    left: 10px;
+    top: 10px;
+
+    padding:
+        6px 10px;
+
+    border-radius: 20px;
+
+    font-size: 10px;
+
+    font-weight: 900;
+
+    text-transform: uppercase;
+
+    background: white;
+
+    color: #1d4ed8;
+}
+
+.type-sell {
+
+    color: #15803d;
+}
+
+
+/* ================= BODY ================= */
+
+.property-body {
+
+    padding: 17px;
+}
+
+.property-title {
+
+    margin:
+        0 0 8px;
+
+    font-size: 19px;
+
+    line-height: 1.3;
+}
+
+.property-price {
+
+    font-size: 19px;
+
+    font-weight: 900;
+
+    margin-bottom: 8px;
+
+    color: #172033;
+}
+
+.property-created-time {
+    color: #64748b;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 2px 0 10px;
+}
+
+.property-meta {
+
+    color: #64748b;
+
+    font-size: 12px;
+
+    line-height: 1.8;
+
+    margin-bottom: 9px;
+}
+
+.property-description {
+
+    color: #475569;
+
+    font-size: 13px;
+
+    line-height: 1.55;
+
+    margin:
+        0 0 14px;
+
+    display: -webkit-box;
+
+    -webkit-line-clamp: 3;
+
+    -webkit-box-orient: vertical;
+
+    overflow: hidden;
+}
+
+.view-btn {
+
+    width: 100%;
+
+    border: none;
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4338ca
+        );
+
+    color: white;
+
+    font-size: 14px;
+
+    font-weight: 900;
+
+    cursor: pointer;
+}
+
+
+/* ================= EMPTY ================= */
+
+.empty-state {
+
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    background: white;
+
+    border:
+        1px dashed #cbd5e1;
+
+    border-radius: 18px;
+
+    padding:
+        50px 20px;
+
+    color: #64748b;
+}
+
+.empty-icon {
+
+    font-size: 45px;
+
+    margin-bottom: 10px;
+}
+
+.empty-state h3 {
+
+    margin:
+        0 0 6px;
+
+    color: #334155;
+}
+
+
+/* ================= LOADING ================= */
+
+.loading {
+
+    grid-column: 1 / -1;
+
+    text-align: center;
+
+    padding: 45px;
+
+    color: #64748b;
+}
+
+.spinner {
+
+    width: 31px;
+    height: 31px;
+
+    border:
+        3px solid #dbeafe;
+
+    border-top-color:
+        #2563eb;
+
+    border-radius: 50%;
+
+    animation:
+        spin .8s linear infinite;
+
+    margin:
+        0 auto 11px;
+}
+
+@keyframes spin {
+
+    to {
+        transform:
+            rotate(360deg);
+    }
+
+}
+
+
+/* ================= MODAL ================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 3000;
+
+    display: none;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px;
+
+    background:
+        rgba(15,23,42,.68);
+
+    backdrop-filter:
+        blur(5px);
+}
+
+.modal.active {
+
+    display: flex;
+}
+
+.modal-box {
+
+    width: 100%;
+
+    max-width: 650px;
+
+    max-height: 90vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 20px;
+
+    box-shadow:
+        0 25px 70px
+        rgba(0,0,0,.25);
+}
+
+.modal-close {
+
+    float: right;
+
+    border: none;
+
+    background: #f1f5f9;
+
+    width: 36px;
+    height: 36px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 18px;
+}
+
+.modal-image {
+
+    width: 100%;
+
+    max-height: 350px;
+
+    object-fit: cover;
+
+    border-radius: 15px;
+
+    margin:
+        10px 0 15px;
+}
+
+.modal-title {
+
+    margin:
+        0 0 8px;
+
+    font-size: 25px;
+}
+
+.modal-price {
+
+    font-size: 21px;
+
+    font-weight: 900;
+
+    margin-bottom: 10px;
+}
+
+.modal-meta {
+
+    color: #64748b;
+
+    line-height: 1.8;
+
+    font-size: 14px;
+}
+
+.modal-description {
+
+    margin-top: 15px;
+
+    color: #334155;
+
+    line-height: 1.7;
+
+    white-space: pre-wrap;
+}
+
+
+/* ================= FOOTER ================= */
+
+.footer {
+
+    text-align: center;
+
+    padding:
+        25px 15px 40px;
+
+    color: #64748b;
+
+    font-size: 12px;
+}
+
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width:850px) {
+
+    .search-grid {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+}
+
+@media (max-width:650px) {
+
+    .header {
+
+        padding:
+            10px 12px;
+    }
+
+    .brand-text span {
+
+        display: none;
+    }
+
+    .header-btn {
+
+        padding:
+            9px 10px;
+
+        font-size: 12px;
+    }
+
+    .main {
+
+        padding:
+            15px 11px 45px;
+    }
+
+    .hero {
+
+        padding:
+            30px 19px;
+
+        border-radius: 20px;
+    }
+
+    .search-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+    .properties-grid {
+
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<header class="header">
+
+    <div class="brand">
+
+        <div class="brand-icon">
+            🏠
+        </div>
+
+        <div class="brand-text">
+
+            <strong>
+                Eastern Ethiopia Digital Broker
+            </strong>
+
+            <span>
+                Professional Property Marketplace
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div class="header-actions">
+
+        <button
+            class="header-btn"
+            id="accountButton"
+            type="button"
+        >
+            👤 Login
+        </button>
+
+        <button
+            class="header-btn login-btn"
+            id="signupButton"
+            type="button"
+        >
+            Create Account
+        </button>
+
+    </div>
+
+</header>
+
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+    <!-- HERO -->
+
+    <section class="hero">
+
+        <h1>
+            Find Your Perfect Property 🏡
+        </h1>
+
+        <p>
+            Discover houses and properties available
+            for rent and sale across Eastern Ethiopia.
+            All published properties are reviewed
+            before appearing here.
+        </p>
+
+    </section>
+
+
+
+    <!-- ================= SEARCH ================= -->
+
+    <section class="search-card">
+
+        <div class="search-grid">
+
+            <input
+                type="search"
+                id="searchInput"
+                placeholder="🔎 Search property or location..."
+            >
+
+
+            <select id="typeFilter">
+
+                <option value="">
+                    All Types
+                </option>
+
+                <option value="rent">
+                    🏠 For Rent
+                </option>
+
+                <option value="sell">
+                    🏡 For Sale
+                </option>
+
+            </select>
+
+
+            <select id="locationFilter"><option value="">All Areas / Towns</option></select>
+
+
+            <select id="bedroomFilter">
+
+                <option value="">
+                    Any Bedrooms
+                </option>
+
+                <option value="1">
+                    1+ Bedroom
+                </option>
+
+                <option value="2">
+                    2+ Bedrooms
+                </option>
+
+                <option value="3">
+                    3+ Bedrooms
+                </option>
+
+                <option value="4">
+                    4+ Bedrooms
+                </option>
+
+                <option value="5">
+                    5+ Bedrooms
+                </option>
+
+            </select>
+
+
+            <select id="sortFilter">
+
+                <option value="newest">
+                    Newest
+                </option>
+
+                <option value="price_low">
+                    Price: Low → High
+                </option>
+
+                <option value="price_high">
+                    Price: High → Low
+                </option>
+
+            </select>
+
+        </div>
+
+    </section>
+
+
+
+    <!-- ================= PROPERTY SECTION ================= -->
+
+    <section>
+        <div class="section-header"><div><h2 class="section-title">⭐ Featured Properties</h2><div id="featuredCount" class="result-count"></div></div></div>
+        <div id="featuredList" class="properties-grid" style="margin-bottom:24px"></div>
+    </section>
+
+    <section>
+
+        <div class="section-header">
+
+            <div>
+
+                <h2 class="section-title">
+                    🏘️ Available Properties
+                </h2>
+
+                <div
+                    class="result-count"
+                    id="resultCount"
+                >
+                    Loading...
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div
+            id="propertiesList"
+            class="properties-grid"
+        >
+
+            <div class="loading">
+
+                <div class="spinner"></div>
+
+                Loading published properties...
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+
+<!-- ================= MODAL ================= -->
+
+<div
+    id="propertyModal"
+    class="modal"
+>
+
+    <div class="modal-box">
+
+        <button
+            id="closeModal"
+            class="modal-close"
+            type="button"
+        >
+            ✕
+        </button>
+
+        <div id="modalContent"></div>
+
+    </div>
+
+</div>
+
+
+
+<footer class="footer">
+
+    © 2026 Eastern Ethiopia Digital Broker
+
+    <br>
+
+    Safe • Professional • Reviewed Properties
+
+</footer>
+
+
+
+<!-- ================= SUPABASE ================= -->
+
+<script src="supabase.js"></script>
+
+
+<script>
+
+/* =====================================================
+   CONFIG
+===================================================== */
+
+const STORAGE_BUCKET =
+    "property-images";
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let allProperties = [];
+
+let propertyImagesMap = {};
+
+
+/* =====================================================
+   ELEMENTS
+===================================================== */
+
+const propertiesList =
+    document.getElementById(
+        "propertiesList"
+    );
+
+const resultCount =
+    document.getElementById(
+        "resultCount"
+    );
+
+const searchInput =
+    document.getElementById(
+        "searchInput"
+    );
+
+const typeFilter =
+    document.getElementById(
+        "typeFilter"
+    );
+
+const bedroomFilter =
+    document.getElementById(
+        "bedroomFilter"
+    );
+
+const sortFilter =
+    document.getElementById(
+        "sortFilter"
+    );
+
+const locationFilter = document.getElementById('locationFilter');
+
+const propertyModal =
+    document.getElementById(
+        "propertyModal"
+    );
+
+const modalContent =
+    document.getElementById(
+        "modalContent"
+    );
+
+
+/* =====================================================
+   LOAD PUBLISHED PROPERTIES
+===================================================== */
+
+async function loadPublishedProperties() {
+
+    propertiesList.innerHTML =
+
+        `
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            Loading published properties...
+
+        </div>
+        `;
+
+
+    try {
+
+        /*
+        IMPORTANT:
+        PUBLIC WEBSITE SHOWS ONLY
+        published properties.
+        */
+
+        const {
+            data,
+            error
+        } =
+            await supabaseClient
+                .from("properties")
+                .select(
+                    `
+                    id,
+                    owner_id,
+                    title,
+                    listing_type,
+                    price,
+                    location,
+                    bedrooms,
+                    description,
+                    status,
+                    is_featured,
+                    featured_until,
+                    region_id,
+                    zone_id,
+                    city_id,
+                    woreda_id,
+                    area_id,
+                    created_at
+                    `
+                )
+                .eq(
+                    "status",
+                    "published"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        allProperties = (data || []).filter(p => ['published','approved','active'].includes(p.status));
+
+        await populatePublicLocations();
+
+        /*
+        Load photos.
+        */
+
+        await loadAllPropertyImages();
+
+
+        renderProperties();
+        renderFeaturedProperties();
+
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Public property loading error:",
+            error
+        );
+
+
+        propertiesList.innerHTML =
+
+            `
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Could not load properties
+                </h3>
+
+                <p>
+                    ${escapeHTML(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </p>
+
+            </div>
+            `;
+
+
+        resultCount.textContent =
+            "Unable to load properties.";
+
+    }
+
+}
+
+
+/* =====================================================
+   LOAD PROPERTY IMAGES
+===================================================== */
+
+async function loadAllPropertyImages() {
+
+    propertyImagesMap = {};
+
+
+    if (
+        allProperties.length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    const propertyIds =
+        allProperties.map(
+            property =>
+                property.id
+        );
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("property_images")
+            .select(
+                `
+                id,
+                property_id,
+                storage_path,
+                display_order
+                `
+            )
+            .in(
+                "property_id",
+                propertyIds
+            )
+            .order(
+                "display_order",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        console.error(
+            "Property images error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    (data || []).forEach(
+        image => {
+
+            if (
+                !propertyImagesMap[
+                    image.property_id
+                ]
+            ) {
+
+                propertyImagesMap[
+                    image.property_id
+                ] = [];
+
+            }
+
+
+            propertyImagesMap[
+                image.property_id
+            ].push(
+                image
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   GET PUBLIC IMAGE URL
+===================================================== */
+
+function getImageUrl(
+    storagePath
+) {
+
+    const {
+        data
+    } =
+        supabaseClient
+            .storage
+            .from(
+                STORAGE_BUCKET
+            )
+            .getPublicUrl(
+                storagePath
+            );
+
+
+    return data.publicUrl;
+
+}
+
+
+async function populatePublicLocations(){
+    if(!locationFilter || locationFilter.dataset.loaded==='1') return;
+    try{
+      const {data,error}=await supabaseClient.from('locations').select('id,parent_id,name,type,is_active').eq('is_active',true).order('name');
+      if(error) throw error;
+      const rows=data||[]; const map=new Map(rows.map(x=>[x.id,x]));
+      const valid=rows.filter(x=>{ let c=x; let guard=0; while(c && guard++<10){ if(!c.is_active)return false; if(c.type==='region') return true; c=map.get(c.parent_id); } return false; });
+      const towns=valid.filter(x=>x.type==='area'||x.type==='city').sort((a,b)=>a.name.localeCompare(b.name));
+      locationFilter.innerHTML='<option value="">All Areas / Towns</option>'+towns.map(x=>'<option value="'+x.id+'">'+escapeHTML(x.name)+'</option>').join('');
+      locationFilter.dataset.loaded='1';
+    }catch(e){ console.warn('Public locations unavailable',e); }
+}
+
+function isFeaturedNowHome(property){ return Boolean(property && property.is_featured && (!property.featured_until || new Date(property.featured_until).getTime()>Date.now())); }
+
+function renderFeaturedProperties(){
+  const box=document.getElementById('featuredList'); const count=document.getElementById('featuredCount'); if(!box)return;
+  const list=allProperties.filter(isFeaturedNowHome).slice(0,8);
+  if(count) count.textContent=list.length ? `${list.length} featured listing${list.length===1?'':'s'}` : 'No featured properties right now.';
+  box.innerHTML='';
+  if(!list.length){ box.innerHTML='<div class="empty-state"><div class="empty-icon">⭐</div><h3>No active featured properties</h3><p>Featured listings appear here while their featured period is active.</p></div>'; return; }
+  list.forEach(p=>box.appendChild(createPropertyCard(p)));
+}
+
+/* =====================================================
+   FILTER + SORT
+===================================================== */
+
+function getFilteredProperties() {
+
+    const search =
+        searchInput.value
+            .trim()
+            .toLowerCase();
+
+
+    const type =
+        typeFilter.value;
+
+
+    const bedroomValue =
+        bedroomFilter.value;
+
+
+    let filtered =
+        allProperties.filter(
+            property => {
+
+                const searchText =
+                    (
+                        property.title +
+                        " " +
+                        property.location +
+                        " " +
+                        (
+                            property.description ||
+                            ""
+                        )
+                    )
+                    .toLowerCase();
+
+
+                if (
+                    search &&
+                    !searchText.includes(
+                        search
+                    )
+                ) {
+
+                    return false;
+
+                }
+
+
+                const normalizedType = String(property.listing_type||'').toLowerCase()==='sale' ? 'sell' : String(property.listing_type||'').toLowerCase();
+                if (type && normalizedType !== type) {
+
+                    return false;
+
+                }
+
+
+                const loc = locationFilter?.value || '';
+                if (loc && ![property.area_id, property.woreda_id, property.city_id].includes(loc)) return false;
+
+                if (
+                    bedroomValue &&
+                    Number(
+                        property.bedrooms
+                    ) <
+                    Number(
+                        bedroomValue
+                    )
+                ) {
+
+                    return false;
+
+                }
+
+
+                return true;
+
+            }
+        );
+
+
+    /*
+    SORT
+    */
+
+    if (
+        sortFilter.value ===
+        "price_low"
+    ) {
+
+        filtered.sort(
+            (
+                a,
+                b
+            ) =>
+                Number(a.price) -
+                Number(b.price)
+        );
+
+    }
+
+    else if (
+        sortFilter.value ===
+        "price_high"
+    ) {
+
+        filtered.sort(
+            (
+                a,
+                b
+            ) =>
+                Number(b.price) -
+                Number(a.price)
+        );
+
+    }
+
+    else {
+
+        filtered.sort(
+            (
+                a,
+                b
+            ) =>
+                new Date(
+                    b.created_at
+                ) -
+                new Date(
+                    a.created_at
+                )
+        );
+
+    }
+
+
+    return filtered;
+
+}
+
+
+/* =====================================================
+   RENDER PROPERTIES
+===================================================== */
+
+function renderProperties() {
+
+    const properties =
+        getFilteredProperties();
+
+
+    resultCount.textContent =
+        properties.length +
+        (
+            properties.length === 1
+                ? " property"
+                : " properties"
+        ) +
+        " available";
+
+
+    if (
+        properties.length === 0
+    ) {
+
+        propertiesList.innerHTML =
+
+            `
+            <div class="empty-state">
+
+                <div class="empty-icon">
+                    🔎
+                </div>
+
+                <h3>
+                    No matching properties
+                </h3>
+
+                <p>
+                    Try changing your search or filters.
+                </p>
+
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    propertiesList.innerHTML =
+        "";
+
+
+    properties.forEach(
+        property => {
+
+            propertiesList.appendChild(
+                createPropertyCard(
+                    property
+                )
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CREATE CARD
+===================================================== */
+
+function createPropertyCard(
+    property
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+    card.className =
+        "property-card";
+
+
+    const imageWrap =
+        document.createElement(
+            "div"
+        );
+
+    imageWrap.className =
+        "property-image-wrap";
+
+
+    const images =
+        propertyImagesMap[
+            property.id
+        ] || [];
+
+
+    if (
+        images.length > 0
+    ) {
+
+        const image =
+            document.createElement(
+                "img"
+            );
+
+        image.className =
+            "property-image";
+
+
+        image.src =
+            getImageUrl(
+                images[0]
+                    .storage_path
+            );
+
+
+        image.alt =
+            property.title;
+
+
+        image.loading =
+            "lazy";
+
+
+        imageWrap.appendChild(
+            image
+        );
+
+
+        if (
+            images.length > 1
+        ) {
+
+            const count =
+                document.createElement(
+                    "div"
+                );
+
+            count.className =
+                "photo-count";
+
+            count.textContent =
+                "📷 " +
+                images.length +
+                " photos";
+
+            imageWrap.appendChild(
+                count
+            );
+
+        }
+
+    }
+
+    else {
+
+        const placeholder =
+            document.createElement(
+                "div"
+            );
+
+        placeholder.className =
+            "image-placeholder";
+
+        placeholder.textContent =
+            "🏠";
+
+        imageWrap.appendChild(
+            placeholder
+        );
+
+    }
+
+
+    const typeBadge =
+        document.createElement(
+            "div"
+        );
+
+    typeBadge.className =
+        "type-badge";
+
+
+    if (
+        property.listing_type ===
+        "rent"
+    ) {
+
+        typeBadge.textContent =
+            "🏠 FOR RENT";
+
+    }
+
+    else {
+
+        typeBadge.textContent =
+            "🏡 FOR SALE";
+
+        typeBadge.classList.add(
+            "type-sell"
+        );
+
+    }
+
+
+    imageWrap.appendChild(typeBadge);
+    if(isFeaturedNowHome(property)){ const badge=document.createElement('div'); badge.className='type-badge'; badge.style.top='44px'; badge.textContent='★ FEATURED'; imageWrap.appendChild(badge); }
+
+
+    card.appendChild(
+        imageWrap
+    );
+
+
+    const body =
+        document.createElement(
+            "div"
+        );
+
+    body.className =
+        "property-body";
+
+
+    const title =
+        document.createElement(
+            "h3"
+        );
+
+    title.className =
+        "property-title";
+
+    title.textContent =
+        property.title;
+
+
+    body.appendChild(
+        title
+    );
+
+
+    const price =
+        document.createElement(
+            "div"
+        );
+
+    price.className =
+        "property-price";
+
+
+    price.textContent =
+        Number(
+            property.price
+        ).toLocaleString(
+            "en-US"
+        ) +
+        " ETB";
+
+
+    if (
+        property.listing_type ===
+        "rent"
+    ) {
+
+        price.textContent +=
+            " / month";
+
+    }
+
+
+    body.appendChild(
+        price
+    );
+
+
+    const meta =
+        document.createElement(
+            "div"
+        );
+
+    meta.className =
+        "property-meta";
+
+
+    meta.textContent =
+        "📍 " +
+        property.location +
+        "  •  🛏 " +
+        property.bedrooms +
+        " bedroom(s)";
+
+
+    body.appendChild(
+        meta
+    );
+
+
+    const createdTime =
+        document.createElement(
+            "div"
+        );
+
+    createdTime.className =
+        "property-created-time";
+
+    createdTime.textContent =
+        "🕒 " +
+        formatPropertyAge(
+            property.created_at
+        );
+
+    body.appendChild(
+        createdTime
+    );
+
+
+    const description =
+        document.createElement(
+            "p"
+        );
+
+    description.className =
+        "property-description";
+
+
+    description.textContent =
+        property.description ||
+        "No description provided.";
+
+
+    body.appendChild(
+        description
+    );
+
+
+    const viewButton =
+        document.createElement(
+            "button"
+        );
+
+    viewButton.className =
+        "view-btn";
+
+    viewButton.type =
+        "button";
+
+    viewButton.textContent =
+        "View Property Details →";
+
+
+    viewButton.addEventListener(
+        "click",
+        function () {
+
+            openPropertyModal(
+                property
+            );
+
+        }
+    );
+
+
+    body.appendChild(
+        viewButton
+    );
+
+
+    card.appendChild(
+        body
+    );
+
+
+    return card;
+
+}
+
+
+/* =====================================================
+   PROPERTY MODAL
+===================================================== */
+
+function openPropertyModal(
+    property
+) {
+
+    const images =
+        propertyImagesMap[
+            property.id
+        ] || [];
+
+
+    let imageHTML = "";
+
+
+    if (
+        images.length > 0
+    ) {
+
+        imageHTML =
+
+            `
+            <img
+                class="modal-image"
+                src="${escapeAttribute(
+                    getImageUrl(
+                        images[0]
+                            .storage_path
+                    )
+                )}"
+                alt="${escapeAttribute(
+                    property.title
+                )}"
+            >
+            `;
+
+    }
+
+
+    const typeText =
+        property.listing_type ===
+        "rent"
+            ? "🏠 For Rent"
+            : "🏡 For Sale";
+
+
+    const priceText =
+        Number(
+            property.price
+        ).toLocaleString(
+            "en-US"
+        ) +
+        " ETB" +
+        (
+            property.listing_type ===
+            "rent"
+                ? " / month"
+                : ""
+        );
+
+
+    modalContent.innerHTML =
+
+        `
+        ${imageHTML}
+
+        <h2 class="modal-title">
+            ${escapeHTML(
+                property.title
+            )}
+        </h2>
+
+        <div class="modal-price">
+            ${priceText}
+        </div>
+
+        <div class="modal-meta">
+
+            ${typeText}
+
+            <br>
+
+            📍 ${escapeHTML(
+                property.location
+            )}
+
+            <br>
+
+            🛏 ${Number(
+                property.bedrooms
+            )} bedroom(s)
+
+            <br>
+
+            📅 Published property
+
+        </div>
+
+        <div class="modal-description">
+
+            ${escapeHTML(
+                property.description ||
+                "No description provided."
+            )}
+
+        </div>
+        `;
+
+
+    propertyModal.classList.add(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   CLOSE MODAL
+===================================================== */
+
+document
+    .getElementById(
+        "closeModal"
+    )
+    .addEventListener(
+        "click",
+        closeModal
+    );
+
+
+propertyModal.addEventListener(
+    "click",
+    function (event) {
+
+        if (
+            event.target ===
+            propertyModal
+        ) {
+
+            closeModal();
+
+        }
+
+    }
+);
+
+
+function closeModal() {
+
+    propertyModal.classList.remove(
+        "active"
+    );
+
+}
+
+
+/* =====================================================
+   FILTER EVENTS
+===================================================== */
+
+searchInput.addEventListener(
+    "input",
+    renderProperties
+);
+
+typeFilter.addEventListener(
+    "change",
+    renderProperties
+);
+
+bedroomFilter.addEventListener(
+    "change",
+    renderProperties
+);
+
+sortFilter.addEventListener("change",renderProperties);
+locationFilter?.addEventListener("change",renderProperties);
+
+
+/* =====================================================
+   HEADER BUTTONS
+===================================================== */
+
+document
+    .getElementById(
+        "accountButton"
+    )
+    .addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "index.html";
+
+        }
+    );
+
+
+document
+    .getElementById(
+        "signupButton"
+    )
+    .addEventListener(
+        "click",
+        function () {
+
+            window.location.href =
+                "signup.html";
+
+        }
+    );
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function formatPropertyAge(createdAt) {
+
+    if (!createdAt) {
+        return "Date unavailable";
+    }
+
+    const created = new Date(createdAt);
+
+    if (Number.isNaN(created.getTime())) {
+        return "Date unavailable";
+    }
+
+    const now = new Date();
+
+    // Calendar-day comparison in the device's local timezone.
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const createdDate = new Date(
+        created.getFullYear(),
+        created.getMonth(),
+        created.getDate()
+    );
+
+    const diffDays = Math.floor(
+        (today.getTime() - createdDate.getTime()) / 86400000
+    );
+
+    if (diffDays <= 0) return "Today";
+    if (diffDays === 1) return "Yesterday";
+    if (diffDays >= 2 && diffDays <= 6) {
+        return "Before " + diffDays + " days";
+    }
+    if (diffDays === 7) return "Before week";
+
+    const weeks = Math.floor(diffDays / 7);
+    if (weeks === 1) return "Before 1 week";
+    return "Before " + weeks + " weeks";
+}
+
+
+function escapeHTML(
+    value
+) {
+
+    const div =
+        document.createElement(
+            "div"
+        );
+
+    div.textContent =
+        value || "";
+
+    return div.innerHTML;
+
+}
+
+
+function escapeAttribute(
+    value
+) {
+
+    return String(
+        value || ""
+    )
+    .replace(
+        /&/g,
+        "&amp;"
+    )
+    .replace(
+        /"/g,
+        "&quot;"
+    )
+    .replace(
+        /</g,
+        "&lt;"
+    )
+    .replace(
+        />/g,
+        "&gt;"
+    );
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+if (
+    typeof supabaseClient ===
+    "undefined"
+) {
+
+    propertiesList.innerHTML =
+
+        `
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                ⚠️
+            </div>
+
+            <h3>
+                Supabase connection missing
+            </h3>
+
+            <p>
+                Check your supabase.js file.
+            </p>
+
+        </div>
+        `;
+
+}
+
+else {
+
+    loadPublishedProperties();
+
+}
+
+</script>
+
+
+</body>
+
+</html>

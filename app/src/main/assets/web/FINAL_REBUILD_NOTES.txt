@@ -1,0 +1,37 @@
+EASTERN ETHIOPIA DIGITAL BROKER - FINAL FIX
+
+This package keeps the existing table structure and frontend architecture.
+
+FIXED: admin Add Property/Add Job no longer asks for an Owner/Employer UUID; those selectors are optional and blank means an admin listing/job. Admin jobs store posted_by=the logged-in admin and posting_method=admin.
+FIXED: admin property approval uses published status and reviewed_by/reviewed_at.
+FIXED: RLS policy set in SUPABASE_RLS_FINAL_FIX.sql supports Super Admin, Admin, and assigned City Admin. City Admin is restricted by admin_city_assignments.city_id.
+FIXED: location cascade remains live-data based and supports missing levels such as Region -> City and Region -> Zone -> City -> Woreda -> Area. It never invents UUIDs.
+FIXED: admin View Property/View Job now opens an in-app detail modal.
+FIXED: visible Harar Local Broker branding changed to Eastern Ethiopia Digital Broker.
+FIXED: shared supabase.js now exposes both db and supabaseClient, so signup and legacy property pages use the same initialized client.
+FIXED: employer signup and role routing now reach employer-job-dashboard.html; admin employer selectors include employer accounts.
+FIXED: RLS profile-role whitelist includes employer.
+FIXED: RLS SQL grants helper-function execution to anon/authenticated readers and permits a signed-in user to create only their own public profile during signup.
+IMPORTANT: Run SUPABASE_RLS_FINAL_FIX.sql in Supabase SQL Editor before testing Add/Approve operations. This script does not delete location rows.
+
+LOCAL VALIDATION
+- All inline and standalone JavaScript passed Node syntax checks.
+- All 13 HTML pages served successfully from a local HTTP smoke server.
+- All literal local href/src references resolve.
+- A pre-deployment anonymous locations probe exposed the old RLS EXECUTE grant issue; the SQL fix above addresses it. Re-run the probe after applying the SQL file.
+
+PRODUCTION INTEGRATION PATCH
+- Added SUPABASE_PRODUCTION_PATCH.sql for the final live DB integration.
+- Public properties/jobs are limited to publishable statuses; sold/rented/hidden/rejected are not exposed through public RLS.
+- Application status flow includes pending/reviewing/shortlisted/accepted/rejected/withdrawn, employer access, admin delete/update, and automatic job-seeker notifications.
+- Added safe conditional profile is_active support for admin disable/activate.
+- Added public property contact RPCs and notification-compatible columns.
+- Frontend no longer sends jobs.location; job locations use region_id/zone_id/city_id/woreda_id/area_id.
+- Featured is time-aware: is_featured is effective only when featured_until is null or in the future.
+- Public sale filtering normalizes both sale/sell values.
+- Public property details reject non-public statuses and handle missing bedrooms/price/share metadata safely.
+- Admin location management supports search/filter plus add/edit/activate/deactivate/delete for Super Admin.
+- Existing data is preserved; no location rows are seeded/deleted by this package.
+
+
+SQL compatibility fix: SUPABASE_PRODUCTION_PATCH.sql, SUPABASE_FINAL_FIX.sql and SUPABASE_RLS_FINAL_FIX.sql now DROP FUNCTION public.get_property_contacts(uuid) before recreating it, preventing PostgreSQL 42P13 return-type conflicts with an existing deployed signature.

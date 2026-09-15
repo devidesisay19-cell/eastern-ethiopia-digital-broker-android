@@ -1,0 +1,3751 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Job Details | Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+    margin:0;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    background:#f5f7fb;
+    color:#172033;
+}
+
+button,
+input,
+textarea,
+select{
+    font:inherit;
+}
+
+button{
+    cursor:pointer;
+}
+
+.hidden{
+    display:none !important;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+.header{
+    background:#ffffff;
+    border-bottom:1px solid #e5e7eb;
+    position:sticky;
+    top:0;
+    z-index:100;
+}
+
+.header-inner{
+    max-width:1100px;
+    margin:auto;
+    padding:12px 18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+}
+
+.brand{
+    font-size:18px;
+    font-weight:800;
+    color:#172033;
+    line-height:1.2;
+}
+
+.brand span{
+    color:#2563eb;
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    flex-wrap:wrap;
+}
+
+.language-select{
+    border:1px solid #cbd5e1;
+    background:#ffffff;
+    color:#172033;
+    border-radius:10px;
+    padding:9px 10px;
+    font-weight:700;
+    outline:none;
+}
+
+.language-select:focus{
+    border-color:#2563eb;
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+.btn{
+    border:none;
+    border-radius:10px;
+    padding:10px 14px;
+    font-weight:700;
+    background:#eef2f7;
+    color:#172033;
+}
+
+.btn-primary{
+    background:#2563eb;
+    color:#ffffff;
+}
+
+.btn-success{
+    background:#16a34a;
+    color:#ffffff;
+}
+
+.btn-danger{
+    background:#dc2626;
+    color:#ffffff;
+}
+
+.btn-warning{
+    background:#f59e0b;
+    color:#ffffff;
+}
+
+.btn:disabled{
+    opacity:.55;
+    cursor:not-allowed;
+}
+
+
+/* =========================================================
+   CONTAINER
+========================================================= */
+
+.container{
+    width:min(1100px,94%);
+    margin:22px auto 50px;
+}
+
+.back-btn{
+    margin-bottom:15px;
+}
+
+
+/* =========================================================
+   STATES
+========================================================= */
+
+.loading,
+.error-box,
+.empty-box{
+    background:#ffffff;
+    border-radius:16px;
+    padding:30px 20px;
+    text-align:center;
+    border:1px solid #e5e7eb;
+}
+
+.error-box{
+    color:#b91c1c;
+}
+
+
+/* =========================================================
+   JOB CARD
+========================================================= */
+
+.job-card{
+    background:#ffffff;
+    border-radius:18px;
+    border:1px solid #e5e7eb;
+    overflow:hidden;
+    box-shadow:
+        0 8px 30px rgba(0,0,0,.05);
+}
+
+.job-header{
+    padding:25px 22px;
+    border-bottom:1px solid #e5e7eb;
+}
+
+.job-title{
+    margin:0 0 12px;
+    font-size:29px;
+    line-height:1.25;
+}
+
+.company{
+    color:#475569;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.badges{
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+}
+
+.badge{
+    display:inline-block;
+    padding:7px 10px;
+    border-radius:999px;
+    background:#eff6ff;
+    color:#1d4ed8;
+    font-size:13px;
+    font-weight:700;
+}
+
+.badge.green{
+    background:#ecfdf5;
+    color:#047857;
+}
+
+.badge.orange{
+    background:#fff7ed;
+    color:#c2410c;
+}
+
+.badge.red{
+    background:#fef2f2;
+    color:#b91c1c;
+}
+
+
+/* =========================================================
+   JOB BODY
+========================================================= */
+
+.job-body{
+    padding:22px;
+}
+
+.section{
+    margin-bottom:25px;
+}
+
+.section-title{
+    font-size:19px;
+    margin:0 0 12px;
+}
+
+.description{
+    line-height:1.7;
+    color:#374151;
+    white-space:pre-wrap;
+}
+
+.info-grid{
+    display:grid;
+    grid-template-columns:
+        repeat(2,minmax(0,1fr));
+    gap:12px;
+}
+
+.info-item{
+    background:#f8fafc;
+    border:1px solid #e5e7eb;
+    border-radius:12px;
+    padding:13px;
+}
+
+.info-label{
+    font-size:12px;
+    color:#64748b;
+    margin-bottom:5px;
+}
+
+.info-value{
+    font-weight:700;
+    color:#172033;
+    word-break:break-word;
+}
+
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+.contact-actions{
+    display:grid;
+    grid-template-columns:
+        repeat(3,minmax(0,1fr));
+    gap:10px;
+}
+
+
+/* =========================================================
+   APPLICATION
+========================================================= */
+
+.apply-section{
+    background:#f8fafc;
+    border:1px solid #e2e8f0;
+    border-radius:16px;
+    padding:20px;
+}
+
+.apply-note{
+    background:#eff6ff;
+    color:#1e40af;
+    border:1px solid #bfdbfe;
+    border-radius:10px;
+    padding:11px 13px;
+    margin-bottom:16px;
+    font-size:13px;
+    line-height:1.5;
+}
+
+textarea,
+input[type="file"]{
+    width:100%;
+}
+
+textarea{
+    min-height:150px;
+    resize:vertical;
+    border:1px solid #cbd5e1;
+    border-radius:12px;
+    padding:13px;
+    background:#ffffff;
+    outline:none;
+}
+
+textarea:focus{
+    border-color:#2563eb;
+}
+
+.file-box{
+    margin-top:15px;
+}
+
+.file-label{
+    display:block;
+    margin-bottom:8px;
+    font-weight:700;
+}
+
+.optional-label{
+    color:#64748b;
+    font-size:12px;
+    font-weight:600;
+}
+
+input[type="file"]{
+    border:1px dashed #94a3b8;
+    border-radius:12px;
+    padding:12px;
+    background:#ffffff;
+}
+
+.file-info{
+    margin-top:7px;
+    font-size:12px;
+    color:#64748b;
+    line-height:1.5;
+}
+
+.selected-file{
+    margin-top:8px;
+    padding:9px 11px;
+    border-radius:9px;
+    background:#eff6ff;
+    color:#1d4ed8;
+    font-size:13px;
+    word-break:break-word;
+}
+
+.form-actions{
+    display:flex;
+    gap:10px;
+    margin-top:16px;
+    flex-wrap:wrap;
+}
+
+.message{
+    margin-top:13px;
+    padding:11px 13px;
+    border-radius:10px;
+    display:none;
+    line-height:1.5;
+}
+
+.message.show{
+    display:block;
+}
+
+.message.success{
+    background:#ecfdf5;
+    color:#047857;
+}
+
+.message.error{
+    background:#fef2f2;
+    color:#b91c1c;
+}
+
+.deadline-warning{
+    margin-top:12px;
+    padding:11px 13px;
+    border-radius:10px;
+    background:#fff7ed;
+    color:#c2410c;
+    font-weight:600;
+}
+
+.save-area{
+    margin-top:15px;
+}
+
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+.footer{
+    text-align:center;
+    color:#64748b;
+    font-size:13px;
+    padding:25px 15px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:700px){
+
+    .header-inner{
+        padding:12px;
+        align-items:flex-start;
+    }
+
+    .brand{
+        font-size:15px;
+        max-width:190px;
+    }
+
+    .header-actions{
+        justify-content:flex-end;
+    }
+
+    .header-actions .btn{
+        padding:8px 10px;
+        font-size:12px;
+    }
+
+    .language-select{
+        padding:8px 7px;
+        font-size:12px;
+        max-width:110px;
+    }
+
+    .container{
+        width:96%;
+        margin-top:14px;
+    }
+
+    .job-title{
+        font-size:24px;
+    }
+
+    .job-header,
+    .job-body{
+        padding:17px;
+    }
+
+    .info-grid{
+        grid-template-columns:1fr;
+    }
+
+    .contact-actions{
+        grid-template-columns:1fr;
+    }
+
+    .form-actions{
+        flex-direction:column;
+    }
+
+    .form-actions .btn{
+        width:100%;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<header class="header">
+
+    <div class="header-inner">
+
+        <div class="brand">
+            Eastern Ethiopia
+            <span>Digital Broker</span>
+        </div>
+
+        <div class="header-actions">
+
+            <select
+                id="languageSelector"
+                class="language-select"
+                onchange="changeLanguage(this.value)"
+                aria-label="Language"
+            >
+
+                <option value="en">English</option>
+
+                <option value="om">
+                    Afaan Oromo
+                </option>
+
+                <option value="am">
+                    አማርኛ
+                </option>
+
+            </select>
+
+            <button
+                id="headerBackButton"
+                class="btn"
+                type="button"
+                onclick="goBack()"
+            >
+                ← Back
+            </button>
+
+            <button
+                id="logoutButton"
+                class="btn btn-danger"
+                type="button"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <button
+        id="dashboardBackButton"
+        class="btn back-btn"
+        type="button"
+        onclick="goBack()"
+    >
+        ← Back to Dashboard
+    </button>
+
+
+    <div
+        id="loading"
+        class="loading"
+    >
+        Loading job...
+    </div>
+
+
+    <div
+        id="errorBox"
+        class="error-box hidden"
+    ></div>
+
+
+    <div
+        id="jobContent"
+        class="hidden"
+    >
+
+        <div class="job-card">
+
+            <div class="job-header">
+
+                <h1
+                    id="jobTitle"
+                    class="job-title"
+                ></h1>
+
+                <div
+                    id="companyName"
+                    class="company"
+                ></div>
+
+                <div
+                    id="badges"
+                    class="badges"
+                ></div>
+
+                <div
+                    id="deadlineWarning"
+                    class="deadline-warning hidden"
+                ></div>
+
+                <div class="save-area">
+
+                    <button
+                        id="saveButton"
+                        class="btn"
+                        type="button"
+                        onclick="toggleSaveJob()"
+                    >
+                        ☆ Save Job
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <div class="job-body">
+
+                <section class="section">
+
+                    <h2
+                        id="jobInformationTitle"
+                        class="section-title"
+                    >
+                        Job Information
+                    </h2>
+
+                    <div
+                        id="infoGrid"
+                        class="info-grid"
+                    ></div>
+
+                </section>
+
+
+                <section class="section">
+
+                    <h2
+                        id="jobDescriptionTitle"
+                        class="section-title"
+                    >
+                        Job Description
+                    </h2>
+
+                    <div
+                        id="description"
+                        class="description"
+                    ></div>
+
+                </section>
+
+
+                <section class="section">
+
+                    <h2
+                        id="contactTitle"
+                        class="section-title"
+                    >
+                        Contact Employer
+                    </h2>
+
+                    <div
+                        id="contactActions"
+                        class="contact-actions"
+                    ></div>
+
+                </section>
+
+
+                <section
+                    id="applicationSection"
+                    class="section apply-section hidden"
+                >
+
+                    <h2
+                        id="applyTitle"
+                        class="section-title"
+                    >
+                        Apply for this Job
+                    </h2>
+
+                    <p id="applicationStatusText"></p>
+
+                    <div class="apply-note">
+
+                        💡
+
+                        <strong id="cvOptionalStrong">
+                            CV is optional.
+                        </strong>
+
+                        <span id="cvOptionalText">
+                            You can apply without uploading
+                            a CV. If this employer requires a
+                            CV, attach your CV before submitting.
+                        </span>
+
+                    </div>
+
+
+                    <label
+                        id="coverLabel"
+                        for="coverMessage"
+                        class="file-label"
+                    >
+                        Cover Message
+                    </label>
+
+                    <textarea
+                        id="coverMessage"
+                        placeholder="Explain why you are suitable for this job..."
+                    ></textarea>
+
+
+                    <div class="file-box">
+
+                        <label
+                            id="cvLabel"
+                            for="cvFile"
+                            class="file-label"
+                        >
+
+                            📄 CV / Resume
+
+                            <span
+                                id="cvOptionalLabel"
+                                class="optional-label"
+                            >
+                                (Optional)
+                            </span>
+
+                        </label>
+
+
+                        <input
+                            id="cvFile"
+                            type="file"
+                            accept=".pdf,.doc,.docx,application/pdf,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                            onchange="handleCVSelection()"
+                        >
+
+
+                        <div
+                            id="cvFileInfo"
+                            class="file-info"
+                        >
+                            You may apply without a CV.<br>
+                            If you attach one:
+                            PDF, DOC or DOCX only.
+                            Maximum file size:
+                            <strong>5 MB</strong>.
+                        </div>
+
+
+                        <div
+                            id="selectedFile"
+                            class="selected-file hidden"
+                        ></div>
+
+                    </div>
+
+
+                    <div
+                        id="applicationMessage"
+                        class="message"
+                    ></div>
+
+
+                    <div class="form-actions">
+
+                        <button
+                            id="applyButton"
+                            class="btn btn-primary"
+                            type="button"
+                            onclick="submitApplication()"
+                        >
+                            📝 Submit Application
+                        </button>
+
+                    </div>
+
+                </section>
+
+
+                <section
+                    id="loginApplyBox"
+                    class="empty-box hidden"
+                >
+
+                    <strong id="loginRequiredText">
+                        Login required
+                    </strong>
+
+                    <p id="loginDescription">
+                        Please login as a job seeker to apply
+                        for this position.
+                    </p>
+
+                    <button
+                        id="loginButton"
+                        class="btn btn-primary"
+                        type="button"
+                        onclick="window.location.href='index.html'"
+                    >
+                        Login
+                    </button>
+
+                </section>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</main>
+
+
+<footer class="footer">
+
+    <span id="footerText">
+        Eastern Ethiopia Digital Broker © 2026
+    </span>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+========================================================= */
+
+const SUPABASE_URL =
+    "https://ubkfrpkapqnlaiscrxim.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE";
+
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+let currentUser = null;
+let currentProfile = null;
+let currentJob = null;
+let currentJobId = null;
+
+let locations = [];
+
+let isSaved = false;
+let alreadyApplied = false;
+
+
+/* =========================================================
+   LANGUAGE SYSTEM
+========================================================= */
+
+const translations = {
+
+    en: {
+
+        back:"← Back",
+        backDashboard:"← Back to Dashboard",
+        logout:"Logout",
+        loading:"Loading job...",
+        jobInformation:"Job Information",
+        jobDescription:"Job Description",
+        contactEmployer:"Contact Employer",
+        apply:"Apply for this Job",
+        coverMessage:"Cover Message",
+        coverPlaceholder:
+            "Explain why you are suitable for this job...",
+        cv:"📄 CV / Resume",
+        optional:"(Optional)",
+        cvStrong:"CV is optional.",
+        cvText:
+            "You can apply without uploading a CV. If this employer requires a CV, attach your CV before submitting.",
+        cvInfo:
+            "You may apply without a CV.<br>If you attach one: PDF, DOC or DOCX only. Maximum file size: <strong>5 MB</strong>.",
+        submit:"📝 Submit Application",
+        loginRequired:"Login required",
+        loginDescription:
+            "Please login as a job seeker to apply for this position.",
+        login:"Login",
+        save:"☆ Save Job",
+        saved:"★ Saved",
+        call:"📞 Call",
+        whatsapp:"💬 WhatsApp",
+        email:"📧 Email",
+        employer:"Employer",
+        category:"Category",
+        jobType:"Job Type",
+        salary:"Salary",
+        location:"Location",
+        deadline:"Application Deadline",
+        posted:"Posted",
+        notSpecified:"Not specified",
+        negotiable:"Negotiable / Not specified",
+        noDescription:"No description provided.",
+        contactUnavailable:
+            "Employer contact information is not available.",
+        deadlinePassed:
+            "⚠️ The application deadline has passed.",
+        onlyJobSeekersSave:
+            "Only job seekers can save jobs.",
+        loginToSave:
+            "Please login to save jobs.",
+        loginFirst:
+            "Please login first.",
+        onlyJobSeekersApply:
+            "Only job seekers can apply for jobs.",
+        jobUnavailable:
+            "Job information is unavailable.",
+        notAccepting:
+            "This job is not accepting applications.",
+        deadlineClosed:
+            "The application deadline has passed.",
+        coverTooShort:
+            "Cover message must contain at least 20 characters.",
+        duplicate:
+            "You have already applied for this job.",
+        applicationSuccessCV:
+            "✅ Application submitted successfully with your CV.",
+        applicationSuccessNoCV:
+            "✅ Application submitted successfully without a CV.",
+        applicationClosed:
+            "Applications are closed because the deadline has passed.",
+        applicationsUnavailable:
+            "Applications are not available for this job.",
+        alreadyApplied:
+            "✅ You have already applied for this job.",
+        writingCover:
+            "Write your cover message. CV upload is optional.",
+        uploading:"Uploading CV...",
+        submitting:"Submitting Application...",
+        applicationsClosed:"Applications Closed",
+        alreadyAppliedButton:"Already Applied",
+        cvTooLarge:"CV must not exceed 5 MB.",
+        cvInvalid:
+            "Only PDF, DOC and DOCX files are allowed.",
+        noCV:
+            "No CV attached. You can still apply.",
+        employerPhoneUnavailable:
+            "Employer phone number is not available.",
+        employerEmailUnavailable:
+            "Employer email is not available.",
+        jobNotFound:"Job not found.",
+        jobNotAvailable:
+            "This job is not currently available.",
+        jobIdNotFound:"Job ID was not found.",
+        unableLoad:"Unable to load job.",
+        unableSave:"Unable to save this job.",
+        unableApplication:
+            "Unable to submit application.",
+        logoutError:
+            "Unable to logout. Please try again.",
+        footer:
+            "Eastern Ethiopia Digital Broker © 2026",
+        fullTime:"Full Time",
+        partTime:"Part Time",
+        contract:"Contract",
+        temporary:"Temporary",
+        internship:"Internship",
+        volunteer:"Volunteer"
+    },
+
+
+    om: {
+
+        back:"← Deebi'i",
+        backDashboard:"← Gara Dashboard Deebi'i",
+        logout:"Ba'i",
+        loading:"Hojii fe'aa jira...",
+        jobInformation:"Odeeffannoo Hojii",
+        jobDescription:"Ibsa Hojii",
+        contactEmployer:"Hojii Kennataa Quunnami",
+        apply:"Hojii kanaaf Galmaa'i",
+        coverMessage:"Ergaa Iyyannoo",
+        coverPlaceholder:
+            "Maaliif hojii kanaaf mijataa akka taate ibsi...",
+        cv:"📄 CV / Resume",
+        optional:"(Dirqama miti)",
+        cvStrong:"CV dirqama miti.",
+        cvText:
+            "CV osoo hin fe'iin iyyachuu dandeessa. Yoo hojii kennataan CV barbaade, osoo hin ergamin dura CV kee dabali.",
+        cvInfo:
+            "CV malee iyyachuu dandeessa.<br>Yoo dabaltu: PDF, DOC ykn DOCX qofa. Guddaan isaa <strong>5 MB</strong>.",
+        submit:"📝 Iyyannoo Ergi",
+        loginRequired:"Seenuun barbaachisa",
+        loginDescription:
+            "Hojii kanaaf iyyachuuf job seeker taatee seeni.",
+        login:"Seeni",
+        save:"☆ Hojii Kuusi",
+        saved:"★ Kuufameera",
+        call:"📞 Bilbili",
+        whatsapp:"💬 WhatsApp",
+        email:"📧 Email",
+        employer:"Hojii Kennataa",
+        category:"Ramaddii",
+        jobType:"Gosa Hojii",
+        salary:"Mindaa",
+        location:"Iddoo",
+        deadline:"Guyyaa Xumuraa",
+        posted:"Guyyaa Maxxanfame",
+        notSpecified:"Hin ibsamne",
+        negotiable:"Mariin / Hin ibsamne",
+        noDescription:"Ibsi hojii hin jiru.",
+        contactUnavailable:
+            "Odeeffannoon quunnamtii hojii kennataa hin jiru.",
+        deadlinePassed:"⚠️ Guyyaan xumuraa darbeera.",
+        onlyJobSeekersSave:
+            "Job seeker qofatu hojii kuusuu danda'a.",
+        loginToSave:"Hojii kuusuuf seeni.",
+        loginFirst:"Mee dura seeni.",
+        onlyJobSeekersApply:
+            "Job seeker qofatu hojii irratti iyyachuu danda'a.",
+        jobUnavailable:"Odeeffannoon hojii hin argamne.",
+        notAccepting:
+            "Hojii kun yeroo ammaa iyyannoo hin fudhatu.",
+        deadlineClosed:"Guyyaan xumuraa darbeera.",
+        coverTooShort:
+            "Ergaan iyyannoo yoo xiqqaate jecha 20 qabaachuu qaba.",
+        duplicate:"Hojii kanaaf duraan iyyatteetta.",
+        applicationSuccessCV:
+            "✅ Iyyannoon kee CV waliin milkaa'inaan ergameera.",
+        applicationSuccessNoCV:
+            "✅ Iyyannoon kee CV malee milkaa'inaan ergameera.",
+        applicationClosed:
+            "Iyyannoon cufameera; guyyaan xumuraa darbeera.",
+        applicationsUnavailable:
+            "Iyyannoon hojii kanaaf hin jiru.",
+        alreadyApplied:
+            "✅ Hojii kanaaf duraan iyyatteetta.",
+        writingCover:
+            "Ergaa iyyannoo kee barreessi. CV fe'uun dirqama miti.",
+        uploading:"CV fe'aa jira...",
+        submitting:"Iyyannoo ergaa jira...",
+        applicationsClosed:"Iyyannoon Cufameera",
+        alreadyAppliedButton:"Duraan Iyyatteetta",
+        cvTooLarge:"CV 5 MB caaluu hin qabu.",
+        cvInvalid:"PDF, DOC fi DOCX qofa eeyyamamu.",
+        noCV:"CV hin dabalamne. Garuu iyyachuu dandeessa.",
+        employerPhoneUnavailable:
+            "Lakkoofsi bilbilaa hojii kennataa hin jiru.",
+        employerEmailUnavailable:
+            "Email hojii kennataa hin jiru.",
+        jobNotFound:"Hojichi hin argamne.",
+        jobNotAvailable:
+            "Hojichi yeroo ammaa hin argamu.",
+        jobIdNotFound:"ID hojii hin argamne.",
+        unableLoad:"Hojii fe'uu hin dandeenye.",
+        unableSave:"Hojii kuusuu hin dandeenye.",
+        unableApplication:
+            "Iyyannoo erguu hin dandeenye.",
+        logoutError:
+            "Ba'uu hin dandeenye. Mee irra deebi'i.",
+        footer:
+            "Eastern Ethiopia Digital Broker © 2026",
+        fullTime:"Yeroo Guutuu",
+        partTime:"Yeroo Gariin",
+        contract:"Kontiraata",
+        temporary:"Yeroo Muraasa",
+        internship:"Internship",
+        volunteer:"Fedhii"
+    },
+
+
+    am: {
+
+        back:"← ተመለስ",
+        backDashboard:"← ወደ Dashboard ተመለስ",
+        logout:"ውጣ",
+        loading:"ስራው እየተጫነ ነው...",
+        jobInformation:"የስራ መረጃ",
+        jobDescription:"የስራ መግለጫ",
+        contactEmployer:"ቀጣሪውን ያነጋግሩ",
+        apply:"ለዚህ ስራ ያመልክቱ",
+        coverMessage:"የማመልከቻ መልዕክት",
+        coverPlaceholder:
+            "ለዚህ ስራ ተስማሚ የሆኑበትን ምክንያት ይግለጹ...",
+        cv:"📄 CV / Resume",
+        optional:"(አማራጭ)",
+        cvStrong:"CV የግድ አይደለም።",
+        cvText:
+            "CV ሳይጭኑ ማመልከት ይችላሉ። ቀጣሪው CV ከፈለገ ከማስገባትዎ በፊት CVዎን ያያይዙ።",
+        cvInfo:
+            "CV ሳይኖርዎት ማመልከት ይችላሉ።<br>ካያያዙ PDF, DOC ወይም DOCX ብቻ። ከፍተኛው <strong>5 MB</strong>.",
+        submit:"📝 ማመልከቻ ያስገቡ",
+        loginRequired:"መግባት ያስፈልጋል",
+        loginDescription:
+            "ለዚህ ስራ ለማመልከት እንደ job seeker ይግቡ።",
+        login:"ግባ",
+        save:"☆ ስራውን አስቀምጥ",
+        saved:"★ ተቀምጧል",
+        call:"📞 ደውል",
+        whatsapp:"💬 WhatsApp",
+        email:"📧 Email",
+        employer:"ቀጣሪ",
+        category:"ምድብ",
+        jobType:"የስራ አይነት",
+        salary:"ደመወዝ",
+        location:"ቦታ",
+        deadline:"የማመልከቻ መጨረሻ",
+        posted:"የተለጠፈበት",
+        notSpecified:"አልተገለጸም",
+        negotiable:"በድርድር / አልተገለጸም",
+        noDescription:"የስራ መግለጫ የለም።",
+        contactUnavailable:
+            "የቀጣሪው የመገናኛ መረጃ የለም።",
+        deadlinePassed:
+            "⚠️ የማመልከቻ መጨረሻ ቀን አልፏል።",
+        onlyJobSeekersSave:
+            "Job seeker ብቻ ስራ ማስቀመጥ ይችላል።",
+        loginToSave:
+            "ስራዎችን ለማስቀመጥ ይግቡ።",
+        loginFirst:
+            "እባክዎ መጀመሪያ ይግቡ።",
+        onlyJobSeekersApply:
+            "Job seeker ብቻ ለስራ ማመልከት ይችላል።",
+        jobUnavailable:
+            "የስራው መረጃ አይገኝም።",
+        notAccepting:
+            "ይህ ስራ በአሁኑ ጊዜ ማመልከቻ አይቀበልም።",
+        deadlineClosed:
+            "የማመልከቻ መጨረሻ ቀን አልፏል።",
+        coverTooShort:
+            "የማመልከቻ መልዕክቱ ቢያንስ 20 ቁምፊዎች ሊኖሩት ይገባል።",
+        duplicate:
+            "ለዚህ ስራ ቀድሞውኑ አመልክተዋል።",
+        applicationSuccessCV:
+            "✅ ማመልከቻዎ ከCV ጋር በተሳካ ሁኔታ ተልኳል።",
+        applicationSuccessNoCV:
+            "✅ ማመልከቻዎ ያለ CV በተሳካ ሁኔታ ተልኳል።",
+        applicationClosed:
+            "ማመልከቻዎች ተዘግተዋል።",
+        applicationsUnavailable:
+            "ለዚህ ስራ ማመልከቻ አይገኝም።",
+        alreadyApplied:
+            "✅ ለዚህ ስራ ቀድሞውኑ አመልክተዋል።",
+        writingCover:
+            "የማመልከቻ መልዕክትዎን ይጻፉ። CV መጫን አማራጭ ነው።",
+        uploading:"CV እየተጫነ ነው...",
+        submitting:"ማመልከቻው እየተላከ ነው...",
+        applicationsClosed:"ማመልከቻ ተዘግቷል",
+        alreadyAppliedButton:"ቀድሞ አመልክተዋል",
+        cvTooLarge:"CV ከ5 MB መብለጥ የለበትም።",
+        cvInvalid:"PDF, DOC እና DOCX ብቻ ይፈቀዳሉ።",
+        noCV:
+            "CV አልተያያዘም። አሁንም ማመልከት ይችላሉ።",
+        employerPhoneUnavailable:
+            "የቀጣሪው ስልክ ቁጥር የለም።",
+        employerEmailUnavailable:
+            "የቀጣሪው Email የለም።",
+        jobNotFound:"ስራው አልተገኘም።",
+        jobNotAvailable:
+            "ይህ ስራ በአሁኑ ጊዜ አይገኝም።",
+        jobIdNotFound:
+            "የስራ ID አልተገኘም።",
+        unableLoad:
+            "ስራውን መጫን አልተቻለም።",
+        unableSave:
+            "ስራውን ማስቀመጥ አልተቻለም።",
+        unableApplication:
+            "ማመልከቻውን መላክ አልተቻለም።",
+        logoutError:
+            "መውጣት አልተቻለም። እባክዎ ደግመው ይሞክሩ።",
+        footer:
+            "Eastern Ethiopia Digital Broker © 2026",
+        fullTime:"የሙሉ ጊዜ",
+        partTime:"የከፊል ጊዜ",
+        contract:"ውል",
+        temporary:"ጊዜያዊ",
+        internship:"ልምምድ",
+        volunteer:"በፈቃደኝነት"
+    }
+
+};
+
+
+let currentLanguage =
+    localStorage.getItem(
+        "eedb_language"
+    ) || "en";
+
+
+function t(key){
+
+    const language =
+        translations[currentLanguage] ||
+        translations.en;
+
+    return (
+        language[key] ??
+        translations.en[key] ??
+        key
+    );
+}
+
+
+function changeLanguage(language){
+
+    if(
+        !translations[language]
+    ){
+        language = "en";
+    }
+
+    currentLanguage = language;
+
+    localStorage.setItem(
+        "eedb_language",
+        currentLanguage
+    );
+
+    applyLanguage();
+
+    if(currentJob){
+
+        renderJob();
+
+        renderApplicationArea();
+    }
+}
+
+
+function applyLanguage(){
+
+    document.documentElement.lang =
+        currentLanguage === "om"
+            ? "om"
+            : currentLanguage === "am"
+                ? "am"
+                : "en";
+
+
+    const selector =
+        document.getElementById(
+            "languageSelector"
+        );
+
+    if(selector){
+        selector.value =
+            currentLanguage;
+    }
+
+
+    document.getElementById(
+        "headerBackButton"
+    ).textContent =
+        t("back");
+
+
+    document.getElementById(
+        "dashboardBackButton"
+    ).textContent =
+        t("backDashboard");
+
+
+    document.getElementById(
+        "logoutButton"
+    ).textContent =
+        t("logout");
+
+
+    document.getElementById(
+        "jobInformationTitle"
+    ).textContent =
+        t("jobInformation");
+
+
+    document.getElementById(
+        "jobDescriptionTitle"
+    ).textContent =
+        t("jobDescription");
+
+
+    document.getElementById(
+        "contactTitle"
+    ).textContent =
+        t("contactEmployer");
+
+
+    document.getElementById(
+        "applyTitle"
+    ).textContent =
+        t("apply");
+
+
+    document.getElementById(
+        "coverLabel"
+    ).textContent =
+        t("coverMessage");
+
+
+    document.getElementById(
+        "coverMessage"
+    ).placeholder =
+        t("coverPlaceholder");
+
+
+    document.getElementById(
+        "cvLabel"
+    ).childNodes[0].textContent =
+        t("cv") + " ";
+
+
+    document.getElementById(
+        "cvOptionalLabel"
+    ).textContent =
+        t("optional");
+
+
+    document.getElementById(
+        "cvOptionalStrong"
+    ).textContent =
+        t("cvStrong");
+
+
+    document.getElementById(
+        "cvOptionalText"
+    ).textContent =
+        t("cvText");
+
+
+    document.getElementById(
+        "cvFileInfo"
+    ).innerHTML =
+        t("cvInfo");
+
+
+    document.getElementById(
+        "loginRequiredText"
+    ).textContent =
+        t("loginRequired");
+
+
+    document.getElementById(
+        "loginDescription"
+    ).textContent =
+        t("loginDescription");
+
+
+    document.getElementById(
+        "loginButton"
+    ).textContent =
+        t("login");
+
+
+    document.getElementById(
+        "footerText"
+    ).textContent =
+        t("footer");
+
+
+    updateSaveButton();
+
+
+    if(
+        currentJob &&
+        !alreadyApplied
+    ){
+
+        const button =
+            document.getElementById(
+                "applyButton"
+            );
+
+        if(
+            button &&
+            !button.disabled
+        ){
+
+            button.textContent =
+                t("submit");
+        }
+    }
+}
+
+
+/* =========================================================
+   ROLE NORMALIZATION
+========================================================= */
+
+function normalizeRole(role){
+
+    const value =
+        String(role || "")
+            .trim()
+            .toLowerCase();
+
+    if(
+        value === "jobseeker" ||
+        value === "job-seeker" ||
+        value === "job seeker"
+    ){
+
+        return "job_seeker";
+    }
+
+    return value;
+}
+
+
+/* =========================================================
+   HTML ESCAPE
+========================================================= */
+
+function escapeHTML(value){
+
+    return String(value ?? "")
+        .replace(/&/g,"&amp;")
+        .replace(/</g,"&lt;")
+        .replace(/>/g,"&gt;")
+        .replace(/"/g,"&quot;")
+        .replace(/'/g,"&#039;");
+}
+
+
+/* =========================================================
+   GET JOB ID - FIXED
+========================================================= */
+
+function getJobId(){
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    /*
+       Supports all three formats:
+
+       job-details.html?id=UUID
+
+       job-details.html?job_id=UUID
+
+       job-details.html?jobId=UUID
+    */
+
+    const jobId =
+        params.get("id") ||
+        params.get("job_id") ||
+        params.get("jobId");
+
+
+    if(!jobId){
+
+        return null;
+    }
+
+
+    return String(
+        jobId
+    ).trim();
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializePage
+);
+
+
+async function initializePage(){
+
+    applyLanguage();
+
+
+    currentJobId =
+        getJobId();
+
+
+    if(!currentJobId){
+
+        showError(
+            t("jobIdNotFound")
+        );
+
+        return;
+    }
+
+
+    try{
+
+        await loadCurrentUser();
+
+        await loadLocations();
+
+        await loadJob();
+
+
+        if(currentUser){
+
+            await checkSavedJob();
+
+            await checkExistingApplication();
+        }
+
+
+        renderApplicationArea();
+
+        applyLanguage();
+
+    }catch(error){
+
+        console.error(
+            "Initialization error:",
+            error
+        );
+
+        showError(
+            error.message ||
+            t("unableLoad")
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD CURRENT USER
+========================================================= */
+
+async function loadCurrentUser(){
+
+    const {
+        data,
+        error
+    } =
+        await db.auth.getUser();
+
+
+    if(error){
+
+        console.warn(
+            "getUser error:",
+            error
+        );
+
+        currentUser = null;
+
+        return;
+    }
+
+
+    currentUser =
+        data?.user || null;
+
+
+    if(!currentUser){
+
+        currentProfile = null;
+
+        return;
+    }
+
+
+    const {
+        data:profile,
+        error:profileError
+    } =
+        await db
+            .from("profiles")
+            .select(
+                "id, full_name, phone, role"
+            )
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+    if(profileError){
+
+        console.warn(
+            "Profile load error:",
+            profileError
+        );
+
+        currentProfile = null;
+
+        return;
+    }
+
+
+    currentProfile =
+        profile || null;
+}
+
+
+/* =========================================================
+   LOAD LOCATIONS
+========================================================= */
+
+async function loadLocations(){
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("locations")
+            .select(
+                "id, parent_id, name, type"
+            )
+            .eq(
+                "is_active",
+                true
+            )
+            .order(
+                "name",
+                {
+                    ascending:true
+                }
+            );
+
+
+    if(error){
+
+        console.warn(
+            "Locations could not be loaded:",
+            error
+        );
+
+        locations = [];
+
+        return;
+    }
+
+
+    locations =
+        Array.isArray(data)
+            ? data
+            : [];
+}
+
+
+/* =========================================================
+   LOCATION HELPERS
+========================================================= */
+
+function getLocationById(id){
+
+    if(!id){
+        return null;
+    }
+
+
+    return locations.find(
+        item =>
+            String(item.id) ===
+            String(id)
+    ) || null;
+}
+
+
+function getLocationName(id){
+
+    const location =
+        getLocationById(id);
+
+    return location
+        ? location.name
+        : "";
+}
+
+
+function buildLocationText(job){
+
+    const names = [];
+
+    const ids = [
+
+        job.region_id,
+        job.zone_id,
+        job.city_id,
+        job.woreda_id,
+        job.area_id
+
+    ];
+
+
+    ids.forEach(id => {
+
+        const name =
+            getLocationName(id);
+
+
+        if(
+            name &&
+            !names.includes(name)
+        ){
+
+            names.push(name);
+        }
+
+    });
+
+
+    return names.join(" → ");
+}
+
+
+/* =========================================================
+   LOAD JOB
+========================================================= */
+
+async function loadJob(){
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("jobs")
+            .select(`
+                id,
+                employer_id,
+                title,
+                description,
+                category,
+                job_type,
+                salary,
+                region_id,
+                zone_id,
+                city_id,
+                woreda_id,
+                area_id,
+                company_name,
+                contact_phone,
+                contact_email,
+                application_deadline,
+                status,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                "id",
+                currentJobId
+            )
+            .maybeSingle();
+
+
+    if(error){
+
+        throw error;
+    }
+
+
+    if(!data){
+
+        throw new Error(
+            t("jobNotFound")
+        );
+    }
+
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    const isOwner =
+        currentUser &&
+        String(data.employer_id) ===
+        String(currentUser.id);
+
+
+    const isAdmin =
+        role === "admin";
+
+
+    const isPublished =
+        data.status ===
+        "published";
+
+
+    if(
+        !isPublished &&
+        !isOwner &&
+        !isAdmin
+    ){
+
+        throw new Error(
+            t("jobNotAvailable")
+        );
+    }
+
+
+    currentJob =
+        data;
+
+
+    renderJob();
+
+
+    document
+        .getElementById("loading")
+        .classList.add("hidden");
+
+
+    document
+        .getElementById("jobContent")
+        .classList.remove("hidden");
+}
+
+
+/* =========================================================
+   RENDER JOB
+========================================================= */
+
+function renderJob(){
+
+    if(!currentJob){
+        return;
+    }
+
+
+    document
+        .getElementById("jobTitle")
+        .textContent =
+        currentJob.title ||
+        "Job Opportunity";
+
+
+    document
+        .getElementById("companyName")
+        .textContent =
+        currentJob.company_name ||
+        t("employer");
+
+
+    renderBadges();
+
+    renderInfo();
+
+
+    document
+        .getElementById("description")
+        .textContent =
+        currentJob.description ||
+        t("noDescription");
+
+
+    renderContacts();
+
+    renderDeadline();
+}
+
+
+/* =========================================================
+   JOB TYPE
+========================================================= */
+
+function formatJobType(type){
+
+    const map = {
+
+        full_time:t("fullTime"),
+        part_time:t("partTime"),
+        contract:t("contract"),
+        temporary:t("temporary"),
+        internship:t("internship"),
+        volunteer:t("volunteer")
+
+    };
+
+
+    return map[type] ||
+        type ||
+        t("notSpecified");
+}
+
+
+/* =========================================================
+   BADGES
+========================================================= */
+
+function renderBadges(){
+
+    const container =
+        document.getElementById(
+            "badges"
+        );
+
+
+    const badges = [];
+
+
+    if(currentJob.category){
+
+        badges.push(`
+            <span class="badge">
+                ${escapeHTML(
+                    currentJob.category
+                )}
+            </span>
+        `);
+    }
+
+
+    if(currentJob.job_type){
+
+        badges.push(`
+            <span class="badge green">
+                ${escapeHTML(
+                    formatJobType(
+                        currentJob.job_type
+                    )
+                )}
+            </span>
+        `);
+    }
+
+
+    if(
+        currentJob.salary !== null &&
+        currentJob.salary !== undefined &&
+        currentJob.salary !== ""
+    ){
+
+        badges.push(`
+            <span class="badge orange">
+                ${escapeHTML(
+                    t("salary") +
+                    ": " +
+                    formatSalary(
+                        currentJob.salary
+                    )
+                )}
+            </span>
+        `);
+    }
+
+
+    if(currentJob.status){
+
+        badges.push(`
+            <span class="badge">
+                ${escapeHTML(
+                    String(
+                        currentJob.status
+                    ).toUpperCase()
+                )}
+            </span>
+        `);
+    }
+
+
+    container.innerHTML =
+        badges.join("");
+}
+
+
+/* =========================================================
+   SALARY
+========================================================= */
+
+function formatSalary(value){
+
+    const number =
+        Number(value);
+
+
+    if(!Number.isFinite(number)){
+
+        return String(
+            value || ""
+        );
+    }
+
+
+    return number.toLocaleString(
+        currentLanguage === "am"
+            ? "am-ET"
+            : currentLanguage === "om"
+                ? "om-ET"
+                : "en-US"
+    );
+}
+
+
+/* =========================================================
+   INFO
+========================================================= */
+
+function renderInfo(){
+
+    const locationText =
+        buildLocationText(
+            currentJob
+        );
+
+
+    const items = [
+
+        [
+            t("category"),
+            currentJob.category ||
+            t("notSpecified")
+        ],
+
+        [
+            t("jobType"),
+            formatJobType(
+                currentJob.job_type
+            )
+        ],
+
+        [
+            t("salary"),
+            currentJob.salary !== null &&
+            currentJob.salary !== undefined &&
+            currentJob.salary !== ""
+                ? formatSalary(
+                    currentJob.salary
+                )
+                : t("negotiable")
+        ],
+
+        [
+            t("location"),
+            locationText ||
+            t("notSpecified")
+        ],
+
+        [
+            t("deadline"),
+            formatDate(
+                currentJob.application_deadline
+            )
+        ],
+
+        [
+            t("posted"),
+            formatDateTime(
+                currentJob.created_at
+            )
+        ]
+
+    ];
+
+
+    document
+        .getElementById("infoGrid")
+        .innerHTML =
+        items.map(
+            item => `
+                <div class="info-item">
+
+                    <div class="info-label">
+                        ${escapeHTML(item[0])}
+                    </div>
+
+                    <div class="info-value">
+                        ${escapeHTML(item[1])}
+                    </div>
+
+                </div>
+            `
+        ).join("");
+}
+
+
+/* =========================================================
+   CONTACT
+========================================================= */
+
+function renderContacts(){
+
+    const container =
+        document.getElementById(
+            "contactActions"
+        );
+
+
+    const phone =
+        String(
+            currentJob.contact_phone ||
+            ""
+        ).trim();
+
+
+    const email =
+        String(
+            currentJob.contact_email ||
+            ""
+        ).trim();
+
+
+    const buttons = [];
+
+
+    if(phone){
+
+        buttons.push(`
+            <button
+                class="btn btn-success"
+                type="button"
+                onclick="callEmployer()"
+            >
+                ${t("call")}
+            </button>
+        `);
+
+
+        buttons.push(`
+            <button
+                class="btn btn-success"
+                type="button"
+                onclick="openWhatsApp()"
+            >
+                ${t("whatsapp")}
+            </button>
+        `);
+    }
+
+
+    if(email){
+
+        buttons.push(`
+            <button
+                class="btn btn-primary"
+                type="button"
+                onclick="emailEmployer()"
+            >
+                ${t("email")}
+            </button>
+        `);
+    }
+
+
+    if(!buttons.length){
+
+        container.innerHTML =
+            `<div class="empty-box">
+                ${escapeHTML(
+                    t("contactUnavailable")
+                )}
+            </div>`;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        buttons.join("");
+}
+
+
+/* =========================================================
+   PHONE
+========================================================= */
+
+function cleanPhone(phone){
+
+    return String(phone || "")
+        .trim()
+        .replace(
+            /[^0-9+]/g,
+            ""
+        );
+}
+
+
+function callEmployer(){
+
+    const phone =
+        cleanPhone(
+            currentJob &&
+            currentJob.contact_phone
+        );
+
+
+    if(!phone){
+
+        alert(
+            t("employerPhoneUnavailable")
+        );
+
+        return;
+    }
+
+
+    window.location.href =
+        "tel:" + phone;
+}
+
+
+/* =========================================================
+   WHATSAPP
+========================================================= */
+
+function openWhatsApp(){
+
+    const phone =
+        cleanPhone(
+            currentJob &&
+            currentJob.contact_phone
+        );
+
+
+    if(!phone){
+
+        alert(
+            t("employerPhoneUnavailable")
+        );
+
+        return;
+    }
+
+
+    const message =
+        "Hello, I am interested in the job: " +
+        (currentJob.title || "");
+
+
+    const url =
+        "https://wa.me/" +
+        phone.replace(
+            /^\+/,
+            ""
+        ) +
+        "?text=" +
+        encodeURIComponent(
+            message
+        );
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+}
+
+
+/* =========================================================
+   EMAIL
+========================================================= */
+
+function emailEmployer(){
+
+    const email =
+        String(
+            currentJob &&
+            currentJob.contact_email ||
+            ""
+        ).trim();
+
+
+    if(!email){
+
+        alert(
+            t("employerEmailUnavailable")
+        );
+
+        return;
+    }
+
+
+    const subject =
+        "Application / Inquiry: " +
+        (currentJob.title || "Job");
+
+
+    const body =
+        "Hello,\n\n" +
+        "I am interested in the job opportunity: " +
+        (currentJob.title || "") +
+        ".\n\nThank you.";
+
+
+    window.location.href =
+        "mailto:" +
+        email +
+        "?subject=" +
+        encodeURIComponent(subject) +
+        "&body=" +
+        encodeURIComponent(body);
+}
+
+
+/* =========================================================
+   DEADLINE
+========================================================= */
+
+function parseDateOnly(value){
+
+    if(!value){
+        return null;
+    }
+
+
+    const parts =
+        String(value).split("-");
+
+
+    if(parts.length !== 3){
+        return null;
+    }
+
+
+    const year =
+        Number(parts[0]);
+
+    const month =
+        Number(parts[1]);
+
+    const day =
+        Number(parts[2]);
+
+
+    if(
+        !year ||
+        !month ||
+        !day
+    ){
+        return null;
+    }
+
+
+    return new Date(
+        year,
+        month - 1,
+        day,
+        23,
+        59,
+        59
+    );
+}
+
+
+function isDeadlinePassed(){
+
+    if(
+        !currentJob ||
+        !currentJob.application_deadline
+    ){
+        return false;
+    }
+
+
+    const deadline =
+        parseDateOnly(
+            currentJob.application_deadline
+        );
+
+
+    if(!deadline){
+        return false;
+    }
+
+
+    return new Date() > deadline;
+}
+
+
+function renderDeadline(){
+
+    const box =
+        document.getElementById(
+            "deadlineWarning"
+        );
+
+
+    if(
+        !currentJob ||
+        !currentJob.application_deadline
+    ){
+
+        box.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    if(isDeadlinePassed()){
+
+        box.textContent =
+            t("deadlinePassed");
+
+        box.classList.remove(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    const deadline =
+        parseDateOnly(
+            currentJob.application_deadline
+        );
+
+
+    box.textContent =
+        "⏰ " +
+        t("deadline") +
+        ": " +
+        deadline.toLocaleDateString(
+            currentLanguage === "am"
+                ? "am-ET"
+                : currentLanguage === "om"
+                    ? "en-GB"
+                    : "en-GB"
+        );
+
+
+    box.classList.remove(
+        "hidden"
+    );
+}
+
+
+/* =========================================================
+   DATE FORMAT
+========================================================= */
+
+function formatDate(value){
+
+    if(!value){
+        return t("notSpecified");
+    }
+
+
+    const date =
+        new Date(
+            value + "T00:00:00"
+        );
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+        return String(value);
+    }
+
+
+    return date.toLocaleDateString(
+        currentLanguage === "am"
+            ? "am-ET"
+            : "en-GB"
+    );
+}
+
+
+function formatDateTime(value){
+
+    if(!value){
+        return t("notSpecified");
+    }
+
+
+    const date =
+        new Date(value);
+
+
+    if(
+        Number.isNaN(
+            date.getTime()
+        )
+    ){
+        return String(value);
+    }
+
+
+    return date.toLocaleDateString(
+        currentLanguage === "am"
+            ? "am-ET"
+            : "en-GB",
+        {
+            day:"2-digit",
+            month:"short",
+            year:"numeric"
+        }
+    );
+}
+
+
+/* =========================================================
+   SAVE JOB
+========================================================= */
+
+async function checkSavedJob(){
+
+    isSaved = false;
+
+
+    if(!currentUser){
+
+        updateSaveButton();
+
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("job_saved")
+            .select("id")
+            .eq(
+                "job_id",
+                currentJobId
+            )
+            .eq(
+                "user_id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+    if(error){
+
+        console.warn(
+            "Save check error:",
+            error
+        );
+
+        updateSaveButton();
+
+        return;
+    }
+
+
+    isSaved =
+        Boolean(data);
+
+
+    updateSaveButton();
+}
+
+
+function updateSaveButton(){
+
+    const button =
+        document.getElementById(
+            "saveButton"
+        );
+
+
+    if(!button){
+        return;
+    }
+
+
+    if(isSaved){
+
+        button.textContent =
+            t("saved");
+
+        button.classList.add(
+            "btn-warning"
+        );
+
+    }else{
+
+        button.textContent =
+            t("save");
+
+        button.classList.remove(
+            "btn-warning"
+        );
+    }
+}
+
+
+async function toggleSaveJob(){
+
+    if(!currentUser){
+
+        alert(
+            t("loginToSave")
+        );
+
+        window.location.href =
+            "index.html";
+
+        return;
+    }
+
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    if(
+        role !== "job_seeker"
+    ){
+
+        alert(
+            t("onlyJobSeekersSave")
+        );
+
+        return;
+    }
+
+
+    try{
+
+        if(isSaved){
+
+            const {
+                error
+            } =
+                await db
+                    .from("job_saved")
+                    .delete()
+                    .eq(
+                        "job_id",
+                        currentJobId
+                    )
+                    .eq(
+                        "user_id",
+                        currentUser.id
+                    );
+
+
+            if(error){
+                throw error;
+            }
+
+
+            isSaved = false;
+
+        }else{
+
+            const {
+                error
+            } =
+                await db
+                    .from("job_saved")
+                    .insert({
+
+                        job_id:
+                            currentJobId,
+
+                        user_id:
+                            currentUser.id
+
+                    });
+
+
+            if(error){
+
+                if(
+                    error.code ===
+                    "23505"
+                ){
+
+                    isSaved = true;
+
+                }else{
+
+                    throw error;
+                }
+
+            }else{
+
+                isSaved = true;
+            }
+        }
+
+
+        updateSaveButton();
+
+    }catch(error){
+
+        console.error(
+            "Save job error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            t("unableSave")
+        );
+    }
+}
+
+
+/* =========================================================
+   CHECK APPLICATION
+========================================================= */
+
+async function checkExistingApplication(){
+
+    alreadyApplied = false;
+
+
+    if(!currentUser){
+        return;
+    }
+
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    if(
+        role !== "job_seeker"
+    ){
+        return;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("job_applications")
+            .select(
+                "id, status, cv_url"
+            )
+            .eq(
+                "job_id",
+                currentJobId
+            )
+            .eq(
+                "applicant_id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+
+    if(error){
+
+        console.warn(
+            "Application check error:",
+            error
+        );
+
+        return;
+    }
+
+
+    alreadyApplied =
+        Boolean(data);
+}
+
+
+/* =========================================================
+   APPLICATION AREA
+========================================================= */
+
+function renderApplicationArea(){
+
+    const applicationSection =
+        document.getElementById(
+            "applicationSection"
+        );
+
+
+    const loginBox =
+        document.getElementById(
+            "loginApplyBox"
+        );
+
+
+    if(!currentUser){
+
+        applicationSection.classList.add(
+            "hidden"
+        );
+
+        loginBox.classList.remove(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    if(
+        role !== "job_seeker"
+    ){
+
+        applicationSection.classList.add(
+            "hidden"
+        );
+
+        loginBox.classList.add(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    loginBox.classList.add(
+        "hidden"
+    );
+
+    applicationSection.classList.remove(
+        "hidden"
+    );
+
+
+    const statusText =
+        document.getElementById(
+            "applicationStatusText"
+        );
+
+
+    const button =
+        document.getElementById(
+            "applyButton"
+        );
+
+
+    if(alreadyApplied){
+
+        statusText.textContent =
+            t("alreadyApplied");
+
+        statusText.style.color =
+            "#047857";
+
+        button.disabled = true;
+
+        button.textContent =
+            t("alreadyAppliedButton");
+
+        return;
+    }
+
+
+    if(isDeadlinePassed()){
+
+        statusText.textContent =
+            t("applicationClosed");
+
+        statusText.style.color =
+            "#b91c1c";
+
+        button.disabled = true;
+
+        button.textContent =
+            t("applicationsClosed");
+
+        return;
+    }
+
+
+    if(
+        currentJob &&
+        currentJob.status !==
+        "published"
+    ){
+
+        statusText.textContent =
+            t("applicationsUnavailable");
+
+        statusText.style.color =
+            "#b91c1c";
+
+        button.disabled = true;
+
+        button.textContent =
+            t("applicationsClosed");
+
+        return;
+    }
+
+
+    statusText.textContent =
+        t("writingCover");
+
+    statusText.style.color =
+        "#475569";
+
+    button.disabled = false;
+
+    button.textContent =
+        t("submit");
+}
+
+
+/* =========================================================
+   CV VALIDATION
+========================================================= */
+
+function validateCV(file){
+
+    if(!file){
+
+        return {
+            valid:true,
+            message:""
+        };
+    }
+
+
+    const maxSize =
+        5 * 1024 * 1024;
+
+
+    if(file.size > maxSize){
+
+        return {
+            valid:false,
+            message:t("cvTooLarge")
+        };
+    }
+
+
+    const allowedTypes = [
+
+        "application/pdf",
+
+        "application/msword",
+
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+
+    ];
+
+
+    const allowedExtensions = [
+
+        ".pdf",
+        ".doc",
+        ".docx"
+
+    ];
+
+
+    const fileName =
+        String(
+            file.name
+        ).toLowerCase();
+
+
+    const extension =
+        allowedExtensions.some(
+            ext =>
+                fileName.endsWith(
+                    ext
+                )
+        );
+
+
+    const mime =
+        allowedTypes.includes(
+            file.type
+        );
+
+
+    if(
+        !extension &&
+        !mime
+    ){
+
+        return {
+            valid:false,
+            message:t("cvInvalid")
+        };
+    }
+
+
+    return {
+        valid:true,
+        message:""
+    };
+}
+
+
+/* =========================================================
+   CV SELECTION
+========================================================= */
+
+function handleCVSelection(){
+
+    const input =
+        document.getElementById(
+            "cvFile"
+        );
+
+
+    const selected =
+        document.getElementById(
+            "selectedFile"
+        );
+
+
+    const file =
+        input.files &&
+        input.files[0];
+
+
+    if(!file){
+
+        selected.textContent =
+            t("noCV");
+
+        selected.style.color =
+            "#64748b";
+
+        selected.classList.remove(
+            "hidden"
+        );
+
+        return;
+    }
+
+
+    const validation =
+        validateCV(file);
+
+
+    if(!validation.valid){
+
+        selected.textContent =
+            "❌ " +
+            validation.message;
+
+        selected.classList.remove(
+            "hidden"
+        );
+
+        selected.style.color =
+            "#b91c1c";
+
+        input.value =
+            "";
+
+        return;
+    }
+
+
+    selected.textContent =
+        "📄 " +
+        file.name +
+        " (" +
+        formatFileSize(
+            file.size
+        ) +
+        ")";
+
+
+    selected.style.color =
+        "#1d4ed8";
+
+
+    selected.classList.remove(
+        "hidden"
+    );
+}
+
+
+function formatFileSize(bytes){
+
+    if(
+        !bytes ||
+        bytes < 1024
+    ){
+
+        return bytes + " B";
+    }
+
+
+    if(
+        bytes <
+        1024 * 1024
+    ){
+
+        return (
+            bytes / 1024
+        ).toFixed(1) +
+        " KB";
+    }
+
+
+    return (
+        bytes /
+        (1024 * 1024)
+    ).toFixed(2) +
+    " MB";
+}
+
+
+/* =========================================================
+   UPLOAD CV
+========================================================= */
+
+async function uploadCV(file){
+
+    if(!file){
+        return null;
+    }
+
+
+    const validation =
+        validateCV(file);
+
+
+    if(!validation.valid){
+
+        throw new Error(
+            validation.message
+        );
+    }
+
+
+    const originalName =
+        String(
+            file.name
+        );
+
+
+    const parts =
+        originalName.split(".");
+
+
+    const extension =
+        parts.length > 1
+            ? parts.pop().toLowerCase()
+            : "pdf";
+
+
+    const fileName =
+        "cv-" +
+        Date.now() +
+        "-" +
+        Math.random()
+            .toString(36)
+            .substring(2,8) +
+        "." +
+        extension;
+
+
+    const storagePath =
+        currentUser.id +
+        "/" +
+        fileName;
+
+
+    const {
+        error
+    } =
+        await db.storage
+            .from("job-cvs")
+            .upload(
+                storagePath,
+                file,
+                {
+                    cacheControl:"3600",
+                    upsert:false,
+                    contentType:
+                        file.type ||
+                        undefined
+                }
+            );
+
+
+    if(error){
+        throw error;
+    }
+
+
+    return storagePath;
+}
+
+
+/* =========================================================
+   SUBMIT APPLICATION
+========================================================= */
+
+async function submitApplication(){
+
+    const button =
+        document.getElementById(
+            "applyButton"
+        );
+
+
+    const cover =
+        document
+            .getElementById(
+                "coverMessage"
+            )
+            .value
+            .trim();
+
+
+    const fileInput =
+        document.getElementById(
+            "cvFile"
+        );
+
+
+    const file =
+        fileInput &&
+        fileInput.files &&
+        fileInput.files[0]
+            ? fileInput.files[0]
+            : null;
+
+
+    clearApplicationMessage();
+
+
+    if(!currentUser){
+
+        showApplicationMessage(
+            t("loginFirst"),
+            "error"
+        );
+
+        return;
+    }
+
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    if(
+        role !== "job_seeker"
+    ){
+
+        showApplicationMessage(
+            t("onlyJobSeekersApply"),
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(!currentJob){
+
+        showApplicationMessage(
+            t("jobUnavailable"),
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(
+        currentJob.status !==
+        "published"
+    ){
+
+        showApplicationMessage(
+            t("notAccepting"),
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(isDeadlinePassed()){
+
+        showApplicationMessage(
+            t("deadlineClosed"),
+            "error"
+        );
+
+        renderApplicationArea();
+
+        return;
+    }
+
+
+    if(
+        cover.length < 20
+    ){
+
+        showApplicationMessage(
+            t("coverTooShort"),
+            "error"
+        );
+
+        return;
+    }
+
+
+    if(file){
+
+        const validation =
+            validateCV(file);
+
+
+        if(!validation.valid){
+
+            showApplicationMessage(
+                validation.message,
+                "error"
+            );
+
+            return;
+        }
+    }
+
+
+    button.disabled = true;
+
+
+    button.textContent =
+        file
+            ? t("uploading")
+            : t("submitting");
+
+
+    let uploadedPath = null;
+
+
+    try{
+
+        const {
+            data:existing,
+            error:existingError
+        } =
+            await db
+                .from("job_applications")
+                .select("id")
+                .eq(
+                    "job_id",
+                    currentJobId
+                )
+                .eq(
+                    "applicant_id",
+                    currentUser.id
+                )
+                .maybeSingle();
+
+
+        if(existingError){
+            throw existingError;
+        }
+
+
+        if(existing){
+
+            alreadyApplied = true;
+
+            throw new Error(
+                t("duplicate")
+            );
+        }
+
+
+        if(file){
+
+            uploadedPath =
+                await uploadCV(file);
+
+            button.textContent =
+                t("submitting");
+
+        }else{
+
+            uploadedPath = null;
+        }
+
+
+        const {
+            error:insertError
+        } =
+            await db
+                .from("job_applications")
+                .insert({
+
+                    job_id:
+                        currentJobId,
+
+                    applicant_id:
+                        currentUser.id,
+
+                    cover_message:
+                        cover,
+
+                    cv_url:
+                        uploadedPath,
+
+                    status:
+                        "pending"
+
+                });
+
+
+        if(insertError){
+
+            if(
+                insertError.code ===
+                "23505"
+            ){
+
+                alreadyApplied = true;
+
+
+                if(uploadedPath){
+
+                    try{
+
+                        await db.storage
+                            .from("job-cvs")
+                            .remove([
+                                uploadedPath
+                            ]);
+
+                    }catch(
+                        cleanupError
+                    ){
+
+                        console.warn(
+                            "Duplicate CV cleanup failed:",
+                            cleanupError
+                        );
+                    }
+                }
+
+
+                throw new Error(
+                    t("duplicate")
+                );
+            }
+
+
+            throw insertError;
+        }
+
+
+        alreadyApplied = true;
+
+
+        document
+            .getElementById(
+                "coverMessage"
+            )
+            .value = "";
+
+
+        document
+            .getElementById(
+                "cvFile"
+            )
+            .value = "";
+
+
+        const selected =
+            document.getElementById(
+                "selectedFile"
+            );
+
+
+        selected.textContent =
+            "";
+
+        selected.classList.add(
+            "hidden"
+        );
+
+
+        showApplicationMessage(
+
+            uploadedPath
+                ? t("applicationSuccessCV")
+                : t("applicationSuccessNoCV"),
+
+            "success"
+        );
+
+
+        renderApplicationArea();
+
+
+    }catch(error){
+
+        console.error(
+            "Application submission error:",
+            error
+        );
+
+
+        if(
+            uploadedPath &&
+            !alreadyApplied
+        ){
+
+            try{
+
+                await db.storage
+                    .from("job-cvs")
+                    .remove([
+                        uploadedPath
+                    ]);
+
+            }catch(
+                cleanupError
+            ){
+
+                console.warn(
+                    "CV cleanup failed:",
+                    cleanupError
+                );
+            }
+        }
+
+
+        showApplicationMessage(
+            error.message ||
+            t("unableApplication"),
+            "error"
+        );
+
+
+    }finally{
+
+        if(!alreadyApplied){
+
+            button.disabled =
+                false;
+
+            button.textContent =
+                t("submit");
+        }
+    }
+}
+
+
+/* =========================================================
+   APPLICATION MESSAGE
+========================================================= */
+
+function showApplicationMessage(
+    text,
+    type
+){
+
+    const box =
+        document.getElementById(
+            "applicationMessage"
+        );
+
+
+    box.textContent =
+        text;
+
+
+    box.className =
+        "message show " +
+        (
+            type === "success"
+                ? "success"
+                : "error"
+        );
+}
+
+
+function clearApplicationMessage(){
+
+    const box =
+        document.getElementById(
+            "applicationMessage"
+        );
+
+
+    box.textContent =
+        "";
+
+
+    box.className =
+        "message";
+}
+
+
+/* =========================================================
+   BACK
+========================================================= */
+
+function goBack(){
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    if(
+        role === "job_seeker"
+    ){
+
+        window.location.href =
+            "job-seeker-dashboard.html";
+
+        return;
+    }
+
+
+    if(
+        role === "owner"
+    ){
+
+        window.location.href =
+            "employer-job-dashboard.html";
+
+        return;
+    }
+
+
+    if(
+        role === "admin"
+    ){
+
+        window.location.href =
+            "admin-dashboard.html";
+
+        return;
+    }
+
+
+    window.location.href =
+        "index.html";
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logout(){
+
+    try{
+
+        const {
+            error
+        } =
+            await db.auth.signOut();
+
+
+        if(error){
+            throw error;
+        }
+
+
+        window.location.href =
+            "index.html";
+
+
+    }catch(error){
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+
+        alert(
+            error.message ||
+            t("logoutError")
+        );
+    }
+}
+
+
+/* =========================================================
+   ERROR UI
+========================================================= */
+
+function showError(message){
+
+    document
+        .getElementById("loading")
+        .classList.add(
+            "hidden"
+        );
+
+
+    const box =
+        document.getElementById(
+            "errorBox"
+        );
+
+
+    box.textContent =
+        message ||
+        t("unableLoad");
+
+
+    box.classList.remove(
+        "hidden"
+    );
+}
+
+</script>
+
+</body>
+</html>

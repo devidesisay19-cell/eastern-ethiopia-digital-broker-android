@@ -1,0 +1,1596 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Applications | Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="supabase.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+.header {
+    background: #102a43;
+    color: white;
+    padding: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.header-inner {
+    max-width: 1100px;
+    margin: auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.logo {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.subtitle {
+    font-size: 12px;
+    opacity: .8;
+    margin-top: 4px;
+}
+
+.back-btn {
+    border: 0;
+    background: white;
+    color: #102a43;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+    padding: 20px 15px 50px;
+}
+
+.job-header {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+.job-title {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.company {
+    color: #667085;
+    margin-top: 6px;
+}
+
+.job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+}
+
+.badge {
+    background: #eef2ff;
+    color: #3730a3;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.stat {
+    background: white;
+    border-radius: 12px;
+    padding: 15px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.stat-number {
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.stat-label {
+    color: #667085;
+    font-size: 12px;
+    margin-top: 4px;
+}
+
+.toolbar {
+    background: white;
+    padding: 15px;
+    border-radius: 13px;
+    margin-bottom: 15px;
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.toolbar input,
+.toolbar select {
+    flex: 1;
+    min-width: 180px;
+    padding: 11px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+}
+
+.application {
+    background: white;
+    border-radius: 14px;
+    padding: 18px;
+    margin-bottom: 13px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.06);
+}
+
+.app-top {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.applicant-name {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.applicant-contact {
+    color: #667085;
+    font-size: 13px;
+    margin-top: 5px;
+    line-height: 1.6;
+}
+
+.status {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    white-space: nowrap;
+}
+
+.status-pending {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.status-reviewing {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.status-shortlisted {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.status-accepted {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.status-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+.status-withdrawn {
+    background: #e5e7eb;
+    color: #374151;
+}
+
+.cover {
+    margin-top: 15px;
+    padding: 14px;
+    background: #f8fafc;
+    border-radius: 9px;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 15px;
+}
+
+.action-btn {
+    border: 0;
+    padding: 9px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.review-btn {
+    background: #dbeafe;
+    color: #1d4ed8;
+}
+
+.shortlist-btn {
+    background: #ede9fe;
+    color: #6d28d9;
+}
+
+.accept-btn {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.reject-btn {
+    background: #fee2e2;
+    color: #b91c1c;
+}
+
+.contact-btn {
+    background: #ecfdf3;
+    color: #047857;
+}
+
+.status-select {
+    padding: 9px;
+    border: 1px solid #d0d5dd;
+    border-radius: 8px;
+}
+
+.empty {
+    background: white;
+    padding: 40px 15px;
+    border-radius: 14px;
+    text-align: center;
+    color: #667085;
+}
+
+.loading {
+    text-align: center;
+    padding: 30px;
+    color: #667085;
+}
+
+.message {
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    display: none;
+}
+
+.success {
+    background: #dcfce7;
+    color: #166534;
+}
+
+.error {
+    background: #fee2e2;
+    color: #991b1b;
+}
+
+@media (max-width: 700px) {
+
+    .stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .app-top {
+        flex-direction: column;
+    }
+
+    .job-title {
+        font-size: 20px;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+
+<header class="header">
+
+<div class="header-inner">
+
+<div>
+
+<div class="logo">
+Eastern Ethiopia Digital Broker
+</div>
+
+<div class="subtitle">
+Employer Applications
+</div>
+
+</div>
+
+<button
+    class="back-btn"
+    onclick="goBack()"
+>
+← Back
+</button>
+
+</div>
+
+</header>
+
+
+<main class="container">
+
+
+<div
+    id="message"
+    class="message"
+></div>
+
+
+<!-- JOB INFORMATION -->
+
+<div
+    id="jobHeader"
+    class="job-header"
+>
+
+<div class="loading">
+Loading job...
+</div>
+
+</div>
+
+
+<!-- STATISTICS -->
+
+<div class="stats">
+
+<div class="stat">
+
+<div
+    id="totalApplications"
+    class="stat-number"
+>
+0
+</div>
+
+<div class="stat-label">
+Total Applications
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div
+    id="pendingCount"
+    class="stat-number"
+>
+0
+</div>
+
+<div class="stat-label">
+Pending
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div
+    id="shortlistedCount"
+    class="stat-number"
+>
+0
+</div>
+
+<div class="stat-label">
+Shortlisted
+</div>
+
+</div>
+
+
+<div class="stat">
+
+<div
+    id="acceptedCount"
+    class="stat-number"
+>
+0
+</div>
+
+<div class="stat-label">
+Accepted
+</div>
+
+</div>
+
+</div>
+
+
+<!-- FILTER -->
+
+<div class="toolbar">
+
+<input
+    type="search"
+    id="searchInput"
+    placeholder="Search applicant..."
+>
+
+<select id="statusFilter">
+
+<option value="">
+All Statuses
+</option>
+
+<option value="pending">
+Pending
+</option>
+
+<option value="reviewing">
+Reviewing
+</option>
+
+<option value="shortlisted">
+Shortlisted
+</option>
+
+<option value="accepted">
+Accepted
+</option>
+
+<option value="rejected">
+Rejected
+</option>
+
+<option value="withdrawn">
+Withdrawn
+</option>
+
+</select>
+
+</div>
+
+
+<!-- APPLICATIONS -->
+
+<div id="applicationsList">
+
+<div class="loading">
+Loading applications...
+</div>
+
+</div>
+
+
+</main>
+
+
+<script>
+
+let currentUser = null;
+let currentJob = null;
+let applications = [];
+
+let jobId = null;
+
+
+/* =========================
+   START
+========================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    async function() {
+
+        try {
+
+            if (!db) {
+
+                throw new Error(
+                    "Supabase client is not initialized."
+                );
+
+            }
+
+
+            await checkEmployer();
+
+
+            getJobId();
+
+
+            if (!jobId) {
+
+                throw new Error(
+                    "Job ID was not found."
+                );
+
+            }
+
+
+            await loadJob();
+
+
+            await loadApplications();
+
+        }
+        catch(error) {
+
+            console.error(error);
+
+            showMessage(
+                error.message,
+                "error"
+            );
+
+            document.getElementById(
+                "applicationsList"
+            ).innerHTML =
+                `<div class="empty">
+                    Unable to load applications.
+                </div>`;
+
+        }
+
+    }
+);
+
+
+/* =========================
+   CHECK EMPLOYER
+========================= */
+
+async function checkEmployer() {
+
+    const {
+        data,
+        error
+    } = await db.auth.getUser();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    currentUser = data.user;
+
+
+    if (!currentUser) {
+
+        window.location.href =
+            "index.html";
+
+        return;
+
+    }
+
+
+    const {
+        data: profile,
+        error: profileError
+    } = await db
+        .from("profiles")
+        .select(`
+            id,
+            full_name,
+            phone,
+            role
+        `)
+        .eq(
+            "id",
+            currentUser.id
+        )
+        .maybeSingle();
+
+
+    if (profileError) {
+        throw profileError;
+    }
+
+
+    if (!profile) {
+
+        throw new Error(
+            "Your profile was not found."
+        );
+
+    }
+
+
+    if (
+        profile.role !== "employer"
+    ) {
+
+        throw new Error(
+            "Only employers can access applications."
+        );
+
+    }
+
+}
+
+
+/* =========================
+   GET JOB ID
+========================= */
+
+function getJobId() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+
+    jobId =
+        params.get("id");
+
+
+    if (!jobId) {
+
+        jobId =
+            localStorage.getItem(
+                "selectedEmployerJobId"
+            );
+
+    }
+
+}
+
+
+/* =========================
+   LOAD JOB
+========================= */
+
+async function loadJob() {
+
+    const {
+        data,
+        error
+    } = await db
+        .from("jobs")
+        .select(`
+            id,
+            employer_id,
+            title,
+            company_name,
+            category,
+            job_type,
+            salary,
+            application_deadline,
+            status
+        `)
+        .eq(
+            "id",
+            jobId
+        )
+        .eq(
+            "employer_id",
+            currentUser.id
+        )
+        .maybeSingle();
+
+
+    if (error) {
+        throw error;
+    }
+
+
+    if (!data) {
+
+        throw new Error(
+            "Job not found or you do not own this job."
+        );
+
+    }
+
+
+    currentJob = data;
+
+
+    renderJobHeader();
+
+}
+
+
+/* =========================
+   JOB HEADER
+========================= */
+
+function renderJobHeader() {
+
+    const salary =
+        currentJob.salary
+            ? Number(
+                currentJob.salary
+              ).toLocaleString()
+            : "Negotiable";
+
+
+    const type =
+        formatJobType(
+            currentJob.job_type
+        );
+
+
+    document.getElementById(
+        "jobHeader"
+    ).innerHTML = `
+
+        <div class="job-title">
+
+            ${escapeHtml(
+                currentJob.title
+            )}
+
+        </div>
+
+        <div class="company">
+
+            ${
+                escapeHtml(
+                    currentJob.company_name ||
+                    "Company not specified"
+                )
+            }
+
+        </div>
+
+
+        <div class="job-meta">
+
+            <span class="badge">
+                ${type}
+            </span>
+
+            <span class="badge">
+                💰 ${salary}
+            </span>
+
+            ${
+                currentJob.category
+                    ? `
+                    <span class="badge">
+                        ${escapeHtml(
+                            currentJob.category
+                        )}
+                    </span>
+                    `
+                    : ""
+            }
+
+            <span class="badge">
+                Status:
+                ${escapeHtml(
+                    currentJob.status
+                )}
+            </span>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   LOAD APPLICATIONS
+========================= */
+
+async function loadApplications() {
+
+    const list =
+        document.getElementById(
+            "applicationsList"
+        );
+
+
+    list.innerHTML =
+        `<div class="loading">
+            Loading applications...
+        </div>`;
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("job_applications")
+        .select(`
+            id,
+            job_id,
+            applicant_id,
+            cover_message,
+            cv_url,
+            status,
+            created_at,
+            updated_at
+        `)
+        .eq(
+            "job_id",
+            jobId
+        )
+        .order(
+            "created_at",
+            {
+                ascending: false
+            }
+        );
+
+
+    if (error) {
+
+        console.error(error);
+
+        throw error;
+
+    }
+
+
+    applications = data || [];
+
+
+    await loadApplicantProfiles();
+
+
+    updateStats();
+
+
+    renderApplications();
+
+}
+
+
+/* =========================
+   LOAD APPLICANT PROFILES
+========================= */
+
+async function loadApplicantProfiles() {
+
+    if (!applications.length) {
+        return;
+    }
+
+
+    const ids =
+        [
+            ...new Set(
+                applications.map(
+                    app =>
+                        app.applicant_id
+                )
+            )
+        ];
+
+
+    const {
+        data,
+        error
+    } = await db
+        .from("profiles")
+        .select(`
+            id,
+            full_name,
+            phone,
+            role
+        `)
+        .in(
+            "id",
+            ids
+        );
+
+
+    if (error) {
+
+        console.error(
+            "Profile loading error:",
+            error
+        );
+
+        return;
+
+    }
+
+
+    const profileMap = {};
+
+
+    (data || []).forEach(
+        profile => {
+
+            profileMap[
+                profile.id
+            ] = profile;
+
+        }
+    );
+
+
+    applications =
+        applications.map(
+            app => ({
+
+                ...app,
+
+                applicant:
+                    profileMap[
+                        app.applicant_id
+                    ] || null
+
+            })
+        );
+
+}
+
+
+/* =========================
+   STATS
+========================= */
+
+function updateStats() {
+
+    document.getElementById(
+        "totalApplications"
+    ).textContent =
+        applications.length;
+
+
+    document.getElementById(
+        "pendingCount"
+    ).textContent =
+        applications.filter(
+            app =>
+                app.status ===
+                "pending"
+        ).length;
+
+
+    document.getElementById(
+        "shortlistedCount"
+    ).textContent =
+        applications.filter(
+            app =>
+                app.status ===
+                "shortlisted"
+        ).length;
+
+
+    document.getElementById(
+        "acceptedCount"
+    ).textContent =
+        applications.filter(
+            app =>
+                app.status ===
+                "accepted"
+        ).length;
+
+}
+
+
+/* =========================
+   FILTER
+========================= */
+
+document.getElementById(
+    "searchInput"
+).addEventListener(
+    "input",
+    renderApplications
+);
+
+
+document.getElementById(
+    "statusFilter"
+).addEventListener(
+    "change",
+    renderApplications
+);
+
+
+/* =========================
+   RENDER
+========================= */
+
+function renderApplications() {
+
+    const list =
+        document.getElementById(
+            "applicationsList"
+        );
+
+
+    const search =
+        document.getElementById(
+            "searchInput"
+        )
+        .value
+        .toLowerCase()
+        .trim();
+
+
+    const status =
+        document.getElementById(
+            "statusFilter"
+        ).value;
+
+
+    const filtered =
+        applications.filter(
+            app => {
+
+                const name =
+                    (
+                        app.applicant &&
+                        app.applicant.full_name
+                    ) || "";
+
+
+                const phone =
+                    (
+                        app.applicant &&
+                        app.applicant.phone
+                    ) || "";
+
+
+                const matchesSearch =
+                    !search ||
+                    name
+                        .toLowerCase()
+                        .includes(search) ||
+                    phone
+                        .toLowerCase()
+                        .includes(search);
+
+
+                const matchesStatus =
+                    !status ||
+                    app.status === status;
+
+
+                return (
+                    matchesSearch &&
+                    matchesStatus
+                );
+
+            }
+        );
+
+
+    if (!filtered.length) {
+
+        list.innerHTML =
+            `<div class="empty">
+
+                <div style="font-size:40px;">
+                    👥
+                </div>
+
+                <p>
+                    No applications found.
+                </p>
+
+            </div>`;
+
+        return;
+
+    }
+
+
+    list.innerHTML =
+        filtered
+            .map(
+                app =>
+                    createApplicationCard(
+                        app
+                    )
+            )
+            .join("");
+
+}
+
+
+/* =========================
+   APPLICATION CARD
+========================= */
+
+function createApplicationCard(app) {
+
+    const applicant =
+        app.applicant || {};
+
+
+    const name =
+        applicant.full_name ||
+        "Applicant";
+
+
+    const phone =
+        applicant.phone ||
+        "Phone not provided";
+
+
+    const statusClass =
+        "status-" +
+        app.status;
+
+
+    const date =
+        formatDate(
+            app.created_at
+        );
+
+
+    return `
+
+        <div class="application">
+
+            <div class="app-top">
+
+                <div>
+
+                    <div class="applicant-name">
+
+                        👤
+                        ${escapeHtml(
+                            name
+                        )}
+
+                    </div>
+
+                    <div class="applicant-contact">
+
+                        📞
+                        ${escapeHtml(
+                            phone
+                        )}
+
+                        <br>
+
+                        📅 Applied:
+                        ${date}
+
+                    </div>
+
+                </div>
+
+
+                <div class="status ${statusClass}">
+
+                    ${capitalize(
+                        app.status
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="cover">
+
+                <strong>
+                    Cover Message
+                </strong>
+
+                <br><br>
+
+                ${escapeHtml(
+                    app.cover_message ||
+                    "No cover message provided."
+                )}
+
+            </div>
+
+
+            <div class="actions">
+
+                <select
+                    class="status-select"
+                    onchange="changeStatus(
+                        '${app.id}',
+                        this.value
+                    )"
+                >
+
+                    <option value="">
+                        Change Status
+                    </option>
+
+                    <option
+                        value="pending"
+                        ${app.status === "pending" ? "selected" : ""}
+                    >
+                        Pending
+                    </option>
+
+                    <option
+                        value="reviewing"
+                        ${app.status === "reviewing" ? "selected" : ""}
+                    >
+                        Reviewing
+                    </option>
+
+                    <option
+                        value="shortlisted"
+                        ${app.status === "shortlisted" ? "selected" : ""}
+                    >
+                        Shortlisted
+                    </option>
+
+                    <option
+                        value="accepted"
+                        ${app.status === "accepted" ? "selected" : ""}
+                    >
+                        Accepted
+                    </option>
+
+                    <option
+                        value="rejected"
+                        ${app.status === "rejected" ? "selected" : ""}
+                    >
+                        Rejected
+                    </option>
+
+                </select>
+
+
+                ${
+                    phone !== "Phone not provided"
+                        ? `
+                        <button
+                            class="action-btn contact-btn"
+                            onclick="contactApplicant(
+                                '${escapeAttribute(phone)}'
+                            )"
+                        >
+                            📞 Contact
+                        </button>
+                        `
+                        : ""
+                }
+
+
+                ${
+                    app.cv_url
+                        ? `
+                        <button
+                            class="action-btn review-btn"
+                            onclick="openCV(
+                                '${escapeAttribute(
+                                    app.cv_url
+                                )}'
+                            )"
+                        >
+                            📄 View CV
+                        </button>
+                        `
+                        : ""
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =========================
+   CHANGE STATUS
+========================= */
+
+async function changeStatus(
+    applicationId,
+    newStatus
+) {
+
+    if (!newStatus) {
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } = await db
+            .from("job_applications")
+            .update({
+                status:
+                    newStatus,
+
+                updated_at:
+                    new Date()
+                        .toISOString()
+            })
+            .eq(
+                "id",
+                applicationId
+            )
+            .eq(
+                "job_id",
+                jobId
+            );
+
+
+        if (error) {
+            throw error;
+        }
+
+
+        showMessage(
+            "Application status updated successfully.",
+            "success"
+        );
+
+
+        await loadApplications();
+
+
+    }
+    catch(error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =========================
+   CONTACT
+========================= */
+
+function contactApplicant(phone) {
+
+    const cleanPhone =
+        String(phone)
+            .replace(
+                /[^0-9+]/g,
+                ""
+            );
+
+
+    if (!cleanPhone) {
+        return;
+    }
+
+
+    window.location.href =
+        "tel:" +
+        cleanPhone;
+
+}
+
+
+/* =========================
+   CV
+========================= */
+
+function openCV(url) {
+
+    if (!url) {
+        return;
+    }
+
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack() {
+
+    window.location.href =
+        "employer-job-dashboard.html";
+
+}
+
+
+/* =========================
+   HELPERS
+========================= */
+
+function formatJobType(type) {
+
+    const map = {
+
+        full_time: "Full-time",
+
+        part_time: "Part-time",
+
+        contract: "Contract",
+
+        temporary: "Temporary",
+
+        internship: "Internship",
+
+        volunteer: "Volunteer"
+
+    };
+
+
+    return map[type] ||
+        type ||
+        "Not specified";
+
+}
+
+
+function formatDate(date) {
+
+    if (!date) {
+        return "";
+    }
+
+
+    return new Date(
+        date
+    ).toLocaleDateString();
+
+}
+
+
+function capitalize(text) {
+
+    if (!text) {
+        return "";
+    }
+
+
+    return text
+        .charAt(0)
+        .toUpperCase() +
+        text.slice(1);
+
+}
+
+
+function escapeHtml(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+        return "";
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+function escapeAttribute(value) {
+
+    return String(value || "")
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "message"
+        );
+
+
+    message.textContent =
+        text;
+
+
+    message.className =
+        "message " +
+        type;
+
+
+    message.style.display =
+        "block";
+
+
+    setTimeout(
+        function() {
+
+            message.style.display =
+                "none";
+
+        },
+        5000
+    );
+
+}
+
+</script>
+
+</body>
+</html>

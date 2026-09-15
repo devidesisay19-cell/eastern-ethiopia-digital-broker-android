@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Sign Up - Eastern Ethiopia Digital Broker</title>
+
+
+    <!-- Your website CSS -->
+    <link rel="stylesheet" href="style.css">
+
+
+    <!-- Supabase JavaScript library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================
+         SIGNUP CONTAINER
+         ========================================= -->
+
+    <div class="auth-container">
+
+
+        <div class="auth-box">
+
+
+            <!-- TITLE -->
+
+            <h1>
+                Eastern Ethiopia Digital Broker
+            </h1>
+
+
+            <p class="subtitle">
+                Create your account
+            </p>
+
+
+
+            <!-- =========================================
+                 SIGNUP FORM
+                 ========================================= -->
+
+            <form id="signupForm">
+
+
+                <!-- FULL NAME -->
+
+                <label for="fullName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="fullName"
+                    placeholder="Enter your full name"
+                    autocomplete="name"
+                    required
+                >
+
+
+
+                <!-- PHONE -->
+
+                <label for="phone">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="phone"
+                    placeholder="09xxxxxxxx"
+                    autocomplete="tel"
+                    required
+                >
+
+
+
+                <!-- EMAIL -->
+
+                <label for="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="email"
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                    required
+                >
+
+
+
+                <!-- PASSWORD -->
+
+                <label for="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="password"
+                    placeholder="At least 6 characters"
+                    minlength="6"
+                    autocomplete="new-password"
+                    required
+                >
+
+
+
+                <!-- ACCOUNT TYPE -->
+
+                <label for="role">
+                    Account Type
+                </label>
+
+
+                <select
+                    id="role"
+                    required
+                >
+
+                    <option value="">
+                        Select account type
+                    </option>
+
+
+                    <option value="owner">
+                        Property Owner
+                    </option>
+
+
+                    <option value="renter">
+                        Renter / Buyer
+                    </option>
+
+
+                    <option value="job_seeker">
+                        Job Seeker
+                    </option>
+
+                    <option value="employer">
+                        Employer
+                    </option>
+
+                </select>
+
+
+
+                <!-- SIGNUP BUTTON -->
+
+                <button
+                    type="submit"
+                    id="signupButton"
+                >
+                    Create Account
+                </button>
+
+
+            </form>
+
+
+
+            <!-- =========================================
+                 SIGNUP MESSAGE
+                 ========================================= -->
+
+            <p id="message"></p>
+
+
+
+            <!-- =========================================
+                 LOGIN LINK
+                 ========================================= -->
+
+            <p class="login-link">
+
+                Already have an account?
+
+                <a href="index.html">
+                    Login
+                </a>
+
+            </p>
+
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =========================================
+         SUPABASE CONNECTION
+         ========================================= -->
+
+    <script src="supabase.js"></script>
+
+
+
+    <!-- =========================================
+         APPLICATION JAVASCRIPT
+         ========================================= -->
+
+    <script src="script.js"></script>
+
+
+</body>
+
+</html>

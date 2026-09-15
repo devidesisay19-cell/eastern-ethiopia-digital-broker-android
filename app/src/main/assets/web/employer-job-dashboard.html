@@ -1,0 +1,4084 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<title>Employer Job Dashboard | Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+    background: #f4f7fb;
+    color: #172033;
+}
+
+button,
+input,
+select,
+textarea {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    background:
+        linear-gradient(
+            135deg,
+            #0f172a,
+            #1d4ed8
+        );
+
+    color: white;
+    padding: 18px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow:
+        0 4px 18px rgba(0,0,0,.12);
+}
+
+.header-inner {
+    max-width: 1200px;
+    margin: auto;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+}
+
+.brand h1 {
+    margin: 0;
+    font-size: 21px;
+}
+
+.brand p {
+    margin: 5px 0 0;
+    opacity: .8;
+    font-size: 13px;
+}
+
+.header-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.header-btn {
+    border: 1px solid rgba(255,255,255,.25);
+    background: rgba(255,255,255,.12);
+    color: white;
+    padding: 9px 13px;
+    border-radius: 9px;
+}
+
+.header-btn:hover {
+    background: rgba(255,255,255,.22);
+}
+
+/* =========================
+   CONTAINER
+========================= */
+
+.container {
+    width: 94%;
+    max-width: 1200px;
+    margin: 25px auto 50px;
+}
+
+/* =========================
+   USER CARD
+========================= */
+
+.user-card {
+    background: white;
+    border-radius: 16px;
+    padding: 18px;
+    box-shadow:
+        0 4px 20px rgba(15,23,42,.07);
+
+    margin-bottom: 20px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.user-name {
+    font-weight: 700;
+    font-size: 18px;
+}
+
+.user-role {
+    display: inline-block;
+    margin-top: 6px;
+    padding: 5px 9px;
+    background: #e0e7ff;
+    color: #3730a3;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* =========================
+   STATS
+========================= */
+
+.stats {
+    display: grid;
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+    margin-bottom: 22px;
+}
+
+.stat {
+    background: white;
+    border-radius: 15px;
+    padding: 20px;
+
+    box-shadow:
+        0 4px 18px rgba(15,23,42,.06);
+}
+
+.stat-label {
+    font-size: 13px;
+    color: #64748b;
+}
+
+.stat-value {
+    font-size: 29px;
+    font-weight: 800;
+    margin-top: 7px;
+}
+
+/* =========================
+   TABS
+========================= */
+
+.tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+.tab {
+    border: none;
+    background: white;
+    color: #475569;
+    padding: 11px 16px;
+    border-radius: 10px;
+    font-weight: 700;
+
+    box-shadow:
+        0 2px 10px rgba(0,0,0,.05);
+}
+
+.tab.active {
+    background: #2563eb;
+    color: white;
+}
+
+/* =========================
+   SECTION
+========================= */
+
+.section {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+
+    box-shadow:
+        0 4px 20px rgba(15,23,42,.06);
+
+    margin-bottom: 20px;
+}
+
+.section-title {
+    margin: 0 0 17px;
+    font-size: 20px;
+}
+
+/* =========================
+   FORM
+========================= */
+
+.form-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 14px;
+}
+
+.full {
+    grid-column: 1 / -1;
+}
+
+.field label {
+    display: block;
+    font-weight: 700;
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+
+.field input,
+.field select,
+.field textarea {
+    width: 100%;
+
+    border: 1px solid #d7deea;
+    border-radius: 10px;
+
+    padding: 11px 12px;
+    outline: none;
+
+    background: white;
+}
+
+.field textarea {
+    min-height: 130px;
+    resize: vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus {
+    border-color: #2563eb;
+    box-shadow:
+        0 0 0 3px rgba(37,99,235,.10);
+}
+
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-top: 17px;
+}
+
+.primary-btn {
+    border: none;
+    background: #2563eb;
+    color: white;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.primary-btn:hover {
+    background: #1d4ed8;
+}
+
+.secondary-btn {
+    border: 1px solid #d7deea;
+    background: white;
+    color: #334155;
+    padding: 11px 18px;
+    border-radius: 10px;
+    font-weight: 700;
+}
+
+.danger-btn {
+    border: none;
+    background: #dc2626;
+    color: white;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.success-btn {
+    border: none;
+    background: #059669;
+    color: white;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.warning-btn {
+    border: none;
+    background: #d97706;
+    color: white;
+    padding: 9px 13px;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+/* =========================
+   FILTERS
+========================= */
+
+.filter-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 10px;
+    margin-bottom: 18px;
+}
+
+.filter-grid input,
+.filter-grid select {
+    width: 100%;
+    padding: 10px;
+
+    border:
+        1px solid #d7deea;
+
+    border-radius: 9px;
+    background: white;
+}
+
+/* =========================
+   JOB CARDS
+========================= */
+
+.jobs-grid {
+    display: grid;
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 15px;
+}
+
+.job-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    padding: 17px;
+
+    transition: .2s;
+}
+
+.job-card:hover {
+    transform: translateY(-2px);
+    box-shadow:
+        0 8px 25px rgba(15,23,42,.08);
+}
+
+.job-title {
+    font-size: 18px;
+    font-weight: 800;
+    margin-bottom: 7px;
+}
+
+.job-company {
+    color: #475569;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+}
+
+.badge {
+    padding: 5px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+.badge.pending {
+    background: #fff7ed;
+    color: #c2410c;
+}
+
+.badge.published {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.badge.rejected {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.badge.closed {
+    background: #f1f5f9;
+    color: #475569;
+}
+
+.job-meta {
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.8;
+}
+
+.job-description {
+    margin-top: 10px;
+    color: #475569;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    margin-top: 15px;
+}
+
+/* =========================
+   APPLICATIONS
+========================= */
+
+.application-card {
+    border:
+        1px solid #e2e8f0;
+
+    border-radius: 13px;
+    padding: 16px;
+    margin-bottom: 12px;
+}
+
+.application-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.applicant-name {
+    font-weight: 800;
+    font-size: 17px;
+}
+
+.applicant-info {
+    margin-top: 7px;
+    color: #64748b;
+    font-size: 13px;
+    line-height: 1.7;
+}
+
+.cover {
+    margin-top: 12px;
+    background: #f8fafc;
+    padding: 12px;
+    border-radius: 9px;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.application-footer {
+    margin-top: 13px;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.status-select {
+    padding: 9px;
+    border:
+        1px solid #d7deea;
+    border-radius: 8px;
+}
+
+/* =========================
+   EMPTY / LOADING
+========================= */
+
+.empty {
+    text-align: center;
+    padding: 35px 15px;
+    color: #64748b;
+}
+
+.loading {
+    text-align: center;
+    padding: 30px;
+    color: #64748b;
+}
+
+.message {
+    padding: 12px 15px;
+    border-radius: 10px;
+    margin-bottom: 15px;
+    font-size: 14px;
+}
+
+.message.success {
+    background: #ecfdf5;
+    color: #047857;
+}
+
+.message.error {
+    background: #fef2f2;
+    color: #b91c1c;
+}
+
+.message.info {
+    background: #eff6ff;
+    color: #1d4ed8;
+}
+
+/* =========================
+   MODAL
+========================= */
+
+.modal {
+    position: fixed;
+    inset: 0;
+
+    background:
+        rgba(15,23,42,.65);
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    padding: 15px;
+    z-index: 500;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-box {
+    width: 100%;
+    max-width: 700px;
+    max-height: 90vh;
+    overflow-y: auto;
+
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.close-btn {
+    border: none;
+    background: #f1f5f9;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 20px;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 900px) {
+
+    .stats {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .filter-grid {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .jobs-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .header-inner {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .container {
+        width: 94%;
+        margin-top: 16px;
+    }
+
+    .stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 9px;
+    }
+
+    .stat {
+        padding: 15px;
+    }
+
+    .stat-value {
+        font-size: 24px;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full {
+        grid-column: auto;
+    }
+
+    .filter-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .section {
+        padding: 15px;
+    }
+
+    .primary-btn,
+    .secondary-btn {
+        width: 100%;
+    }
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header class="header">
+
+    <div class="header-inner">
+
+        <div class="brand">
+
+            <h1>
+                💼 Eastern Ethiopia Digital Broker
+            </h1>
+
+            <p>
+                Employer Job Dashboard
+            </p>
+
+        </div>
+
+        <div class="header-actions">
+
+            <button
+                class="header-btn"
+                onclick="goBack()"
+            >
+                ← Back
+            </button>
+
+            <button
+                class="header-btn"
+                onclick="logout()"
+            >
+                Logout
+            </button>
+
+        </div>
+
+    </div>
+
+</header>
+
+
+<main class="container">
+
+    <div id="globalMessage"></div>
+
+
+    <!-- USER -->
+
+    <section class="user-card">
+
+        <div>
+
+            <div
+                id="userName"
+                class="user-name"
+            >
+                Loading...
+            </div>
+
+            <div
+                id="userEmail"
+                style="
+                    color:#64748b;
+                    margin-top:4px;
+                    font-size:13px;
+                "
+            >
+            </div>
+
+            <span
+                id="userRole"
+                class="user-role"
+            >
+                Employer
+            </span>
+
+        </div>
+
+        <button
+            class="primary-btn"
+            onclick="showTab('post')"
+        >
+            + Post New Job
+        </button>
+
+    </section>
+
+
+    <!-- STATS -->
+
+    <section class="stats">
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Total Jobs
+            </div>
+
+            <div
+                id="totalJobs"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Published
+            </div>
+
+            <div
+                id="publishedJobs"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Pending
+            </div>
+
+            <div
+                id="pendingJobs"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+        <div class="stat">
+
+            <div class="stat-label">
+                Applications
+            </div>
+
+            <div
+                id="totalApplications"
+                class="stat-value"
+            >
+                0
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- TABS -->
+
+    <div class="tabs">
+
+        <button
+            id="tabMyJobs"
+            class="tab active"
+            onclick="showTab('jobs')"
+        >
+            📋 My Jobs
+        </button>
+
+        <button
+            id="tabPost"
+            class="tab"
+            onclick="showTab('post')"
+        >
+            ➕ Post Job
+        </button>
+
+        <button
+            id="tabApplications"
+            class="tab"
+            onclick="showTab('applications')"
+        >
+            👥 Applications
+        </button>
+
+    </div>
+
+
+    <!-- =========================
+         MY JOBS
+    ========================== -->
+
+    <section
+        id="jobsSection"
+        class="section"
+    >
+
+        <h2 class="section-title">
+            My Job Posts
+        </h2>
+
+        <div class="filter-grid">
+
+            <input
+                id="jobSearch"
+                type="search"
+                placeholder="🔎 Search jobs..."
+                oninput="renderJobs()"
+            >
+
+            <select
+                id="jobStatusFilter"
+                onchange="renderJobs()"
+            >
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="published">
+                    Published
+                </option>
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="rejected">
+                    Rejected
+                </option>
+
+                <option value="closed">
+                    Closed
+                </option>
+
+            </select>
+
+            <select
+                id="jobTypeFilter"
+                onchange="renderJobs()"
+            >
+
+                <option value="">
+                    All Job Types
+                </option>
+
+                <option value="full_time">
+                    Full Time
+                </option>
+
+                <option value="part_time">
+                    Part Time
+                </option>
+
+                <option value="contract">
+                    Contract
+                </option>
+
+                <option value="temporary">
+                    Temporary
+                </option>
+
+                <option value="internship">
+                    Internship
+                </option>
+
+                <option value="volunteer">
+                    Volunteer
+                </option>
+
+            </select>
+
+            <button
+                class="secondary-btn"
+                onclick="loadJobs()"
+            >
+                🔄 Refresh
+            </button>
+
+        </div>
+
+        <div id="jobsContainer">
+            <div class="loading">
+                Loading jobs...
+            </div>
+        </div>
+
+    </section>
+
+
+    <!-- =========================
+         POST JOB
+    ========================== -->
+
+    <section
+        id="postSection"
+        class="section hidden"
+    >
+
+        <h2
+            id="formTitle"
+            class="section-title"
+        >
+            Post New Job
+        </h2>
+
+        <form
+            id="jobForm"
+            onsubmit="submitJob(event)"
+        >
+
+            <div class="form-grid">
+
+                <div class="field">
+
+                    <label>
+                        Job Title *
+                    </label>
+
+                    <input
+                        id="jobTitle"
+                        required
+                        maxlength="150"
+                        placeholder="e.g. Accountant"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Company / Organization
+                    </label>
+
+                    <input
+                        id="companyName"
+                        maxlength="150"
+                        placeholder="Company name"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Category
+                    </label>
+
+                    <input
+                        id="category"
+                        maxlength="100"
+                        placeholder="e.g. Health, IT, Finance"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Job Type
+                    </label>
+
+                    <select id="jobType">
+
+                        <option value="full_time">
+                            Full Time
+                        </option>
+
+                        <option value="part_time">
+                            Part Time
+                        </option>
+
+                        <option value="contract">
+                            Contract
+                        </option>
+
+                        <option value="temporary">
+                            Temporary
+                        </option>
+
+                        <option value="internship">
+                            Internship
+                        </option>
+
+                        <option value="volunteer">
+                            Volunteer
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Salary
+                    </label>
+
+                    <input
+                        id="salary"
+                        type="number"
+                        min="0"
+                        step="0.01"
+                        placeholder="e.g. 15000"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Application Deadline
+                    </label>
+
+                    <input
+                        id="deadline"
+                        type="date"
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Contact Phone
+                    </label>
+
+                    <input
+                        id="contactPhone"
+                        type="tel"
+                        maxlength="30"
+                        placeholder="+251..."
+                    >
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Contact Email
+                    </label>
+
+                    <input
+                        id="contactEmail"
+                        type="email"
+                        maxlength="150"
+                        placeholder="company@example.com"
+                    >
+
+                </div>
+
+
+                <!-- LOCATION -->
+
+                <div class="field">
+
+                    <label>
+                        Region
+                    </label>
+
+                    <select
+                        id="regionSelect"
+                        onchange="regionChanged()"
+                    >
+
+                        <option value="">
+                            Select Region
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Zone
+                    </label>
+
+                    <select
+                        id="zoneSelect"
+                        onchange="zoneChanged()"
+                        disabled
+                    >
+
+                        <option value="">
+                            Select Zone
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        City / Town
+                    </label>
+
+                    <select
+                        id="citySelect"
+                        onchange="cityChanged()"
+                        disabled
+                    >
+
+                        <option value="">
+                            Select City / Town
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Woreda
+                    </label>
+
+                    <select
+                        id="woredaSelect"
+                        onchange="woredaChanged()"
+                        disabled
+                    >
+
+                        <option value="">
+                            Select Woreda
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field">
+
+                    <label>
+                        Area
+                    </label>
+
+                    <select
+                        id="areaSelect"
+                        disabled
+                    >
+
+                        <option value="">
+                            Select Area
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="field full">
+
+                    <label>
+                        Job Description *
+                    </label>
+
+                    <textarea
+                        id="description"
+                        required
+                        maxlength="10000"
+                        placeholder="Describe the job, responsibilities, requirements, qualifications..."
+                    ></textarea>
+
+                </div>
+
+            </div>
+
+
+            <div class="form-actions">
+
+                <button
+                    id="submitJobBtn"
+                    type="submit"
+                    class="primary-btn"
+                >
+                    Publish Job
+                </button>
+
+                <button
+                    type="button"
+                    class="secondary-btn"
+                    onclick="resetJobForm()"
+                >
+                    Clear
+                </button>
+
+            </div>
+
+        </form>
+
+    </section>
+
+
+    <!-- =========================
+         APPLICATIONS
+    ========================== -->
+
+    <section
+        id="applicationsSection"
+        class="section hidden"
+    >
+
+        <h2 class="section-title">
+            Job Applications
+        </h2>
+
+        <div class="filter-grid">
+
+            <input
+                id="applicationSearch"
+                type="search"
+                placeholder="🔎 Applicant or job..."
+                oninput="renderApplications()"
+            >
+
+            <select
+                id="applicationStatusFilter"
+                onchange="renderApplications()"
+            >
+
+                <option value="">
+                    All Status
+                </option>
+
+                <option value="pending">
+                    Pending
+                </option>
+
+                <option value="reviewing">
+                    Reviewing
+                </option>
+
+                <option value="shortlisted">
+                    Shortlisted
+                </option>
+
+                <option value="accepted">
+                    Accepted
+                </option>
+
+                <option value="rejected">
+                    Rejected
+                </option>
+
+                <option value="withdrawn">
+                    Withdrawn
+                </option>
+
+            </select>
+
+            <button
+                class="secondary-btn"
+                onclick="loadApplications()"
+            >
+                🔄 Refresh
+            </button>
+
+        </div>
+
+        <div id="applicationsContainer">
+
+            <div class="loading">
+                Loading applications...
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================
+     JOB VIEW MODAL
+========================== -->
+
+<div
+    id="jobModal"
+    class="modal"
+    onclick="closeModalOutside(event)"
+>
+
+    <div class="modal-box">
+
+        <div class="modal-header">
+
+            <h2
+                id="modalJobTitle"
+                style="margin:0"
+            >
+                Job
+            </h2>
+
+            <button
+                class="close-btn"
+                onclick="closeJobModal()"
+            >
+                ×
+            </button>
+
+        </div>
+
+        <div id="modalJobContent"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+    "https://ubkfrpkapqnlaiscrxim.supabase.co";
+
+const SUPABASE_KEY =
+    "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE";
+
+const db =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+/* =====================================================
+   STATE
+===================================================== */
+
+let currentUser = null;
+
+let currentProfile = null;
+
+let jobs = [];
+
+let applications = [];
+
+let locations = [];
+
+let editingJobId = null;
+
+let loadedApplications = false;
+
+
+/* =====================================================
+   HELPERS
+===================================================== */
+
+function escapeHTML(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function formatDate(date) {
+
+    if (!date) {
+        return "Not specified";
+    }
+
+    const d = new Date(date);
+
+    if (Number.isNaN(d.getTime())) {
+        return "Not specified";
+    }
+
+    return d.toLocaleDateString(
+        undefined,
+        {
+            year: "numeric",
+            month: "short",
+            day: "numeric"
+        }
+    );
+}
+
+
+function showMessage(
+    message,
+    type = "info"
+) {
+
+    const box =
+        document.getElementById(
+            "globalMessage"
+        );
+
+    box.innerHTML = `
+        <div class="message ${type}">
+            ${escapeHTML(message)}
+        </div>
+    `;
+
+    setTimeout(() => {
+
+        box.innerHTML = "";
+
+    }, 5000);
+}
+
+
+function normalizeRole(role) {
+
+    const value =
+        String(role || "")
+            .toLowerCase()
+            .trim();
+
+    if (
+        value === "jobseeker" ||
+        value === "job-seeker" ||
+        value === "job seeker"
+    ) {
+        return "job_seeker";
+    }
+
+    return value;
+}
+
+
+function isManagementRole(role) {
+
+    return [
+        "admin",
+        "super_admin",
+        "city_admin"
+    ].includes(
+        normalizeRole(role)
+    );
+}
+
+
+function jobTypeLabel(type) {
+
+    const labels = {
+
+        full_time: "Full Time",
+        part_time: "Part Time",
+        contract: "Contract",
+        temporary: "Temporary",
+        internship: "Internship",
+        volunteer: "Volunteer"
+
+    };
+
+    return labels[type] || type || "Not specified";
+}
+
+
+function statusLabel(status) {
+
+    const labels = {
+
+        pending: "Pending",
+        reviewing: "Reviewing",
+        shortlisted: "Shortlisted",
+        accepted: "Accepted",
+        rejected: "Rejected",
+        withdrawn: "Withdrawn"
+
+    };
+
+    return labels[status] || status || "Pending";
+}
+
+
+function jobStatusClass(status) {
+
+    return [
+        "pending",
+        "published",
+        "rejected",
+        "closed"
+    ].includes(status)
+        ? status
+        : "";
+}
+
+
+function isDeadlineExpired(deadline) {
+
+    if (!deadline) {
+        return false;
+    }
+
+    const today =
+        new Date();
+
+    today.setHours(
+        0, 0, 0, 0
+    );
+
+    const d =
+        new Date(deadline);
+
+    d.setHours(
+        0, 0, 0, 0
+    );
+
+    return d < today;
+}
+
+
+/* =====================================================
+   AUTH
+===================================================== */
+
+async function init() {
+
+    try {
+
+        const {
+            data: {
+                session
+            }
+        } =
+            await db.auth.getSession();
+
+        if (!session) {
+
+            window.location.href =
+                "index.html";
+
+            return;
+        }
+
+        currentUser =
+            session.user;
+
+        await loadProfile();
+
+        const role =
+            normalizeRole(
+                currentProfile?.role
+            );
+
+        if (
+            role !== "owner" &&
+            role !== "employer" &&
+            !isManagementRole(role)
+        ) {
+
+            showMessage(
+                "You do not have permission to access the employer dashboard.",
+                "error"
+            );
+
+            setTimeout(() => {
+
+                window.location.href =
+                    "index.html";
+
+            }, 1800);
+
+            return;
+        }
+
+        renderUser();
+
+        await loadLocations();
+
+        await loadJobs();
+
+        await updateStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to initialize dashboard.",
+            "error"
+        );
+
+    }
+
+}
+
+
+async function loadProfile() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("profiles")
+            .select(
+                "id,full_name,phone,role"
+            )
+            .eq(
+                "id",
+                currentUser.id
+            )
+            .maybeSingle();
+
+    if (error) {
+        throw error;
+    }
+
+    if (!data) {
+        throw new Error(
+            "Your profile could not be found."
+        );
+    }
+
+    currentProfile =
+        data;
+}
+
+
+function renderUser() {
+
+    document.getElementById(
+        "userName"
+    ).textContent =
+        currentProfile.full_name ||
+        "Employer";
+
+    document.getElementById(
+        "userEmail"
+    ).textContent =
+        currentUser.email ||
+        "";
+
+    document.getElementById(
+        "userRole"
+    ).textContent =
+        normalizeRole(
+            currentProfile.role
+        ) === "admin"
+            ? "Administrator"
+            : "Employer";
+}
+
+
+/* =====================================================
+   LOCATIONS
+===================================================== */
+
+async function loadLocations() {
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("locations")
+            .select(
+                "id,parent_id,name,type,is_active"
+            )
+            .eq(
+                "is_active",
+                true
+            )
+            .order(
+                "name"
+            );
+
+    if (error) {
+        throw error;
+    }
+
+    locations =
+        data || [];
+
+    populateRegions();
+}
+
+
+function getChildren(
+    parentId,
+    type
+) {
+
+    return locations.filter(
+        item =>
+            item.parent_id === parentId &&
+            item.type === type
+    );
+}
+
+
+function setOptions(
+    selectId,
+    items,
+    placeholder
+) {
+
+    const select =
+        document.getElementById(
+            selectId
+        );
+
+    select.innerHTML =
+        `<option value="">
+            ${escapeHTML(placeholder)}
+        </option>`;
+
+    items.forEach(item => {
+
+        const option =
+            document.createElement(
+                "option"
+            );
+
+        option.value =
+            item.id;
+
+        option.textContent =
+            item.name;
+
+        select.appendChild(
+            option
+        );
+
+    });
+
+    select.disabled =
+        items.length === 0;
+}
+
+
+function resetLocationSelect(
+    selectId,
+    placeholder
+) {
+
+    const select =
+        document.getElementById(
+            selectId
+        );
+
+    select.innerHTML =
+        `<option value="">
+            ${placeholder}
+        </option>`;
+
+    select.disabled =
+        true;
+}
+
+
+function populateRegions() {
+
+    const regions =
+        locations.filter(
+            item =>
+                item.type === "region"
+        );
+
+    setOptions(
+        "regionSelect",
+        regions,
+        "Select Region"
+    );
+
+    resetLocationSelect(
+        "zoneSelect",
+        "Select Zone"
+    );
+
+    resetLocationSelect(
+        "citySelect",
+        "Select City / Town"
+    );
+
+    resetLocationSelect(
+        "woredaSelect",
+        "Select Woreda"
+    );
+
+    resetLocationSelect(
+        "areaSelect",
+        "Select Area"
+    );
+}
+
+
+function regionChanged() {
+
+    const regionId =
+        document.getElementById(
+            "regionSelect"
+        ).value;
+
+    resetLocationSelect(
+        "zoneSelect",
+        "Select Zone"
+    );
+
+    resetLocationSelect(
+        "citySelect",
+        "Select City / Town"
+    );
+
+    resetLocationSelect(
+        "woredaSelect",
+        "Select Woreda"
+    );
+
+    resetLocationSelect(
+        "areaSelect",
+        "Select Area"
+    );
+
+    if (!regionId) {
+        return;
+    }
+
+    const zones =
+        getChildren(
+            regionId,
+            "zone"
+        );
+
+    setOptions(
+        "zoneSelect",
+        zones,
+        "Select Zone"
+    );
+
+    const cities =
+        getChildren(
+            regionId,
+            "city"
+        );
+
+    if (cities.length) {
+
+        setOptions(
+            "citySelect",
+            cities,
+            "Select City / Town"
+        );
+
+    }
+
+}
+
+
+function zoneChanged() {
+
+    const zoneId =
+        document.getElementById(
+            "zoneSelect"
+        ).value;
+
+    resetLocationSelect(
+        "citySelect",
+        "Select City / Town"
+    );
+
+    resetLocationSelect(
+        "woredaSelect",
+        "Select Woreda"
+    );
+
+    resetLocationSelect(
+        "areaSelect",
+        "Select Area"
+    );
+
+    if (!zoneId) {
+        return;
+    }
+
+    const cities =
+        getChildren(
+            zoneId,
+            "city"
+        );
+
+    setOptions(
+        "citySelect",
+        cities,
+        "Select City / Town"
+    );
+
+}
+
+
+function cityChanged() {
+
+    const cityId =
+        document.getElementById(
+            "citySelect"
+        ).value;
+
+    resetLocationSelect(
+        "woredaSelect",
+        "Select Woreda"
+    );
+
+    resetLocationSelect(
+        "areaSelect",
+        "Select Area"
+    );
+
+    if (!cityId) {
+        return;
+    }
+
+    const woredas =
+        getChildren(
+            cityId,
+            "woreda"
+        );
+
+    setOptions(
+        "woredaSelect",
+        woredas,
+        "Select Woreda"
+    );
+
+}
+
+
+function woredaChanged() {
+
+    const woredaId =
+        document.getElementById(
+            "woredaSelect"
+        ).value;
+
+    resetLocationSelect(
+        "areaSelect",
+        "Select Area"
+    );
+
+    if (!woredaId) {
+        return;
+    }
+
+    const areas =
+        getChildren(
+            woredaId,
+            "area"
+        );
+
+    setOptions(
+        "areaSelect",
+        areas,
+        "Select Area"
+    );
+
+}
+
+
+/* =====================================================
+   JOBS
+===================================================== */
+
+async function loadJobs() {
+
+    const container =
+        document.getElementById(
+            "jobsContainer"
+        );
+
+    container.innerHTML =
+        `<div class="loading">
+            Loading jobs...
+        </div>`;
+
+    try {
+
+        let query =
+            db
+                .from("jobs")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+        /*
+         * Employer sees own jobs.
+         * Admin sees all jobs.
+         */
+
+        const role =
+            normalizeRole(
+                currentProfile?.role
+            );
+
+        if (!isManagementRole(role)) {
+
+            query =
+                query.eq(
+                    "employer_id",
+                    currentUser.id
+                );
+
+        }
+
+        const {
+            data,
+            error
+        } =
+            await query;
+
+        if (error) {
+            throw error;
+        }
+
+        jobs =
+            data || [];
+
+        renderJobs();
+
+        await updateStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            `<div class="empty">
+                Unable to load jobs.
+            </div>`;
+
+        showMessage(
+            error.message ||
+            "Failed to load jobs.",
+            "error"
+        );
+
+    }
+
+}
+
+
+function renderJobs() {
+
+    const container =
+        document.getElementById(
+            "jobsContainer"
+        );
+
+    const search =
+        document.getElementById(
+            "jobSearch"
+        ).value
+        .trim()
+        .toLowerCase();
+
+    const status =
+        document.getElementById(
+            "jobStatusFilter"
+        ).value;
+
+    const type =
+        document.getElementById(
+            "jobTypeFilter"
+        ).value;
+
+    let filtered =
+        jobs.filter(job => {
+
+            const text = (
+
+                (job.title || "") +
+                " " +
+                (job.company_name || "") +
+                " " +
+                (job.category || "") +
+                " " +
+                (job.description || "")
+
+            ).toLowerCase();
+
+            if (
+                search &&
+                !text.includes(search)
+            ) {
+                return false;
+            }
+
+            if (
+                status &&
+                job.status !== status
+            ) {
+                return false;
+            }
+
+            if (
+                type &&
+                job.job_type !== type
+            ) {
+                return false;
+            }
+
+            return true;
+
+        });
+
+    if (!filtered.length) {
+
+        container.innerHTML =
+            `<div class="empty">
+                No jobs found.
+            </div>`;
+
+        return;
+    }
+
+    const grid =
+        document.createElement(
+            "div"
+        );
+
+    grid.className =
+        "jobs-grid";
+
+    filtered.forEach(job => {
+
+        const card =
+            document.createElement(
+                "article"
+            );
+
+        card.className =
+            "job-card";
+
+        const expired =
+            isDeadlineExpired(
+                job.application_deadline
+            );
+
+        card.innerHTML = `
+
+            <div class="job-title">
+                ${escapeHTML(job.title)}
+            </div>
+
+            <div class="job-company">
+                🏢
+                ${escapeHTML(
+                    job.company_name ||
+                    "Organization not specified"
+                )}
+            </div>
+
+            <div class="badges">
+
+                <span class="badge ${jobStatusClass(job.status)}">
+                    ${escapeHTML(
+                        job.status || "pending"
+                    )}
+                </span>
+
+                <span class="badge">
+                    ${escapeHTML(
+                        jobTypeLabel(
+                            job.job_type
+                        )
+                    )}
+                </span>
+
+                ${
+                    job.category
+                    ?
+                    `<span class="badge">
+                        ${escapeHTML(
+                            job.category
+                        )}
+                    </span>`
+                    :
+                    ""
+                }
+
+            </div>
+
+            <div class="job-meta">
+
+                💰 Salary:
+                ${
+                    job.salary !== null &&
+                    job.salary !== undefined
+                    ?
+                    escapeHTML(
+                        Number(job.salary)
+                            .toLocaleString()
+                    )
+                    :
+                    "Not specified"
+                }
+
+                <br>
+
+                📅 Deadline:
+                ${
+                    job.application_deadline
+                    ?
+                    escapeHTML(
+                        formatDate(
+                            job.application_deadline
+                        )
+                    )
+                    :
+                    "Not specified"
+                }
+
+                ${
+                    expired
+                    ?
+                    `<br>
+                    ⚠️ Application deadline passed`
+                    :
+                    ""
+                }
+
+                <br>
+
+                🕒 Created:
+                ${escapeHTML(
+                    formatDate(
+                        job.created_at
+                    )
+                )}
+
+            </div>
+
+            <div class="job-description">
+                ${escapeHTML(
+                    (job.description || "")
+                        .substring(0, 220)
+                )}
+                ${
+                    (job.description || "").length > 220
+                    ? "..."
+                    : ""
+                }
+            </div>
+
+            <div class="card-actions">
+
+                <button
+                    class="secondary-btn"
+                    onclick="viewJob('${encodeURIComponent(job.id)}')"
+                >
+                    👁 View
+                </button>
+
+                <button
+                    class="warning-btn"
+                    onclick="editJob('${encodeURIComponent(job.id)}')"
+                >
+                    ✏️ Edit
+                </button>
+
+                ${
+                    job.status === "closed"
+                    ?
+                    `<button
+                        class="success-btn"
+                        onclick="changeJobStatus('${encodeURIComponent(job.id)}','published')"
+                    >
+                        🔓 Reopen
+                    </button>`
+                    :
+                    `<button
+                        class="warning-btn"
+                        onclick="changeJobStatus('${encodeURIComponent(job.id)}','closed')"
+                    >
+                        🔒 Close
+                    </button>`
+                }
+
+                <button
+                    class="danger-btn"
+                    onclick="deleteJob('${encodeURIComponent(job.id)}')"
+                >
+                    🗑 Delete
+                </button>
+
+            </div>
+
+        `;
+
+        grid.appendChild(
+            card
+        );
+
+    });
+
+    container.innerHTML = "";
+
+    container.appendChild(
+        grid
+    );
+
+}
+
+
+/* =====================================================
+   VIEW JOB
+===================================================== */
+
+function viewJob(encodedId) {
+
+    const id =
+        decodeURIComponent(
+            encodedId
+        );
+
+    const job =
+        jobs.find(
+            item =>
+                item.id === id
+        );
+
+    if (!job) {
+        return;
+    }
+
+    document.getElementById(
+        "modalJobTitle"
+    ).textContent =
+        job.title || "Job";
+
+    document.getElementById(
+        "modalJobContent"
+    ).innerHTML = `
+
+        <div class="badges">
+
+            <span class="badge ${jobStatusClass(job.status)}">
+                ${escapeHTML(
+                    job.status
+                )}
+            </span>
+
+            <span class="badge">
+                ${escapeHTML(
+                    jobTypeLabel(
+                        job.job_type
+                    )
+                )}
+            </span>
+
+        </div>
+
+        <p>
+            <strong>Company:</strong>
+            ${escapeHTML(
+                job.company_name ||
+                "Not specified"
+            )}
+        </p>
+
+        <p>
+            <strong>Category:</strong>
+            ${escapeHTML(
+                job.category ||
+                "Not specified"
+            )}
+        </p>
+
+        <p>
+            <strong>Salary:</strong>
+            ${
+                job.salary !== null &&
+                job.salary !== undefined
+                ?
+                escapeHTML(
+                    Number(job.salary)
+                        .toLocaleString()
+                )
+                :
+                "Not specified"
+            }
+        </p>
+
+        <p>
+            <strong>Deadline:</strong>
+            ${escapeHTML(
+                formatDate(
+                    job.application_deadline
+                )
+            )}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            ${escapeHTML(
+                job.contact_phone ||
+                "Not specified"
+            )}
+        </p>
+
+        <p>
+            <strong>Email:</strong>
+            ${escapeHTML(
+                job.contact_email ||
+                "Not specified"
+            )}
+        </p>
+
+        <hr>
+
+        <h3>
+            Job Description
+        </h3>
+
+        <div
+            style="
+                line-height:1.7;
+                white-space:pre-wrap;
+            "
+        >
+            ${escapeHTML(
+                job.description
+            )}
+        </div>
+
+    `;
+
+    document.getElementById(
+        "jobModal"
+    ).classList.add(
+        "show"
+    );
+
+}
+
+
+function closeJobModal() {
+
+    document.getElementById(
+        "jobModal"
+    ).classList.remove(
+        "show"
+    );
+
+}
+
+
+function closeModalOutside(event) {
+
+    if (
+        event.target.id ===
+        "jobModal"
+    ) {
+
+        closeJobModal();
+
+    }
+
+}
+
+
+/* =====================================================
+   EDIT JOB
+===================================================== */
+
+function editJob(encodedId) {
+
+    const id =
+        decodeURIComponent(
+            encodedId
+        );
+
+    const job =
+        jobs.find(
+            item =>
+                item.id === id
+        );
+
+    if (!job) {
+        return;
+    }
+
+    editingJobId =
+        job.id;
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Edit Job";
+
+    document.getElementById(
+        "submitJobBtn"
+    ).textContent =
+        "Update Job";
+
+    document.getElementById(
+        "jobTitle"
+    ).value =
+        job.title || "";
+
+    document.getElementById(
+        "companyName"
+    ).value =
+        job.company_name || "";
+
+    document.getElementById(
+        "category"
+    ).value =
+        job.category || "";
+
+    document.getElementById(
+        "jobType"
+    ).value =
+        job.job_type ||
+        "full_time";
+
+    document.getElementById(
+        "salary"
+    ).value =
+        job.salary ?? "";
+
+    document.getElementById(
+        "deadline"
+    ).value =
+        job.application_deadline ||
+        "";
+
+    document.getElementById(
+        "contactPhone"
+    ).value =
+        job.contact_phone || "";
+
+    document.getElementById(
+        "contactEmail"
+    ).value =
+        job.contact_email || "";
+
+    document.getElementById(
+        "description"
+    ).value =
+        job.description || "";
+
+    showTab(
+        "post"
+    );
+
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+
+}
+
+
+/* =====================================================
+   SUBMIT / UPDATE JOB
+===================================================== */
+
+async function submitJob(event) {
+
+    event.preventDefault();
+
+    const button =
+        document.getElementById(
+            "submitJobBtn"
+        );
+
+    button.disabled =
+        true;
+
+    button.textContent =
+        editingJobId
+            ? "Updating..."
+            : "Publishing...";
+
+    try {
+
+        const title =
+            document.getElementById(
+                "jobTitle"
+            ).value.trim();
+
+        const description =
+            document.getElementById(
+                "description"
+            ).value.trim();
+
+        if (!title) {
+            throw new Error(
+                "Job title is required."
+            );
+        }
+
+        if (!description) {
+            throw new Error(
+                "Job description is required."
+            );
+        }
+
+        const salaryValue =
+            document.getElementById(
+                "salary"
+            ).value;
+
+        const regionId =
+            document.getElementById(
+                "regionSelect"
+            ).value || null;
+
+        const zoneId =
+            document.getElementById(
+                "zoneSelect"
+            ).value || null;
+
+        const cityId =
+            document.getElementById(
+                "citySelect"
+            ).value || null;
+
+        const woredaId =
+            document.getElementById(
+                "woredaSelect"
+            ).value || null;
+
+        const areaId =
+            document.getElementById(
+                "areaSelect"
+            ).value || null;
+
+        const payload = {
+
+            title,
+
+            description,
+
+            category:
+                document.getElementById(
+                    "category"
+                ).value.trim() || null,
+
+            job_type:
+                document.getElementById(
+                    "jobType"
+                ).value,
+
+            salary:
+                salaryValue
+                    ? Number(salaryValue)
+                    : null,
+
+            region_id:
+                regionId,
+
+            zone_id:
+                zoneId,
+
+            city_id:
+                cityId,
+
+            woreda_id:
+                woredaId,
+
+            area_id:
+                areaId,
+
+            company_name:
+                document.getElementById(
+                    "companyName"
+                ).value.trim() || null,
+
+            contact_phone:
+                document.getElementById(
+                    "contactPhone"
+                ).value.trim() || null,
+
+            contact_email:
+                document.getElementById(
+                    "contactEmail"
+                ).value.trim() || null,
+
+            application_deadline:
+                document.getElementById(
+                    "deadline"
+                ).value || null
+
+        };
+
+
+        if (editingJobId) {
+
+            const role =
+                normalizeRole(
+                    currentProfile?.role
+                );
+
+            let query =
+                db
+                    .from("jobs")
+                    .update(payload)
+                    .eq(
+                        "id",
+                        editingJobId
+                    );
+
+            if (!isManagementRole(role)) {
+
+                query =
+                    query.eq(
+                        "employer_id",
+                        currentUser.id
+                    );
+
+            }
+
+            const {
+                error
+            } =
+                await query;
+
+            if (error) {
+                throw error;
+            }
+
+            showMessage(
+                "Job updated successfully.",
+                "success"
+            );
+
+        } else {
+
+            /*
+             * Normal employer:
+             * employer_id = current user
+             *
+             * Admin:
+             * employer_id remains current admin ID
+             * if posting from this dashboard.
+             */
+
+            const {
+                error
+            } =
+                await db
+                    .from("jobs")
+                    .insert({
+                        ...payload,
+                        employer_id: currentUser.id,
+                        posted_by: currentUser.id,
+                        posting_method: 'employer',
+                        status: 'pending',
+                        updated_at: new Date().toISOString()
+                    });
+
+            if (error) {
+                throw error;
+            }
+
+            showMessage(
+                "Job posted successfully and sent for review.",
+                "success"
+            );
+
+        }
+
+        resetJobForm();
+
+        await loadJobs();
+
+        showTab(
+            "jobs"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to save job.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled =
+            false;
+
+        button.textContent =
+            editingJobId
+                ? "Update Job"
+                : "Publish Job";
+
+    }
+
+}
+
+
+/* =====================================================
+   RESET FORM
+===================================================== */
+
+function resetJobForm() {
+
+    editingJobId =
+        null;
+
+    document.getElementById(
+        "jobForm"
+    ).reset();
+
+    document.getElementById(
+        "formTitle"
+    ).textContent =
+        "Post New Job";
+
+    document.getElementById(
+        "submitJobBtn"
+    ).textContent =
+        "Publish Job";
+
+    populateRegions();
+
+}
+
+
+/* =====================================================
+   CHANGE JOB STATUS
+===================================================== */
+
+async function changeJobStatus(
+    encodedId,
+    newStatus
+) {
+
+    const id =
+        decodeURIComponent(
+            encodedId
+        );
+
+    const job =
+        jobs.find(
+            item =>
+                item.id === id
+        );
+
+    if (!job) {
+        return;
+    }
+
+    const message =
+        newStatus === "closed"
+            ? "Close this job?"
+            : "Reopen this job?";
+
+    if (!confirm(message)) {
+        return;
+    }
+
+    try {
+
+        const role =
+            normalizeRole(
+                currentProfile?.role
+            );
+
+        let query =
+            db
+                .from("jobs")
+                .update({
+                    status:
+                        newStatus
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+        if (!isManagementRole(role)) {
+
+            query =
+                query.eq(
+                    "employer_id",
+                    currentUser.id
+                );
+
+        }
+
+        const {
+            error
+        } =
+            await query;
+
+        if (error) {
+            throw error;
+        }
+
+        showMessage(
+            `Job ${newStatus === "closed"
+                ? "closed"
+                : "reopened"} successfully.`,
+            "success"
+        );
+
+        await loadJobs();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to change job status.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   DELETE JOB
+===================================================== */
+
+async function deleteJob(
+    encodedId
+) {
+
+    const id =
+        decodeURIComponent(
+            encodedId
+        );
+
+    const job =
+        jobs.find(
+            item =>
+                item.id === id
+        );
+
+    if (!job) {
+        return;
+    }
+
+    if (
+        !confirm(
+            `Delete "${job.title}" permanently?`
+        )
+    ) {
+        return;
+    }
+
+    try {
+
+        const role =
+            normalizeRole(
+                currentProfile?.role
+            );
+
+        let query =
+            db
+                .from("jobs")
+                .delete()
+                .eq(
+                    "id",
+                    id
+                );
+
+        if (!isManagementRole(role)) {
+
+            query =
+                query.eq(
+                    "employer_id",
+                    currentUser.id
+                );
+
+        }
+
+        const {
+            error
+        } =
+            await query;
+
+        if (error) {
+            throw error;
+        }
+
+        showMessage(
+            "Job deleted successfully.",
+            "success"
+        );
+
+        await loadJobs();
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to delete job.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   APPLICATIONS
+===================================================== */
+
+async function loadApplications() {
+
+    const container =
+        document.getElementById(
+            "applicationsContainer"
+        );
+
+    container.innerHTML =
+        `<div class="loading">
+            Loading applications...
+        </div>`;
+
+    try {
+
+        const role =
+            normalizeRole(
+                currentProfile?.role
+            );
+
+        let query =
+            db
+                .from(
+                    "job_applications"
+                )
+                .select(`
+                    id,
+                    job_id,
+                    applicant_id,
+                    cover_message,
+                    cv_url,
+                    status,
+                    created_at,
+                    updated_at
+                `)
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+        const {
+            data: applicationData,
+            error
+        } =
+            await query;
+
+        if (error) {
+            throw error;
+        }
+
+        const list =
+            applicationData || [];
+
+        /*
+         * Get jobs visible to current employer/admin.
+         */
+
+        const visibleJobIds =
+            new Set(
+                jobs.map(
+                    job => job.id
+                )
+            );
+
+        applications =
+            list.filter(
+                application =>
+                    visibleJobIds.has(
+                        application.job_id
+                    )
+            );
+
+        /*
+         * Get applicant profiles.
+         */
+
+        const applicantIds =
+            [
+                ...new Set(
+                    applications
+                        .map(
+                            item =>
+                                item.applicant_id
+                        )
+                        .filter(Boolean)
+                )
+            ];
+
+        let profileMap =
+            new Map();
+
+        if (applicantIds.length) {
+
+            const {
+                data: profiles,
+                error:
+                    profileError
+            } =
+                await db
+                    .from("profiles")
+                    .select(
+                        "id,full_name,phone"
+                    )
+                    .in(
+                        "id",
+                        applicantIds
+                    );
+
+            if (
+                profileError
+            ) {
+
+                console.warn(
+                    profileError
+                );
+
+            } else {
+
+                (
+                    profiles || []
+                ).forEach(
+                    profile => {
+
+                        profileMap.set(
+                            profile.id,
+                            profile
+                        );
+
+                    }
+                );
+
+            }
+
+        }
+
+        applications =
+            applications.map(
+                application => ({
+                    ...application,
+
+                    applicant:
+                        profileMap.get(
+                            application.applicant_id
+                        ) || null
+
+                })
+            );
+
+        loadedApplications =
+            true;
+
+        renderApplications();
+
+        updateApplicationStats();
+
+    } catch (error) {
+
+        console.error(error);
+
+        container.innerHTML =
+            `<div class="empty">
+                Unable to load applications.
+            </div>`;
+
+        showMessage(
+            error.message ||
+            "Failed to load applications.",
+            "error"
+        );
+
+    }
+
+}
+
+
+function renderApplications() {
+
+    const container =
+        document.getElementById(
+            "applicationsContainer"
+        );
+
+    const search =
+        document.getElementById(
+            "applicationSearch"
+        ).value
+        .trim()
+        .toLowerCase();
+
+    const status =
+        document.getElementById(
+            "applicationStatusFilter"
+        ).value;
+
+    let filtered =
+        applications.filter(
+            application => {
+
+                const job =
+                    jobs.find(
+                        item =>
+                            item.id ===
+                            application.job_id
+                    );
+
+                const applicant =
+                    application.applicant;
+
+                const text = (
+
+                    job?.title || ""
+
+                ) + " " + (
+
+                    applicant?.full_name || ""
+
+                ) + " " + (
+
+                    applicant?.phone || ""
+
+                );
+
+                if (
+                    search &&
+                    !text
+                        .toLowerCase()
+                        .includes(search)
+                ) {
+                    return false;
+                }
+
+                if (
+                    status &&
+                    application.status !== status
+                ) {
+                    return false;
+                }
+
+                return true;
+
+            }
+        );
+
+    if (!filtered.length) {
+
+        container.innerHTML =
+            `<div class="empty">
+                No applications found.
+            </div>`;
+
+        return;
+
+    }
+
+    container.innerHTML =
+        filtered
+            .map(
+                application =>
+                    renderApplicationCard(
+                        application
+                    )
+            )
+            .join("");
+
+}
+
+
+function renderApplicationCard(
+    application
+) {
+
+    const job =
+        jobs.find(
+            item =>
+                item.id ===
+                application.job_id
+        );
+
+    const applicant =
+        application.applicant;
+
+    return `
+
+        <div class="application-card">
+
+            <div class="application-head">
+
+                <div>
+
+                    <div class="applicant-name">
+                        ${escapeHTML(
+                            applicant?.full_name ||
+                            "Applicant"
+                        )}
+                    </div>
+
+                    <div
+                        style="
+                            margin-top:5px;
+                            font-size:13px;
+                            color:#2563eb;
+                            font-weight:700;
+                        "
+                    >
+                        ${escapeHTML(
+                            job?.title ||
+                            "Job"
+                        )}
+                    </div>
+
+                </div>
+
+                <span
+                    class="badge"
+                >
+                    ${escapeHTML(
+                        statusLabel(
+                            application.status
+                        )
+                    )}
+                </span>
+
+            </div>
+
+
+            <div class="applicant-info">
+
+                📞
+                ${escapeHTML(
+                    applicant?.phone ||
+                    "Phone not available"
+                )}
+
+                <br>
+
+                📅 Applied:
+                ${escapeHTML(
+                    formatDate(
+                        application.created_at
+                    )
+                )}
+
+            </div>
+
+
+            ${
+                application.cover_message
+                ?
+                `
+                <div class="cover">
+
+                    <strong>
+                        Cover Message
+                    </strong>
+
+                    <br><br>
+
+                    ${escapeHTML(
+                        application.cover_message
+                    )}
+
+                </div>
+                `
+                :
+                `
+                <div class="cover">
+                    No cover message provided.
+                </div>
+                `
+            }
+
+
+            <div class="application-footer">
+
+                <select
+                    class="status-select"
+                    onchange="
+                        updateApplicationStatus(
+                            '${encodeURIComponent(application.id)}',
+                            this.value
+                        )
+                    "
+                >
+
+                    <option
+                        value="pending"
+                        ${
+                            application.status ===
+                            "pending"
+                            ? "selected"
+                            : ""
+                        }
+                    >
+                        Pending
+                    </option>
+
+                    <option
+                        value="reviewing"
+                        ${
+                            application.status ===
+                            "reviewing"
+                            ? "selected"
+                            : ""
+                        }
+                    >
+                        Reviewing
+                    </option>
+
+                    <option
+                        value="shortlisted"
+                        ${
+                            application.status ===
+                            "shortlisted"
+                            ? "selected"
+                            : ""
+                        }
+                    >
+                        Shortlisted
+                    </option>
+
+                    <option
+                        value="accepted"
+                        ${
+                            application.status ===
+                            "accepted"
+                            ? "selected"
+                            : ""
+                        }
+                    >
+                        Accepted
+                    </option>
+
+                    <option
+                        value="rejected"
+                        ${
+                            application.status ===
+                            "rejected"
+                            ? "selected"
+                            : ""
+                        }
+                    >
+                        Rejected
+                    </option>
+
+                    <option
+                        value="withdrawn"
+                        ${
+                            application.status ===
+                            "withdrawn"
+                            ? "selected"
+                            : ""
+                        }
+                    >
+                        Withdrawn
+                    </option>
+
+                </select>
+
+
+                ${
+                    application.cv_url
+                    ?
+                    `
+                    <button
+                        class="primary-btn"
+                        onclick="
+                            viewCV(
+                                '${encodeURIComponent(application.id)}'
+                            )
+                        "
+                    >
+                        📄 View CV
+                    </button>
+                    `
+                    :
+                    `
+                    <span
+                        style="
+                            color:#64748b;
+                            font-size:13px;
+                        "
+                    >
+                        📄 No CV
+                    </span>
+                    `
+                }
+
+            </div>
+
+        </div>
+
+    `;
+
+}
+
+
+/* =====================================================
+   UPDATE APPLICATION STATUS
+===================================================== */
+
+async function updateApplicationStatus(
+    encodedApplicationId,
+    newStatus
+) {
+
+    const id =
+        decodeURIComponent(
+            encodedApplicationId
+        );
+
+    try {
+
+        const application =
+            applications.find(
+                item =>
+                    item.id === id
+            );
+
+        if (!application) {
+            return;
+        }
+
+        const job =
+            jobs.find(
+                item =>
+                    item.id ===
+                    application.job_id
+            );
+
+        if (!job) {
+            throw new Error(
+                "You are not authorized to update this application."
+            );
+        }
+
+        const role =
+            normalizeRole(
+                currentProfile?.role
+            );
+
+        let query =
+            db
+                .from(
+                    "job_applications"
+                )
+                .update({
+                    status:
+                        newStatus,
+                    updated_at:
+                        new Date()
+                            .toISOString()
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+        /*
+         * Employer can only update applications
+         * belonging to their own jobs.
+         */
+
+        if (!isManagementRole(role)) {
+
+            query =
+                query.eq(
+                    "job_id",
+                    job.id
+                );
+
+        }
+
+        const {
+            error
+        } =
+            await query;
+
+        if (error) {
+            throw error;
+        }
+
+        application.status =
+            newStatus;
+
+        application.updated_at =
+            new Date()
+                .toISOString();
+
+        renderApplications();
+
+        updateApplicationStats();
+
+        showMessage(
+            "Application status updated successfully.",
+            "success"
+        );
+
+        /*
+         * IMPORTANT:
+         * No notification trigger/realtime is
+         * used here.
+         */
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to update application status.",
+            "error"
+        );
+
+        await loadApplications();
+
+    }
+
+}
+
+
+/* =====================================================
+   VIEW CV
+===================================================== */
+
+async function viewCV(
+    encodedApplicationId
+) {
+
+    const id =
+        decodeURIComponent(
+            encodedApplicationId
+        );
+
+    try {
+
+        const application =
+            applications.find(
+                item =>
+                    item.id === id
+            );
+
+        if (
+            !application ||
+            !application.cv_url
+        ) {
+
+            showMessage(
+                "CV is not available.",
+                "error"
+            );
+
+            return;
+        }
+
+        showMessage(
+            "Preparing secure CV link...",
+            "info"
+        );
+
+        const {
+            data,
+            error
+        } =
+            await db.storage
+                .from("job-cvs")
+                .createSignedUrl(
+                    application.cv_url,
+                    300
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        if (
+            !data ||
+            !data.signedUrl
+        ) {
+
+            throw new Error(
+                "Could not create secure CV link."
+            );
+
+        }
+
+        window.open(
+            data.signedUrl,
+            "_blank"
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            error.message ||
+            "Unable to open CV.",
+            "error"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+async function updateStats() {
+
+    document.getElementById(
+        "totalJobs"
+    ).textContent =
+        jobs.length;
+
+    document.getElementById(
+        "publishedJobs"
+    ).textContent =
+        jobs.filter(
+            job =>
+                job.status ===
+                "published"
+        ).length;
+
+    document.getElementById(
+        "pendingJobs"
+    ).textContent =
+        jobs.filter(
+            job =>
+                job.status ===
+                "pending"
+        ).length;
+
+    if (
+        loadedApplications
+    ) {
+
+        updateApplicationStats();
+
+        return;
+    }
+
+    /*
+     * Count applications belonging
+     * to visible jobs.
+     */
+
+    if (!jobs.length) {
+
+        document.getElementById(
+            "totalApplications"
+        ).textContent =
+            "0";
+
+        return;
+
+    }
+
+    try {
+
+        const jobIds =
+            jobs.map(
+                job => job.id
+            );
+
+        const {
+            count,
+            error
+        } =
+            await db
+                .from(
+                    "job_applications"
+                )
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                )
+                .in(
+                    "job_id",
+                    jobIds
+                );
+
+        if (error) {
+            throw error;
+        }
+
+        document.getElementById(
+            "totalApplications"
+        ).textContent =
+            count || 0;
+
+    } catch (error) {
+
+        console.warn(
+            "Application count failed:",
+            error
+        );
+
+        document.getElementById(
+            "totalApplications"
+        ).textContent =
+            "0";
+
+    }
+
+}
+
+
+function updateApplicationStats() {
+
+    document.getElementById(
+        "totalApplications"
+    ).textContent =
+        applications.length;
+
+}
+
+
+/* =====================================================
+   TABS
+===================================================== */
+
+function showTab(tab) {
+
+    const jobsSection =
+        document.getElementById(
+            "jobsSection"
+        );
+
+    const postSection =
+        document.getElementById(
+            "postSection"
+        );
+
+    const applicationsSection =
+        document.getElementById(
+            "applicationsSection"
+        );
+
+    const tabs = {
+
+        jobs:
+            document.getElementById(
+                "tabMyJobs"
+            ),
+
+        post:
+            document.getElementById(
+                "tabPost"
+            ),
+
+        applications:
+            document.getElementById(
+                "tabApplications"
+            )
+
+    };
+
+    jobsSection.classList.add(
+        "hidden"
+    );
+
+    postSection.classList.add(
+        "hidden"
+    );
+
+    applicationsSection.classList.add(
+        "hidden"
+    );
+
+    Object.values(tabs)
+        .forEach(
+            button =>
+                button.classList.remove(
+                    "active"
+                )
+        );
+
+    if (tab === "jobs") {
+
+        jobsSection.classList.remove(
+            "hidden"
+        );
+
+        tabs.jobs.classList.add(
+            "active"
+        );
+
+    }
+
+    if (tab === "post") {
+
+        postSection.classList.remove(
+            "hidden"
+        );
+
+        tabs.post.classList.add(
+            "active"
+        );
+
+    }
+
+    if (
+        tab === "applications"
+    ) {
+
+        applicationsSection.classList.remove(
+            "hidden"
+        );
+
+        tabs.applications.classList.add(
+            "active"
+        );
+
+        if (
+            !loadedApplications
+        ) {
+
+            loadApplications();
+
+        }
+
+    }
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function goBack() {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+async function logout() {
+
+    try {
+
+        await db.auth.signOut();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+init();
+
+</script>
+
+</body>
+
+</html>
