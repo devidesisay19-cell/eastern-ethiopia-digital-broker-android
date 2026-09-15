@@ -317,6 +317,32 @@ body {
     font-size: 23px;
 }
 
+/* HOME JOB CARDS */
+.home-job-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 12px;
+    cursor: pointer;
+}
+
+.home-job-card h3 {
+    margin: 0 0 10px;
+}
+
+.home-job-card p {
+    margin: 6px 0;
+}
+
+.property-date-group {
+    margin-bottom: 28px;
+}
+
+.property-date-group .section-header {
+    margin-bottom: 12px;
+}
+
 .result-count {
 
     color: #64748b;
@@ -1036,6 +1062,21 @@ body {
     </section>
 
 
+<section id="jobsSection">
+    <div class="section-header">
+        <div>
+            <h2 class="section-title">💼 Available Jobs</h2>
+            <div id="jobsResultCount" class="result-count">Loading...</div>
+        </div>
+    </div>
+    <div id="jobsList" class="properties-grid">
+        <div class="loading">
+            <div class="spinner"></div>
+            Loading published jobs...
+        </div>
+    </div>
+</section>
+
 </main>
 
 
@@ -1083,6 +1124,98 @@ body {
 
 
 <script>
+
+/* =====================================================
+   LOAD PUBLISHED JOBS
+===================================================== */
+async function loadPublishedJobs() {
+    const jobsList = document.getElementById("jobsList");
+    const jobsResultCount = document.getElementById("jobsResultCount");
+
+    try {
+        const { data, error } = await supabaseClient
+            .from("jobs")
+            .select("*")
+            .eq("status", "published")
+            .order("created_at", { ascending: false });
+
+        if (error) throw error;
+
+        const jobs = data || [];
+        jobsResultCount.textContent = jobs.length + " Jobs";
+
+        if (!jobs.length) {
+            jobsList.innerHTML =
+                '<div class="empty-state"><h3>No published jobs yet</h3></div>';
+            return;
+        }
+
+        const groups = new Map();
+
+        jobs.forEach(job => {
+            const age = formatPropertyAge(job.created_at);
+            if (!groups.has(age)) groups.set(age, []);
+            groups.get(age).push(job);
+        });
+
+        const order = [
+            "Today",
+            "Yesterday",
+            "Before 2 days",
+            "Before 3 days",
+            "Before 4 days",
+            "Before 5 days",
+            "Before 6 days",
+            "Before week"
+        ];
+
+        jobsList.innerHTML = "";
+
+        order.forEach(age => {
+            const list = groups.get(age);
+            if (!list || !list.length) return;
+
+            const section = document.createElement("section");
+            section.className = "property-date-group";
+
+            const title = document.createElement("div");
+            title.className = "section-header";
+            title.innerHTML =
+                '<h2 class="section-title">💼 ' + age + ' Job</h2>';
+
+            const grid = document.createElement("div");
+            grid.className = "properties-grid";
+
+            list.forEach(job => {
+                const card = document.createElement("article");
+                card.className = "home-job-card";
+                card.onclick = () => {
+                    window.location.href =
+                        "job-details.html?id=" + job.id;
+                };
+
+                card.innerHTML = `
+                    <h3>${job.title || "Untitled Job"}</h3>
+                    <p>🏢 ${job.company_name || "Company not specified"}</p>
+                    <p>💼 ${job.job_type || "Job type not specified"}</p>
+                    <p>📅 ${formatPropertyAge(job.created_at)}</p>
+                `;
+
+                grid.appendChild(card);
+            });
+
+            section.appendChild(title);
+            section.appendChild(grid);
+            jobsList.appendChild(section);
+        });
+
+    } catch (error) {
+        console.error(error);
+        jobsList.innerHTML =
+            '<div class="empty-state"><h3>Unable to load jobs</h3></div>';
+        jobsResultCount.textContent = "";
+    }
+}
 
 /* =====================================================
    CONFIG
@@ -1609,21 +1742,50 @@ function renderProperties() {
     }
 
 
-    propertiesList.innerHTML =
-        "";
+    const groups = new Map();
 
+    properties.forEach(property => {
+        const age = formatPropertyAge(property.created_at);
+        if (!groups.has(age)) groups.set(age, []);
+        groups.get(age).push(property);
+    });
 
-    properties.forEach(
-        property => {
+    const order = [
+        "Today",
+        "Yesterday",
+        "Before 2 days",
+        "Before 3 days",
+        "Before 4 days",
+        "Before 5 days",
+        "Before 6 days",
+        "Before week"
+    ];
 
-            propertiesList.appendChild(
-                createPropertyCard(
-                    property
-                )
-            );
+    propertiesList.innerHTML = "";
 
-        }
-    );
+    order.forEach(age => {
+        const list = groups.get(age);
+        if (!list || !list.length) return;
+
+        const section = document.createElement("section");
+        section.className = "property-date-group";
+
+        const title = document.createElement("div");
+        title.className = "section-header";
+        title.innerHTML =
+            '<h2 class="section-title">' + age + ' Properties</h2>';
+
+        const grid = document.createElement("div");
+        grid.className = "property-grid";
+
+        list.forEach(property => {
+            grid.appendChild(createPropertyCard(property));
+        });
+
+        section.appendChild(title);
+        section.appendChild(grid);
+        propertiesList.appendChild(section);
+    });
 
 }
 
@@ -2281,6 +2443,7 @@ if (
 else {
 
     loadPublishedProperties();
+    loadPublishedJobs();
 
 }
 

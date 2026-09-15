@@ -154,7 +154,6 @@ class MainActivity : AppCompatActivity() {
         if (::webView.isInitialized) {
             webView.stopLoading()
             webView.webChromeClient = null
-            webView.webViewClient = null
             webView.destroy()
         }
         super.onDestroy()
