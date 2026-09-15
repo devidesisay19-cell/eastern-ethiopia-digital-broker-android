@@ -1745,7 +1745,37 @@ function renderProperties() {
     const groups = new Map();
 
     properties.forEach(property => {
-        const age = formatPropertyAge(property.created_at);
+        const created = new Date(property.created_at);
+        if (Number.isNaN(created.getTime())) return;
+
+        const now = new Date();
+
+        const today = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate()
+        );
+
+        const createdDay = new Date(
+            created.getFullYear(),
+            created.getMonth(),
+            created.getDate()
+        );
+
+        const diffDays = Math.round(
+            (today - createdDay) / 86400000
+        );
+
+        let age;
+
+        if (diffDays <= 0) age = "Today";
+        else if (diffDays === 1) age = "Yesterday";
+        else if (diffDays >= 2 && diffDays <= 6) {
+            age = "Before " + diffDays + " days";
+        }
+        else if (diffDays === 7) age = "Before week";
+        else return;
+
         if (!groups.has(age)) groups.set(age, []);
         groups.get(age).push(property);
     });
