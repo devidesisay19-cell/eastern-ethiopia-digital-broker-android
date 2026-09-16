@@ -1699,84 +1699,69 @@ function getFilteredProperties() {
 
 function renderProperties() {
 
-    const properties =
-        getFilteredProperties();
-
+    const properties = getFilteredProperties();
 
     resultCount.textContent =
         properties.length +
-        (
-            properties.length === 1
-                ? " property"
-                : " properties"
-        ) +
+        (properties.length === 1 ? " property" : " properties") +
         " available";
 
-
-    if (
-        properties.length === 0
-    ) {
-
-        propertiesList.innerHTML =
-
-            `
+    if (properties.length === 0) {
+        propertiesList.innerHTML = `
             <div class="empty-state">
-
-                <div class="empty-icon">
-                    🔎
-                </div>
-
-                <h3>
-                    No matching properties
-                </h3>
-
-                <p>
-                    Try changing your search or filters.
-                </p>
-
+                <div class="empty-icon">🔎</div>
+                <h3>No matching properties</h3>
+                <p>Try changing your search or filters.</p>
             </div>
-            `;
-
+        `;
         return;
-
     }
-
 
     const groups = new Map();
 
     properties.forEach(property => {
+
+        if (!property.created_at) return;
+
         const created = new Date(property.created_at);
         if (Number.isNaN(created.getTime())) return;
 
         const now = new Date();
 
-        const today = new Date(
+        const todayStart = new Date(
             now.getFullYear(),
             now.getMonth(),
             now.getDate()
         );
 
-        const createdDay = new Date(
+        const createdStart = new Date(
             created.getFullYear(),
             created.getMonth(),
             created.getDate()
         );
 
-        const diffDays = Math.round(
-            (today - createdDay) / 86400000
+        const diffDays = Math.floor(
+            (todayStart.getTime() - createdStart.getTime()) / 86400000
         );
 
         let age;
 
-        if (diffDays <= 0) age = "Today";
-        else if (diffDays === 1) age = "Yesterday";
-        else if (diffDays >= 2 && diffDays <= 6) {
+        if (diffDays === 0) {
+            age = "Today";
+        } else if (diffDays === 1) {
+            age = "Yesterday";
+        } else if (diffDays >= 2 && diffDays <= 6) {
             age = "Before " + diffDays + " days";
+        } else if (diffDays === 7) {
+            age = "Before week";
+        } else {
+            return;
         }
-        else if (diffDays === 7) age = "Before week";
-        else return;
 
-        if (!groups.has(age)) groups.set(age, []);
+        if (!groups.has(age)) {
+            groups.set(age, []);
+        }
+
         groups.get(age).push(property);
     });
 
@@ -1794,7 +1779,9 @@ function renderProperties() {
     propertiesList.innerHTML = "";
 
     order.forEach(age => {
+
         const list = groups.get(age);
+
         if (!list || !list.length) return;
 
         const section = document.createElement("section");
@@ -1802,8 +1789,11 @@ function renderProperties() {
 
         const title = document.createElement("div");
         title.className = "section-header";
+
         title.innerHTML =
-            '<h2 class="section-title">' + age + ' Properties</h2>';
+            '<h2 class="section-title">📅 ' +
+            age +
+            ' Properties</h2>';
 
         const grid = document.createElement("div");
         grid.className = "properties-grid";
@@ -1814,9 +1804,9 @@ function renderProperties() {
 
         section.appendChild(title);
         section.appendChild(grid);
+
         propertiesList.appendChild(section);
     });
-
 }
 
 
