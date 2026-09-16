@@ -17,7 +17,7 @@
 
 <title>Eastern Ethiopia Digital Broker</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 
@@ -1368,6 +1368,20 @@ footer {
     }
 }
 
+.quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px;margin:28px 0;}
+.quick-action-card{display:block;text-decoration:none;}
+@media(max-width:600px){.quick-actions{grid-template-columns:1fr;}}
+.home-jobs-section{margin:40px 0;padding:24px 0;}
+.home-job-date-section{margin:28px 0 36px;}
+.home-job-date-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;padding:14px 16px;border-radius:14px;background:#ecfdf5;border:1px solid #99f6e4;}
+.home-job-date-heading h3{margin:0;font-size:20px;}
+.home-job-date-heading span{font-size:13px;font-weight:700;padding:6px 10px;border-radius:999px;background:#fff;}
+.home-jobs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+.home-job-card{padding:20px;border-radius:16px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+.home-job-card h3{margin:0 0 8px;font-size:19px;}
+.home-job-card strong{display:block;margin-bottom:10px;}
+.home-job-card p{margin:10px 0;line-height:1.6;}
+@media(max-width:600px){.home-job-date-heading h3{font-size:18px;}.home-jobs-grid{grid-template-columns:1fr;}}
 </style>
 
 </head>
@@ -1418,6 +1432,20 @@ footer {
                 data-i18n="jobs"
             >
                 Jobs
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="handleListProperty()"
+            >
+                Property Listing
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="document.getElementById('jobsSection').scrollIntoView({behavior:'smooth'})"
+            >
+                Latest Jobs
             </button>
 
             <button
@@ -1704,6 +1732,12 @@ footer {
                         Sale
                     </option>
 
+                    <option
+                        value="job"
+                        data-i18n="job"
+                    >
+                        Job
+                    </option>
                 </select>
 
             </div>
@@ -1792,12 +1826,40 @@ footer {
 
     </div>
 
+
+    <div class="quick-actions">
+        <a class="quick-action-card" href="#propertiesSection">
+            <div class="quick-action-icon">🏠</div>
+            <div class="quick-action-title">Property Listing</div>
+            <div class="quick-action-text">Browse available properties</div>
+        </a>
+        <a class="quick-action-card" href="#jobsSection">
+            <div class="quick-action-icon">💼</div>
+            <div class="quick-action-title">Latest Jobs</div>
+            <div class="quick-action-text">View the latest job opportunities</div>
+        </a>
+    </div>
+
+
+    <section id="jobsSection" class="home-jobs-section">
+        <div class="section-title">
+            <div>
+                <h2>Latest Jobs</h2>
+                <p>Latest published job opportunities.</p>
+            </div>
+        </div>
+
+        <div id="homeJobsArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading jobs...</p>
+            </div>
+        </div>
+    </section>
+
 </main>
 
 
-<!-- =========================================================
-     LOGIN MODAL
-========================================================= -->
 
 <div
     class="modal"
@@ -4528,6 +4590,160 @@ async function loadProperties() {
 /* =========================================================
    PROPERTY IMAGE URL
 ========================================================= */
+/* =========================================================
+   LOAD HOME JOBS
+========================================================= */
+
+async function loadHomeJobs() {
+    const area = document.getElementById("homeJobsArea");
+    if (!area || !db) return;
+
+    try {
+        const { data, error } = await db
+            .from("jobs")
+            .select("id,title,description,category,job_type,salary,company_name,application_deadline,status,created_at")
+            .eq("status","published")
+            .order("created_at",{ascending:false});
+
+        if (error) throw error;
+
+        renderHomeJobs(data || []);
+    } catch (error) {
+        console.error("HOME JOB LOAD ERROR:", error);
+        area.innerHTML = '<div class="error-box">HOME JOB ERROR: ' + String(error.message || error) + '</div>';
+    }
+}
+
+function renderHomeJobs(list) {
+    const area = document.getElementById("homeJobsArea");
+    if (!area) return;
+
+    if (!list.length) {
+        area.innerHTML = '<div class="empty">No published jobs found.</div>';
+        return;
+    }
+
+    const groups = {
+        today:[],
+        yesterday:[],
+        day2:[],
+        day3:[],
+        day4:[],
+        day5:[],
+        day6:[],
+        week:[],
+        older:[]
+    };
+
+    const now = new Date();
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    list.forEach(function(job) {
+        const d = new Date(job.created_at);
+
+        if (isNaN(d.getTime())) {
+            groups.older.push(job);
+            return;
+        }
+
+        const jobDate = new Date(
+            d.getFullYear(),
+            d.getMonth(),
+            d.getDate()
+        );
+
+        const diff = Math.floor(
+            (today - jobDate) / 86400000
+        );
+
+        if (diff === 0) groups.today.push(job);
+        else if (diff === 1) groups.yesterday.push(job);
+        else if (diff === 2) groups.day2.push(job);
+        else if (diff === 3) groups.day3.push(job);
+        else if (diff === 4) groups.day4.push(job);
+        else if (diff === 5) groups.day5.push(job);
+        else if (diff === 6) groups.day6.push(job);
+        else if (diff === 7) groups.week.push(job);
+        else groups.older.push(job);
+    });
+
+    const names = [
+        ["today","Today Jobs"],
+        ["yesterday","Yesterday Jobs"],
+        ["day2","Before 2 Days Jobs"],
+        ["day3","Before 3 Days Jobs"],
+        ["day4","Before 4 Days Jobs"],
+        ["day5","Before 5 Days Jobs"],
+        ["day6","Before 6 Days Jobs"],
+        ["week","Before Week Jobs"],
+        ["older","Older Jobs"]
+    ];
+
+    let html = "";
+
+    names.forEach(function(item) {
+        const jobs = groups[item[0]];
+
+        if (!jobs.length) return;
+
+        html += `
+            <section class="home-job-date-section">
+                <div class="home-job-date-heading">
+                    <h3>${item[1]}</h3>
+                    <span>
+                        ${jobs.length}
+                        ${jobs.length === 1 ? "Job" : "Jobs"}
+                    </span>
+                </div>
+
+                <div class="home-jobs-grid">
+                    ${jobs.map(function(job) {
+                        return `
+                            <article class="home-job-card">
+                                <h3>
+                                    ${escapeHTML(job.title || "Untitled Job")}
+                                </h3>
+
+                                <strong>
+                                    ${escapeHTML(job.company_name || "Company")}
+                                </strong>
+
+                                <p>
+                                    ${escapeHTML(
+                                        job.description ||
+                                        "No description available."
+                                    )}
+                                </p>
+
+                                <div>
+                                    ${escapeHTML(job.category || "")}
+                                </div>
+
+                                <div>
+                                    ${escapeHTML(job.job_type || "")}
+                                </div>
+
+                                ${
+                                    job.salary
+                                    ? `<div>${escapeHTML(
+                                        String(job.salary)
+                                      )}</div>`
+                                    : ""
+                                }
+                            </article>
+                        `;
+                    }).join("")}
+                </div>
+            </section>
+        `;
+    });
+
+    area.innerHTML = html;
+}
 
 function getPropertyImage(
     property
@@ -4826,84 +5042,145 @@ function normalizePropertyType(
    RENDER PROPERTIES
 ========================================================= */
 
-function renderProperties(
-    properties
-) {
+function renderProperties(properties) {
 
-    const area =
-        document.getElementById(
-            "propertyArea"
-        );
+    const area = document.getElementById("propertyArea");
 
+    if (!area) return;
 
-    if (!area) {
-
+    if (!properties || properties.length === 0) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🏠</div>
+                <h3>No Properties Found</h3>
+                <p>Try changing your search or filters.</p>
+            </div>
+        `;
         return;
     }
 
+    const groups = [
+        { label: "Today Property", days: 0 },
+        { label: "Yesterday Property", days: 1 },
+        { label: "Before 2 Days Property", days: 2 },
+        { label: "Before 3 Days Property", days: 3 },
+        { label: "Before 4 Days Property", days: 4 },
+        { label: "Before 5 Days Property", days: 5 },
+        { label: "Before 6 Days Property", days: 6 },
+        { label: "Before Week Property", days: 7 }
+    ];
 
-    if (
-        !properties ||
-        properties.length === 0
-    ) {
+    const now = new Date();
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
 
-        area.innerHTML = `
+    const getDayDifference = function(property) {
+        if (!property.created_at) return 9999;
 
-            <div class="empty-state">
+        const created = new Date(property.created_at);
 
-                <div class="empty-state-icon">
-                    🏠
-                </div>
+        if (isNaN(created.getTime())) return 9999;
 
-                <h3>
-                    No Properties Found
-                </h3>
+        const createdDay = new Date(
+            created.getFullYear(),
+            created.getMonth(),
+            created.getDate()
+        );
 
-                <p>
-                    Try changing your search or filters.
-                </p>
+        return Math.floor(
+            (today - createdDay) / (1000 * 60 * 60 * 24)
+        );
+    };
 
+    const grouped = {};
+    groups.forEach(function(group) {
+        grouped[group.days] = [];
+    });
+
+    grouped.older = [];
+
+    properties.forEach(function(property) {
+        const diff = getDayDifference(property);
+
+        if (grouped[diff] !== undefined) {
+            grouped[diff].push(property);
+        } else {
+            grouped.older.push(property);
+        }
+    });
+
+    area.innerHTML = "";
+
+    let shownGroups = 0;
+
+    groups.forEach(function(group) {
+
+        const items = grouped[group.days];
+
+        if (!items || items.length === 0) return;
+
+        const section = document.createElement("section");
+        section.className = "property-date-section";
+
+        section.innerHTML = `
+            <div class="property-date-heading">
+                <h2>${group.label}</h2>
+                <span>${items.length} ${items.length === 1 ? "Property" : "Properties"}</span>
             </div>
-
         `;
 
-        return;
+        const grid = document.createElement("div");
+        grid.className = "property-grid";
+
+        items.forEach(function(property) {
+            const card = createPropertyCard(property);
+            grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        area.appendChild(section);
+
+        shownGroups++;
+    });
+
+    if (grouped.older.length > 0) {
+
+        const section = document.createElement("section");
+        section.className = "property-date-section";
+
+        section.innerHTML = `
+            <div class="property-date-heading">
+                <h2>Older Properties</h2>
+                <span>${grouped.older.length} ${grouped.older.length === 1 ? "Property" : "Properties"}</span>
+            </div>
+        `;
+
+        const grid = document.createElement("div");
+        grid.className = "property-grid";
+
+        grouped.older.forEach(function(property) {
+            const card = createPropertyCard(property);
+            grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        area.appendChild(section);
+
+        shownGroups++;
     }
 
-
-    const grid =
-        document.createElement(
-            "div"
-        );
-
-
-    grid.className =
-        "property-grid";
-
-
-    properties.forEach(
-        function(property) {
-
-            const card =
-                createPropertyCard(
-                    property
-                );
-
-
-            grid.appendChild(
-                card
-            );
-        }
-    );
-
-
-    area.innerHTML =
-        "";
-
-
-    area.appendChild(
-        grid
-    );
+    if (shownGroups === 0) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🏠</div>
+                <h3>No Properties Found</h3>
+                <p>Try changing your search or filters.</p>
+            </div>
+        `;
+    }
 }
 
 
@@ -5218,6 +5495,21 @@ function applyFilters() {
             .value
             .toLowerCase();
 
+
+    if (type === "job") {
+        const propertyArea = document.getElementById("propertyArea");
+        const jobsSection = document.getElementById("jobsSection");
+
+        if (propertyArea) propertyArea.innerHTML = "";
+
+        if (jobsSection) {
+            jobsSection.style.display = "";
+            loadHomeJobs();
+            jobsSection.scrollIntoView({behavior:"smooth"});
+        }
+
+        return;
+    }
 
     const cityId =
         document
@@ -5585,6 +5877,7 @@ async function initializeApp() {
      */
 
     await loadProperties();
+    await loadHomeJobs();
 
 
     console.log(
@@ -5631,3 +5924,53 @@ document.addEventListener(
 </body>
 
 </html>
+<style>
+.property-date-section {
+    margin: 34px 0;
+}
+
+.property-date-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    background: #ffffff;
+    border-left: 5px solid #0f766e;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+}
+
+.property-date-heading h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.property-date-heading span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f766e;
+    background: #ecfdf5;
+    padding: 7px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .property-date-heading {
+        padding: 12px 14px;
+    }
+
+    .property-date-heading h2 {
+        font-size: 18px;
+    }
+
+    .property-date-heading span {
+        font-size: 11px;
+        padding: 6px 9px;
+    }
+}
+</style>
