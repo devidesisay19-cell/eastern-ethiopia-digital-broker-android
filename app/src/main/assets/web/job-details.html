@@ -819,7 +819,7 @@ input[type="file"]{
                         id="loginButton"
                         class="btn btn-primary"
                         type="button"
-                        onclick="window.location.href='index.html'"
+                        onclick="window.location.href='index.html?signup=job_seeker'"
                     >
                         Login
                     </button>
@@ -2100,87 +2100,293 @@ function renderInfo(){
    CONTACT
 ========================================================= */
 
-function renderContacts(){
+async function renderContacts(){
 
     const container =
-        document.getElementById(
-            "contactActions"
+        document.getElementById("contactActions");
+
+    if(!container){
+        return;
+    }
+
+    container.innerHTML =
+        `<div class="empty-box">Loading contacts...</div>`;
+
+    const cityId =
+        currentJob &&
+        currentJob.city_id;
+
+    const admins = [];
+
+    try{
+
+        /* =========================================
+           CITY ADMINS ASSIGNED TO THIS CITY
+        ========================================= */
+
+        if(cityId){
+
+            const assignmentResult =
+                await db
+                    .from("admin_city_assignments")
+                    .select("admin_id")
+                    .eq("city_id", cityId);
+
+            if(assignmentResult.error){
+                throw assignmentResult.error;
+            }
+
+            const adminIds =
+                Array.from(
+                    new Set(
+                        (assignmentResult.data || [])
+                            .map(row => row.admin_id)
+                            .filter(Boolean)
+                            .map(id => String(id))
+                    )
+                );
+
+            if(adminIds.length){
+
+                const profileResult =
+                    await db
+                        .from("profiles")
+                        .select(
+                            "id,full_name,phone,role,is_active"
+                        )
+                        .in("id", adminIds);
+
+                if(profileResult.error){
+                    throw profileResult.error;
+                }
+
+                const cityAdmins =
+                    (profileResult.data || [])
+                        .filter(admin =>
+                            admin.is_active === true &&
+                            normalizeRole(admin.role) === "city_admin"
+                        );
+
+                admins.push(
+                    ...cityAdmins.map(admin => ({
+                        ...admin,
+                        admin_type: "City Admin"
+                    }))
+                );
+            }
+        }
+
+        /* =========================================
+           ALL ACTIVE SUPER ADMINS
+        ========================================= */
+
+        const superAdminResult =
+            await db
+                .from("profiles")
+                .select(
+                    "id,full_name,phone,role,is_active"
+                )
+                .eq("is_active", true);
+
+        if(superAdminResult.error){
+            throw superAdminResult.error;
+        }
+
+        const superAdmins =
+            (superAdminResult.data || [])
+                .filter(admin =>
+                    normalizeRole(admin.role) === "super_admin"
+                );
+
+        admins.push(
+            ...superAdmins.map(admin => ({
+                ...admin,
+                admin_type: "Super Admin"
+            }))
         );
 
+    }catch(error){
 
-    const phone =
-        String(
-            currentJob.contact_phone ||
-            ""
-        ).trim();
-
-
-    const email =
-        String(
-            currentJob.contact_email ||
-            ""
-        ).trim();
-
-
-    const buttons = [];
-
-
-    if(phone){
-
-        buttons.push(`
-            <button
-                class="btn btn-success"
-                type="button"
-                onclick="callEmployer()"
-            >
-                ${t("call")}
-            </button>
-        `);
-
-
-        buttons.push(`
-            <button
-                class="btn btn-success"
-                type="button"
-                onclick="openWhatsApp()"
-            >
-                ${t("whatsapp")}
-            </button>
-        `);
-    }
-
-
-    if(email){
-
-        buttons.push(`
-            <button
-                class="btn btn-primary"
-                type="button"
-                onclick="emailEmployer()"
-            >
-                ${t("email")}
-            </button>
-        `);
-    }
-
-
-    if(!buttons.length){
+        console.error(
+            "ADMIN CONTACT LOAD ERROR:",
+            error
+        );
 
         container.innerHTML =
             `<div class="empty-box">
+                Contact loading error:
                 ${escapeHTML(
-                    t("contactUnavailable")
+                    String(
+                        error.message ||
+                        error
+                    )
                 )}
             </div>`;
 
         return;
     }
 
+    /* Remove duplicate admin records */
+    const uniqueAdmins = [];
+    const seenAdmins = new Set();
+
+    admins.forEach(admin => {
+
+        const key =
+            String(admin.id || "") +
+            "|" +
+            String(admin.admin_type || "");
+
+        if(!seenAdmins.has(key)){
+            seenAdmins.add(key);
+            uniqueAdmins.push(admin);
+        }
+
+    });
+
+    if(!uniqueAdmins.length){
+
+        let debugInfo =
+            "No admin contacts found." +
+            "<br>Job ID: " +
+            escapeHTML(currentJobId || "none") +
+            "<br>City ID: " +
+            escapeHTML(
+                String(
+                    (currentJob && currentJob.city_id) || "NULL"
+                )
+            );
+
+        container.innerHTML =
+            `<div class="empty-box">
+                ${debugInfo}
+            </div>`;
+
+        return;
+    }
 
     container.innerHTML =
-        buttons.join("");
+        uniqueAdmins.map(admin => {
+
+            const name =
+                String(
+                    admin.full_name ||
+                    admin.admin_type ||
+                    "Administrator"
+                ).trim();
+
+            const phone =
+                cleanPhone(admin.phone);
+
+            const encodedPhone =
+                encodeURIComponent(phone);
+
+            return `
+                <div
+                    class="empty-box"
+                    style="margin-bottom:12px;"
+                >
+
+                    <strong>
+                        ${escapeHTML(
+                            admin.admin_type
+                        )}
+                    </strong>
+
+                    <div style="margin-top:6px;">
+                        ${escapeHTML(name)}
+                    </div>
+
+                    ${
+                        phone
+                        ? `
+                            <div style="margin-top:6px;">
+                                ${escapeHTML(phone)}
+                            </div>
+
+                            <div
+                                class="contact-actions"
+                                style="margin-top:10px;"
+                            >
+
+                                <button
+                                    class="btn btn-success"
+                                    type="button"
+                                    onclick="callContact('${encodedPhone}')"
+                                >
+                                    ${t("call")}
+                                </button>
+
+                                <button
+                                    class="btn btn-success"
+                                    type="button"
+                                    onclick="openWhatsAppContact('${encodedPhone}')"
+                                >
+                                    ${t("whatsapp")}
+                                </button>
+
+                            </div>
+                        `
+                        : `
+                            <div style="margin-top:8px;">
+                                Contact phone unavailable
+                            </div>
+                        `
+                    }
+
+                </div>
+            `;
+
+        }).join("");
 }
 
+function callContact(encodedPhone){
+
+    const phone =
+        cleanPhone(
+            decodeURIComponent(encodedPhone || "")
+        );
+
+    if(!phone){
+        alert(
+            t("employerPhoneUnavailable")
+        );
+        return;
+    }
+
+    window.location.href =
+        "tel:" + phone;
+}
+
+function openWhatsAppContact(encodedPhone){
+
+    const phone =
+        cleanPhone(
+            decodeURIComponent(encodedPhone || "")
+        );
+
+    if(!phone){
+        alert(
+            t("employerPhoneUnavailable")
+        );
+        return;
+    }
+
+    const message =
+        "Hello, I am interested in the job: " +
+        (currentJob && currentJob.title || "");
+
+    const url =
+        "https://wa.me/" +
+        phone.replace(/^\+/, "") +
+        "?text=" +
+        encodeURIComponent(message);
+
+    window.open(
+        url,
+        "_blank"
+    );
+}
 
 /* =========================================================
    PHONE
@@ -2194,123 +2400,6 @@ function cleanPhone(phone){
             /[^0-9+]/g,
             ""
         );
-}
-
-
-function callEmployer(){
-
-    const phone =
-        cleanPhone(
-            currentJob &&
-            currentJob.contact_phone
-        );
-
-
-    if(!phone){
-
-        alert(
-            t("employerPhoneUnavailable")
-        );
-
-        return;
-    }
-
-
-    window.location.href =
-        "tel:" + phone;
-}
-
-
-/* =========================================================
-   WHATSAPP
-========================================================= */
-
-function openWhatsApp(){
-
-    const phone =
-        cleanPhone(
-            currentJob &&
-            currentJob.contact_phone
-        );
-
-
-    if(!phone){
-
-        alert(
-            t("employerPhoneUnavailable")
-        );
-
-        return;
-    }
-
-
-    const message =
-        "Hello, I am interested in the job: " +
-        (currentJob.title || "");
-
-
-    const url =
-        "https://wa.me/" +
-        phone.replace(
-            /^\+/,
-            ""
-        ) +
-        "?text=" +
-        encodeURIComponent(
-            message
-        );
-
-
-    window.open(
-        url,
-        "_blank"
-    );
-}
-
-
-/* =========================================================
-   EMAIL
-========================================================= */
-
-function emailEmployer(){
-
-    const email =
-        String(
-            currentJob &&
-            currentJob.contact_email ||
-            ""
-        ).trim();
-
-
-    if(!email){
-
-        alert(
-            t("employerEmailUnavailable")
-        );
-
-        return;
-    }
-
-
-    const subject =
-        "Application / Inquiry: " +
-        (currentJob.title || "Job");
-
-
-    const body =
-        "Hello,\n\n" +
-        "I am interested in the job opportunity: " +
-        (currentJob.title || "") +
-        ".\n\nThank you.";
-
-
-    window.location.href =
-        "mailto:" +
-        email +
-        "?subject=" +
-        encodeURIComponent(subject) +
-        "&body=" +
-        encodeURIComponent(body);
 }
 
 

@@ -1383,7 +1383,6 @@ textarea.input{
   </div>
 
 
-  <div class="card filter-card" style="margin-bottom:12px"><div class="filter-grid"><div class="field"><label>Search locations</label><input id="locSearch" class="input" placeholder="Search location..."></div><div class="field"><label>Type</label><select id="locTypeFilter" class="input"><option value="">All types</option><option value="region">Region</option><option value="zone">Zone</option><option value="city">City</option><option value="woreda">Woreda</option><option value="area">Area</option></select></div><div class="field" style="align-self:end"><button class="btn primary" onclick="addLocation()">＋ Add Location</button></div></div></div>
 
   <div class="card">
 
@@ -1657,6 +1656,7 @@ textarea.input{
     <div>
       <h2>Location Management</h2>
       <p>Live Eastern Ethiopia location hierarchy.</p>
+      <button class="btn primary" type="button" onclick="addLocation()">＋ Add Location</button>
     </div>
 
   </div>
@@ -5927,8 +5927,63 @@ function renderLocations(){
 async function reloadAllLocations(){
   const r=await EEDB.client.from('locations').select('id,parent_id,name,type,is_active,created_at').order('name'); if(r.error){toast(r.error.message,'error');return;} locations=r.data||[]; renderLocations(); setupCascades(); }
 function filteredLocations(){ const q=($('locSearch')?.value||'').toLowerCase().trim(); const t=$('locTypeFilter')?.value||''; return locations.filter(l=>(!q||l.name.toLowerCase().includes(q))&&(!t||l.type===t)); }
-async function addLocation(){ if(profile?.role!=='super_admin') return toast('Only Super Admin can manage locations.','error'); const name=prompt('Location name:'); if(!name?.trim())return; const type=prompt('Type: region, zone, city, woreda, area'); if(!['region','zone','city','woreda','area'].includes((type||'').trim().toLowerCase()))return toast('Invalid type.','error'); const typeN=type.trim().toLowerCase(); let parent_id=null; if(typeN!=='region'){ const opts=locations.filter(l=>l.is_active && ((typeN==='zone'&&l.type==='region')||(typeN==='city'&&['region','zone'].includes(l.type))||(typeN==='woreda'&&l.type==='city')||(typeN==='area'&&['woreda','city'].includes(l.type)))); const shown=opts.slice(0,50); const hint=shown.map((l,i)=>(i+1)+'. '+l.name).join('\n'); const parent=prompt('Choose parent number:\n'+hint); const idx=Number(parent)-1; parent_id=Number.isInteger(idx)&&idx>=0&&idx<shown.length?shown[idx].id:null; if(!parent_id)return toast('Invalid parent selection.','error'); } const r=await EEDB.client.from('locations').insert({name:name.trim(),type:typeN,parent_id,is_active:true}); if(r.error)toast(r.error.message,'error'); else {toast('Location added.','success');await reloadAllLocations();} }
-async function editLocation(id){ const l=locations.find(x=>x.id===id); if(!l)return; const name=prompt('Location name:',l.name); if(!name?.trim())return; const r=await EEDB.client.from('locations').update({name:name.trim()}).eq('id',id); if(r.error)toast(r.error.message,'error'); else {toast('Location updated.','success');await reloadAllLocations();} }
+async function addLocation(){ if(profile?.role!=='super_admin') return toast('Only Super Admin can manage locations.','error'); const name=prompt('Location name:'); if(!name?.trim())return; const type=prompt('Type: region, zone, city, woreda, area'); if(!['region','zone','city','woreda','area'].includes((type||'').trim().toLowerCase()))return toast('Invalid type.','error'); const typeN=type.trim().toLowerCase(); let parent_id=null; if(typeN!=='region'){ const opts=locations.filter(l=>l.is_active && ((typeN==='zone'&&l.type==='region')||(typeN==='city'&&['region','zone','city'].includes(l.type))||(typeN==='woreda'&&l.type==='city')||(typeN==='area'&&['woreda','city'].includes(l.type)))); const shown=opts.slice(0,50); const hint=shown.map((l,i)=>(i+1)+'. '+l.name).join('\n'); const parent=prompt('Choose parent number:\n'+hint); const idx=Number(parent)-1; parent_id=Number.isInteger(idx)&&idx>=0&&idx<shown.length?shown[idx].id:null; if(!parent_id)return toast('Invalid parent selection.','error'); } const r=await EEDB.client.from('locations').insert({name:name.trim(),type:typeN,parent_id,is_active:true}); if(r.error)toast(r.error.message,'error'); else {toast('Location added.','success');await reloadAllLocations();} }
+async function editLocation(id){
+  const l=locations.find(x=>x.id===id);
+  if(!l)return;
+
+  const name=prompt('Location name:',l.name);
+  if(!name?.trim())return;
+
+  let parent_id=l.parent_id;
+
+  if(l.type!=='region'){
+    const opts=locations.filter(x =>
+      x.is_active &&
+      (
+        (l.type==='zone' && x.type==='region') ||
+        (l.type==='city' && ['region','zone','city'].includes(x.type)) ||
+        (l.type==='woreda' && x.type==='city') ||
+        (l.type==='area' && ['woreda','city'].includes(x.type))
+      )
+    );
+
+    const parentNames=opts.map((x,i)=>
+      (i+1)+'. '+x.name+
+      (String(x.id)===String(l.parent_id)?' (current)':'')
+    ).join('\n');
+
+    const parent=prompt(
+      'Choose parent number:\n\n'+parentNames
+    );
+
+    if(parent===null)return;
+
+    const idx=parseInt(parent,10)-1;
+
+    if(!Number.isInteger(idx) || idx<0 || idx>=opts.length){
+      return toast('Invalid parent selection.','error');
+    }
+
+    parent_id=opts[idx].id;
+  }
+
+  const r=await EEDB.client
+    .from('locations')
+    .update({
+      name:name.trim(),
+      parent_id:parent_id
+    })
+    .eq('id',id);
+
+  if(r.error){
+    toast(r.error.message,'error');
+  }else{
+    toast('Location updated.','success');
+    await reloadAllLocations();
+  }
+}
+
 async function toggleLocation(id){ const l=locations.find(x=>x.id===id); if(!l)return; const r=await EEDB.client.from('locations').update({is_active:!l.is_active}).eq('id',id); if(r.error)toast(r.error.message,'error'); else {toast(l.is_active?'Location deactivated.':'Location activated.','success');await reloadAllLocations();} }
 async function deleteLocation(id){ if(!confirm('Delete this location? Child/referenced locations may prevent deletion.'))return; const r=await EEDB.client.from('locations').delete().eq('id',id); if(r.error)toast(r.error.message,'error'); else {toast('Location deleted.','success');await reloadAllLocations();} }
 

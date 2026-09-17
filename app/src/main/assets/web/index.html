@@ -3764,6 +3764,52 @@ function openLogin() {
    OPEN SIGNUP
 ========================================================= */
 
+function openJobSeekerSignup(){
+
+    openSignup();
+
+    const role =
+        document.getElementById(
+            "roleJobSeeker"
+        );
+
+    if(role){
+        role.checked = true;
+    }
+}
+
+
+/* =========================================================
+   JOB SEEKER SIGNUP URL
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        if(
+            params.get("signup") ===
+            "job_seeker"
+        ){
+
+            setTimeout(
+                function(){
+
+                    openJobSeekerSignup();
+
+                },
+                150
+            );
+        }
+    }
+);
+
+
 function openSignup() {
 
     closeModal(
@@ -4591,35 +4637,238 @@ async function loadProperties() {
    PROPERTY IMAGE URL
 ========================================================= */
 /* =========================================================
+   HOME JOB ACTIONS
+========================================================= */
+
+let homeSavedJobs = [];
+let homeApplications = [];
+
+function homeIsJobSaved(jobId) {
+    return homeSavedJobs.some(function(row) {
+        return String(row.job_id) === String(jobId);
+    });
+}
+
+function homeHasApplied(jobId) {
+    return homeApplications.some(function(row) {
+        return String(row.job_id) === String(jobId);
+    });
+}
+
+async function loadHomeJobActions() {
+
+    homeSavedJobs = [];
+    homeApplications = [];
+
+    if (!db || !currentUser) {
+        return;
+    }
+
+    try {
+
+        const savedResult = await db
+            .from("job_saved")
+            .select("id,job_id,user_id,created_at")
+            .eq("user_id", currentUser.id);
+
+        if (!savedResult.error) {
+            homeSavedJobs = savedResult.data || [];
+        }
+
+        const applicationResult = await db
+            .from("job_applications")
+            .select("id,job_id,user_id")
+            .eq("user_id", currentUser.id);
+
+        if (!applicationResult.error) {
+            homeApplications = applicationResult.data || [];
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "HOME JOB ACTIONS LOAD ERROR:",
+            error
+        );
+    }
+}
+
+async function toggleHomeSaved(encodedJobId) {
+
+    if (!currentUser) {
+
+        if (typeof updateUserMenu === "function") {
+            updateUserMenu();
+        }
+
+        return;
+    }
+
+    const jobId =
+        decodeURIComponent(encodedJobId);
+
+    try {
+
+        const alreadySaved =
+            homeIsJobSaved(jobId);
+
+        if (alreadySaved) {
+
+            const { error } =
+                await db
+                    .from("job_saved")
+                    .delete()
+                    .eq("job_id", jobId)
+                    .eq("user_id", currentUser.id);
+
+            if (error) {
+                throw error;
+            }
+
+        } else {
+
+            const { error } =
+                await db
+                    .from("job_saved")
+                    .insert({
+                        job_id: jobId,
+                        user_id: currentUser.id
+                    });
+
+            if (error) {
+
+                const message =
+                    String(
+                        error.message || ""
+                    ).toLowerCase();
+
+                if (
+                    message.includes("duplicate") ||
+                    message.includes("unique")
+                ) {
+                    await loadHomeJobActions();
+                    renderHomeJobs(window.homeJobs || []);
+                    return;
+                }
+
+                throw error;
+            }
+        }
+
+        await loadHomeJobActions();
+
+        renderHomeJobs(
+            window.homeJobs || []
+        );
+
+    } catch (error) {
+
+        console.error(
+            "HOME SAVE JOB ERROR:",
+            error
+        );
+
+        alert(
+            String(
+                error.message ||
+                "Unable to save this job."
+            )
+        );
+    }
+}
+
+function viewHomeJob(encodedJobId) {
+
+    if (!encodedJobId) {
+        return;
+    }
+
+    const jobId =
+        decodeURIComponent(
+            encodedJobId
+        );
+
+    window.location.href =
+        "job-details.html?job_id=" +
+        encodeURIComponent(jobId);
+}
+
+
+/* =========================================================
    LOAD HOME JOBS
 ========================================================= */
 
 async function loadHomeJobs() {
-    const area = document.getElementById("homeJobsArea");
+
+    const area =
+        document.getElementById(
+            "homeJobsArea"
+        );
+
     if (!area || !db) return;
 
     try {
-        const { data, error } = await db
-            .from("jobs")
-            .select("id,title,description,category,job_type,salary,company_name,application_deadline,status,created_at")
-            .eq("status","published")
-            .order("created_at",{ascending:false});
 
-        if (error) throw error;
+        const { data, error } =
+            await db
+                .from("jobs")
+                .select(
+                    "id,city_id,title,description,category,job_type,salary,company_name,application_deadline,status,created_at"
+                )
+                .eq(
+                    "status",
+                    "published"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending:false
+                    }
+                );
 
-        renderHomeJobs(data || []);
+        if (error) {
+            throw error;
+        }
+
+        await loadHomeJobActions();
+
+        window.homeJobs =
+            data || [];
+
+        renderHomeJobs(
+            window.homeJobs
+        );
+
     } catch (error) {
-        console.error("HOME JOB LOAD ERROR:", error);
-        area.innerHTML = '<div class="error-box">HOME JOB ERROR: ' + String(error.message || error) + '</div>';
+
+        console.error(
+            "HOME JOB LOAD ERROR:",
+            error
+        );
+
+        area.innerHTML =
+            '<div class="error-box">HOME JOB ERROR: ' +
+            String(
+                error.message || error
+            ) +
+            '</div>';
     }
 }
 
 function renderHomeJobs(list) {
-    const area = document.getElementById("homeJobsArea");
+
+    const area =
+        document.getElementById(
+            "homeJobsArea"
+        );
+
     if (!area) return;
 
     if (!list.length) {
-        area.innerHTML = '<div class="empty">No published jobs found.</div>';
+
+        area.innerHTML =
+            '<div class="empty">No published jobs found.</div>';
+
         return;
     }
 
@@ -4636,6 +4885,7 @@ function renderHomeJobs(list) {
     };
 
     const now = new Date();
+
     const today = new Date(
         now.getFullYear(),
         now.getMonth(),
@@ -4643,32 +4893,58 @@ function renderHomeJobs(list) {
     );
 
     list.forEach(function(job) {
-        const d = new Date(job.created_at);
+
+        const d =
+            new Date(
+                job.created_at
+            );
 
         if (isNaN(d.getTime())) {
+
             groups.older.push(job);
+
             return;
         }
 
-        const jobDate = new Date(
-            d.getFullYear(),
-            d.getMonth(),
-            d.getDate()
-        );
+        const jobDate =
+            new Date(
+                d.getFullYear(),
+                d.getMonth(),
+                d.getDate()
+            );
 
-        const diff = Math.floor(
-            (today - jobDate) / 86400000
-        );
+        const diff =
+            Math.floor(
+                (today - jobDate) /
+                86400000
+            );
 
-        if (diff === 0) groups.today.push(job);
-        else if (diff === 1) groups.yesterday.push(job);
-        else if (diff === 2) groups.day2.push(job);
-        else if (diff === 3) groups.day3.push(job);
-        else if (diff === 4) groups.day4.push(job);
-        else if (diff === 5) groups.day5.push(job);
-        else if (diff === 6) groups.day6.push(job);
-        else if (diff === 7) groups.week.push(job);
-        else groups.older.push(job);
+        if (diff === 0)
+            groups.today.push(job);
+
+        else if (diff === 1)
+            groups.yesterday.push(job);
+
+        else if (diff === 2)
+            groups.day2.push(job);
+
+        else if (diff === 3)
+            groups.day3.push(job);
+
+        else if (diff === 4)
+            groups.day4.push(job);
+
+        else if (diff === 5)
+            groups.day5.push(job);
+
+        else if (diff === 6)
+            groups.day6.push(job);
+
+        else if (diff === 7)
+            groups.week.push(job);
+
+        else
+            groups.older.push(job);
     });
 
     const names = [
@@ -4686,58 +4962,212 @@ function renderHomeJobs(list) {
     let html = "";
 
     names.forEach(function(item) {
-        const jobs = groups[item[0]];
 
-        if (!jobs.length) return;
+        const jobs =
+            groups[item[0]];
+
+        if (!jobs.length) {
+            return;
+        }
 
         html += `
             <section class="home-job-date-section">
+
                 <div class="home-job-date-heading">
-                    <h3>${item[1]}</h3>
+
+                    <h3>
+                        ${item[1]}
+                    </h3>
+
                     <span>
                         ${jobs.length}
-                        ${jobs.length === 1 ? "Job" : "Jobs"}
+                        ${
+                            jobs.length === 1
+                            ? "Job"
+                            : "Jobs"
+                        }
                     </span>
+
                 </div>
 
                 <div class="home-jobs-grid">
+
                     ${jobs.map(function(job) {
+
+                        const saved =
+                            homeIsJobSaved(
+                                job.id
+                            );
+
+                        const applied =
+                            homeHasApplied(
+                                job.id
+                            );
+
+                        const description =
+                            String(
+                                job.description ||
+                                ""
+                            );
+
+                        const shortDescription =
+                            description.length > 180
+                            ? description.substring(
+                                0,
+                                180
+                              ) + "..."
+                            : description;
+
                         return `
-                            <article class="home-job-card">
+                            <article
+                                class="home-job-card"
+                            >
+
                                 <h3>
-                                    ${escapeHTML(job.title || "Untitled Job")}
+                                    ${escapeHTML(
+                                        job.title ||
+                                        "Untitled Job"
+                                    )}
                                 </h3>
 
                                 <strong>
-                                    ${escapeHTML(job.company_name || "Company")}
+                                    🏢
+                                    ${escapeHTML(
+                                        job.company_name ||
+                                        "Company"
+                                    )}
                                 </strong>
 
-                                <p>
-                                    ${escapeHTML(
-                                        job.description ||
-                                        "No description available."
-                                    )}
-                                </p>
+                                <div
+                                    class="job-meta"
+                                >
 
-                                <div>
-                                    ${escapeHTML(job.category || "")}
+                                    ${
+                                        job.category
+                                        ?
+                                        `
+                                        <span
+                                            class="chip"
+                                        >
+                                            📂
+                                            ${escapeHTML(
+                                                job.category
+                                            )}
+                                        </span>
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                    <span
+                                        class="chip"
+                                    >
+                                        💼
+                                        ${escapeHTML(
+                                            job.job_type ||
+                                            ""
+                                        )}
+                                    </span>
+
+                                    ${
+                                        job.salary
+                                        ?
+                                        `
+                                        <span
+                                            class="chip"
+                                        >
+                                            💰
+                                            ${escapeHTML(
+                                                String(
+                                                    job.salary
+                                                )
+                                            )}
+                                        </span>
+                                        `
+                                        :
+                                        ""
+                                    }
+
                                 </div>
 
-                                <div>
-                                    ${escapeHTML(job.job_type || "")}
+                                <div
+                                    class="job-description"
+                                >
+                                    ${escapeHTML(
+                                        shortDescription ||
+                                        "No description available."
+                                    )}
                                 </div>
 
                                 ${
-                                    job.salary
-                                    ? `<div>${escapeHTML(
-                                        String(job.salary)
-                                      )}</div>`
-                                    : ""
+                                    applied
+                                    ?
+                                    `
+                                    <div
+                                        style="
+                                            margin-top:10px;
+                                            padding:9px;
+                                            border-radius:9px;
+                                            background:#e8f7f0;
+                                            color:#16734f;
+                                            font-size:12px;
+                                            font-weight:700;
+                                        "
+                                    >
+                                        ✓ You already applied
+                                    </div>
+                                    `
+                                    :
+                                    ""
                                 }
+
+                                <div
+                                    class="job-actions"
+                                >
+
+                                    <button
+                                        class="
+                                            btn
+                                            btn-primary
+                                            btn-small
+                                        "
+                                        type="button"
+                                        onclick="viewHomeJob('${encodeURIComponent(
+                                            job.id
+                                        )}')"
+                                    >
+                                        View Job
+                                    </button>
+
+                                    <button
+                                        class="
+                                            btn
+                                            btn-secondary
+                                            btn-small
+                                        "
+                                        type="button"
+                                        onclick="toggleHomeSaved('${encodeURIComponent(
+                                            job.id
+                                        )}')"
+                                    >
+                                        ${
+                                            saved
+                                            ?
+                                            "❤️ Saved"
+                                            :
+                                            "🤍 Save"
+                                        }
+                                    </button>
+
+                                </div>
+
                             </article>
                         `;
+
                     }).join("")}
+
                 </div>
+
             </section>
         `;
     });

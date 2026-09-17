@@ -1,3 +1,10 @@
 .gradle/
 
 index-before-working-backup.html
+app/src/main/assets/web/index-before-job-actions.html
+app/src/main/assets/web/job-details-before-admin-contact.html
+app/src/main/assets/web/index-before-jobseeker-signup.html
+app/src/main/assets/web/job-details-before-debug.html
+app/build/
+local.properties
+app/src/main/assets/web/job-details-current-broken.html
