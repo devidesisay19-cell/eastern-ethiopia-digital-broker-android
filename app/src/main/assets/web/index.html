@@ -1384,6 +1384,36 @@ footer {
 @media(max-width:600px){.home-job-date-heading h3{font-size:18px;}.home-jobs-grid{grid-template-columns:1fr;}}
 </style>
 
+<!-- =========================================================
+     PWA / iPHONE SUPPORT
+========================================================= -->
+<link rel="manifest" href="./manifest.json">
+
+<link
+    rel="apple-touch-icon"
+    href="./icons/apple-touch-icon.png"
+>
+
+<meta
+    name="theme-color"
+    content="#0f766e"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="EEDB"
+>
+
 </head>
 
 <body>
@@ -6349,6 +6379,27 @@ document.addEventListener(
     }
 );
 
+</script>
+
+<!-- =========================================================
+     SERVICE WORKER
+========================================================= -->
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+        navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(function() {
+                console.log("EEDB Service Worker registered.");
+            })
+            .catch(function(error) {
+                console.warn(
+                    "EEDB Service Worker registration failed:",
+                    error
+                );
+            });
+    });
+}
 </script>
 
 </body>

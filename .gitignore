@@ -8,3 +8,4 @@ app/src/main/assets/web/job-details-before-debug.html
 app/build/
 local.properties
 app/src/main/assets/web/job-details-current-broken.html
+keystore.properties
