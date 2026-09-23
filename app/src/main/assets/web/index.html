@@ -17,7 +17,8 @@
 
 <title>Eastern Ethiopia Digital Broker</title>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-lib.js"></script>
+<script src="supabase.js"></script>
 
 <style>
 
@@ -1768,6 +1769,15 @@ footer {
                     >
                         Job
                     </option>
+                    
+                    <option value="marketplace">
+                        Marketplace
+                    </option>
+
+                    <option value="car">
+                        Car
+                    </option>
+
                 </select>
 
             </div>
@@ -1883,6 +1893,38 @@ footer {
             <div class="loading">
                 <div class="spinner"></div>
                 <p>Loading jobs...</p>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="marketplaceSection" class="home-jobs-section">
+        <div class="section-title">
+            <div>
+                <h2>Latest Marketplace</h2>
+                <p>Latest published marketplace items.</p>
+            </div>
+        </div>
+        <div id="homeMarketplaceArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading marketplace...</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="carsSection" class="home-jobs-section">
+        <div class="section-title">
+            <div>
+                <h2>Latest Cars</h2>
+                <p>Latest published cars.</p>
+            </div>
+        </div>
+        <div id="homeCarsArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading cars...</p>
             </div>
         </div>
     </section>
@@ -2307,616 +2349,6 @@ footer {
    SUPABASE CONFIGURATION
 ========================================================= */
 
-const SUPABASE_URL =
-    "https://ubkfrpkapqnlaiscrxim.supabase.co";
-
-const SUPABASE_PUBLIC_KEY =
-    "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE";
-
-let db = null;
-
-let allProperties = [];
-
-let locationMap = {};
-
-let currentUser = null;
-
-let currentProfile = null;
-
-
-/* =========================================================
-   TRANSLATIONS
-========================================================= */
-
-const translations = {
-
-    en: {
-
-        brand:
-            "Eastern Ethiopia Digital Broker",
-
-        properties:
-            "Properties",
-
-        jobs:
-            "Jobs",
-
-        dashboard:
-            "Dashboard",
-
-        login:
-            "Login",
-
-        logout:
-            "Logout",
-
-        heroTitle:
-            "Find Your Next Home or Opportunity",
-
-        heroDescription:
-            "Discover houses for rent and sale, local jobs, and opportunities across Eastern Ethiopia.",
-
-        findProperty:
-            "🏠 Find Property",
-
-        findJobs:
-            "💼 Find Jobs",
-
-        listProperty:
-            "➕ List Property",
-
-        houses:
-            "Houses",
-
-        housesDescription:
-            "Find houses for rent and sale.",
-
-        jobsDescription:
-            "Discover local employment opportunities.",
-
-        localSearch:
-            "Local Search",
-
-        localSearchDescription:
-            "Search opportunities by location.",
-
-        latestProperties:
-            "Latest Properties",
-
-        browseProperties:
-            "Browse available properties.",
-
-        search:
-            "Search",
-
-        searchPlaceholder:
-            "Search property, location...",
-
-        type:
-            "Type",
-
-        all:
-            "All",
-
-        rent:
-            "Rent",
-
-        sale:
-            "Sale",
-
-        cityTown:
-            "City / Town",
-
-        minPrice:
-            "Min Price",
-
-        maxPrice:
-            "Max Price",
-
-        reset:
-            "Reset",
-
-        loadingProperties:
-            "Loading properties...",
-
-        welcomeBack:
-            "Welcome Back",
-
-        loginSubtitle:
-            "Login to continue to your dashboard.",
-
-        email:
-            "Email",
-
-        password:
-            "Password",
-
-        noAccount:
-            "Don't have an account?",
-
-        createAccount:
-            "Create Account",
-
-        signupSubtitle:
-            "Choose your account type and get started.",
-
-        fullName:
-            "Full Name",
-
-        phoneNumber:
-            "Phone Number",
-
-        accountType:
-            "Account Type",
-
-        owner:
-            "Owner",
-
-        renter:
-            "Renter",
-
-        jobSeeker:
-            "Job Seeker",
-
-        alreadyAccount:
-            "Already have an account?",
-
-        property:
-            "Property",
-
-        footerDescription:
-            "A local digital marketplace for properties, jobs and opportunities across Eastern Ethiopia.",
-
-        allRights:
-            "All rights reserved."
-    },
-
-
-    om: {
-
-        brand:
-            "Eastern Ethiopia Digital Broker",
-
-        properties:
-            "Manneen",
-
-        jobs:
-            "Hojiiwwan",
-
-        dashboard:
-            "Daashboordii",
-
-        login:
-            "Seeni",
-
-        logout:
-            "Ba'i",
-
-        heroTitle:
-            "Mana ykn Carraa Jireenyaa Itti Aanu Keessan Argadhaa",
-
-        heroDescription:
-            "Manneen kireeffatamuu fi gurguraman, hojiiwwan naannoo fi carraawwan Bahaa Itoophiyaa keessatti argadhaa.",
-
-        findProperty:
-            "🏠 Mana Barbaadi",
-
-        findJobs:
-            "💼 Hojii Barbaadi",
-
-        listProperty:
-            "➕ Mana Galchi",
-
-        houses:
-            "Manneen",
-
-        housesDescription:
-            "Manneen kireeffatamuu fi gurguraman barbaadi.",
-
-        jobsDescription:
-            "Carraawwan hojii naannoo argadhu.",
-
-        localSearch:
-            "Barbaacha Naannoo",
-
-        localSearchDescription:
-            "Carraawwan bakka irratti hundaa'uun barbaadi.",
-
-        latestProperties:
-            "Manneen Haaraa",
-
-        browseProperties:
-            "Manneen jiran ilaali.",
-
-        search:
-            "Barbaadi",
-
-        searchPlaceholder:
-            "Mana ykn bakka barbaadi...",
-
-        type:
-            "Gosa",
-
-        all:
-            "Hunda",
-
-        rent:
-            "Kiraa",
-
-        sale:
-            "Gurgurtaa",
-
-        cityTown:
-            "Magaalaa / Town",
-
-        minPrice:
-            "Gatii Xiqqaa",
-
-        maxPrice:
-            "Gatii Guddaa",
-
-        reset:
-            "Irra Deebi'i",
-
-        loadingProperties:
-            "Manneen fe'amaa jiru...",
-
-        welcomeBack:
-            "Baga Nagaan Deebite",
-
-        loginSubtitle:
-            "Daashboordii kee itti fufuuf seeni.",
-
-        email:
-            "Imeelii",
-
-        password:
-            "Jecha Iccitii",
-
-        noAccount:
-            "Akkaawuntii hin qabduu?",
-
-        createAccount:
-            "Akkaawuntii Uumi",
-
-        signupSubtitle:
-            "Gosa akkaawuntii kee filadhu.",
-
-        fullName:
-            "Maqaa Guutuu",
-
-        phoneNumber:
-            "Lakkoofsa Bilbilaa",
-
-        accountType:
-            "Gosa Akkaawuntii",
-
-        owner:
-            "Abbaa Manaa",
-
-        renter:
-            "Kireeffataa",
-
-        jobSeeker:
-            "Hojii Barbaadaa",
-
-        alreadyAccount:
-            "Duraan akkaawuntii qabdaa?",
-
-        property:
-            "Mana",
-
-        footerDescription:
-            "Gabaa dijitaalaa naannoo kan manneen, hojiiwwanii fi carraawwan Bahaa Itoophiyaa walitti fidu.",
-
-        allRights:
-            "Mirgi hundi eegamaadha."
-    },
-
-
-    am: {
-
-        brand:
-            "Eastern Ethiopia Digital Broker",
-
-        properties:
-            "ቤቶች",
-
-        jobs:
-            "ስራዎች",
-
-        dashboard:
-            "ዳሽቦርድ",
-
-        login:
-            "ግባ",
-
-        logout:
-            "ውጣ",
-
-        heroTitle:
-            "ቀጣዩን ቤትዎን ወይም የስራ እድልዎን ያግኙ",
-
-        heroDescription:
-            "በምስራቅ ኢትዮጵያ የሚገኙ የኪራይና የሽያጭ ቤቶች፣ ስራዎች እና እድሎችን ያግኙ።",
-
-        findProperty:
-            "🏠 ቤት ፈልግ",
-
-        findJobs:
-            "💼 ስራ ፈልግ",
-
-        listProperty:
-            "➕ ቤት አስገባ",
-
-        houses:
-            "ቤቶች",
-
-        housesDescription:
-            "የሚከራዩና የሚሸጡ ቤቶችን ያግኙ።",
-
-        jobsDescription:
-            "የአካባቢ የስራ እድሎችን ያግኙ።",
-
-        localSearch:
-            "የአካባቢ ፍለጋ",
-
-        localSearchDescription:
-            "እድሎችን በአካባቢ ይፈልጉ።",
-
-        latestProperties:
-            "የቅርብ ጊዜ ቤቶች",
-
-        browseProperties:
-            "ያሉትን ቤቶች ይመልከቱ።",
-
-        search:
-            "ፈልግ",
-
-        searchPlaceholder:
-            "ቤት ወይም አካባቢ ይፈልጉ...",
-
-        type:
-            "አይነት",
-
-        all:
-            "ሁሉም",
-
-        rent:
-            "ኪራይ",
-
-        sale:
-            "ሽያጭ",
-
-        cityTown:
-            "ከተማ / ከተማ አካባቢ",
-
-        minPrice:
-            "ዝቅተኛ ዋጋ",
-
-        maxPrice:
-            "ከፍተኛ ዋጋ",
-
-        reset:
-            "አጽዳ",
-
-        loadingProperties:
-            "ቤቶች በመጫን ላይ...",
-
-        welcomeBack:
-            "እንኳን ደህና መጡ",
-
-        loginSubtitle:
-            "ወደ ዳሽቦርድዎ ለመቀጠል ይግቡ።",
-
-        email:
-            "ኢሜይል",
-
-        password:
-            "የይለፍ ቃል",
-
-        noAccount:
-            "መለያ የለዎትም?",
-
-        createAccount:
-            "መለያ ፍጠር",
-
-        signupSubtitle:
-            "የመለያዎን አይነት ይምረጡ።",
-
-        fullName:
-            "ሙሉ ስም",
-
-        phoneNumber:
-            "ስልክ ቁጥር",
-
-        accountType:
-            "የመለያ አይነት",
-
-        owner:
-            "የቤት ባለቤት",
-
-        renter:
-            "ተከራይ",
-
-        jobSeeker:
-            "ስራ ፈላጊ",
-
-        alreadyAccount:
-            "አስቀድመው መለያ አለዎት?",
-
-        property:
-            "ቤት",
-
-        footerDescription:
-            "በምስራቅ ኢትዮጵያ ቤቶችን፣ ስራዎችን እና እድሎችን የሚያገናኝ ዲጂታል የአካባቢ ገበያ።",
-
-        allRights:
-            "መብቱ የተጠበቀ ነው።"
-    }
-
-};
-
-
-/* =========================================================
-   LANGUAGE FUNCTIONS
-========================================================= */
-
-function getCurrentLanguage() {
-
-    return (
-        localStorage.getItem("appLanguage")
-        || "en"
-    );
-}
-
-
-function changeLanguage(language) {
-
-    if (!translations[language]) {
-
-        language = "en";
-    }
-
-    localStorage.setItem(
-        "appLanguage",
-        language
-    );
-
-    applyLanguage(
-        language
-    );
-}
-
-
-function applyLanguage(language) {
-
-    const dictionary =
-        translations[language] ||
-        translations.en;
-
-
-    document.documentElement.lang =
-        language === "om"
-            ? "om"
-            : language === "am"
-                ? "am"
-                : "en";
-
-
-    document
-        .querySelectorAll("[data-i18n]")
-        .forEach(
-            function(element) {
-
-                const key =
-                    element.getAttribute(
-                        "data-i18n"
-                    );
-
-                if (
-                    dictionary[key] !== undefined
-                ) {
-
-                    element.textContent =
-                        dictionary[key];
-                }
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            "[data-i18n-placeholder]"
-        )
-        .forEach(
-            function(element) {
-
-                const key =
-                    element.getAttribute(
-                        "data-i18n-placeholder"
-                    );
-
-                if (
-                    dictionary[key] !== undefined
-                ) {
-
-                    element.placeholder =
-                        dictionary[key];
-                }
-            }
-        );
-
-
-    const selector =
-        document.getElementById(
-            "languageSelector"
-        );
-
-    if (selector) {
-
-        selector.value =
-            language;
-    }
-
-
-    updateCityFilterLanguage();
-}
-
-
-/* =========================================================
-   SUPABASE INITIALIZATION
-========================================================= */
-
-function initializeSupabase() {
-
-    if (!window.supabase) {
-
-        console.error(
-            "Supabase library was not loaded."
-        );
-
-        showPropertyError(
-            "Supabase library could not be loaded. Check your internet connection."
-        );
-
-        return false;
-    }
-
-    try {
-
-        db =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLIC_KEY
-            );
-
-        console.log(
-            "SUPABASE CLIENT CREATED SUCCESSFULLY"
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "SUPABASE INITIALIZATION ERROR:",
-            error
-        );
-
-        showPropertyError(
-            "Supabase could not be initialized."
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   ROLE NORMALIZATION
-========================================================= */
-
 function normalizeRole(role) {
 
     if (!role) {
@@ -3216,7 +2648,7 @@ function setupAuthListener() {
 
 
     db.auth.onAuthStateChange(
-        async function(event, session) {
+        function(event, session) {
 
             console.log(
                 "AUTH EVENT:",
@@ -3234,14 +2666,7 @@ function setupAuthListener() {
                     session.user;
 
 
-                setTimeout(
-                    async function() {
 
-                        await checkCurrentUser();
-
-                    },
-                    0
-                );
             }
 
 
@@ -4828,19 +4253,231 @@ function viewHomeJob(encodedJobId) {
    LOAD HOME JOBS
 ========================================================= */
 
-async function loadHomeJobs() {
+let homeMarketplaceItems = [];
+let homeCars = [];
+
+function renderHomeMarketplace(list) {
+    const area = document.getElementById("homeMarketplaceArea");
+    if (!area) return;
+
+    if (!list || !list.length) {
+        area.innerHTML = "<div class="empty-state">No published marketplace items found.</div>";
+        return;
+    }
+
+    area.innerHTML = list.map(function(item) {
+        const photo = item.photo_urls && item.photo_urls.length
+            ? item.photo_urls[0]
+            : "";
+
+        const image = photo
+            ? "<img src="" + escAttr(photo) + "" alt="Marketplace item">"
+            : "<div class="home-card-no-image">🛍️</div>";
+
+        return "<article class="property-card home-marketplace-card">" +
+            "<div class="property-image">" + image + "</div>" +
+            "<div class="property-content">" +
+            "<h3>" + esc(item.title || "Marketplace Item") + "</h3>" +
+            "<p>🛍️ " + esc(item.category || "Marketplace") + "</p>" +
+            "<p>" + esc(item.condition || "") + "</p>" +
+            "<strong>" + Number(item.price || 0).toLocaleString() +
+            " " + esc(item.price_unit || "") + "</strong>" +
+            "</div></article>";
+    }).join("");
+}
+
+function renderHomeCars(list) {
+    const area = document.getElementById("homeCarsArea");
+    if (!area) return;
+
+    if (!list || !list.length) {
+        area.innerHTML = "<div class="empty-state">No published cars found.</div>";
+        return;
+    }
+
+    area.innerHTML = list.map(function(car) {
+        const photo = car.photo_urls && car.photo_urls.length
+            ? car.photo_urls[0]
+            : "";
+
+        const image = photo
+            ? "<img src="" + escAttr(photo) + "" alt="Car">"
+            : "<div class="home-card-no-image">🚗</div>";
+
+        const carName =
+            car.title ||
+            [car.brand, car.model].filter(Boolean).join(" ") ||
+            "Car";
+
+        return "<article class="property-card home-car-card">" +
+            "<div class="property-image">" + image + "</div>" +
+            "<div class="property-content">" +
+            "<h3>" + esc(carName) + "</h3>" +
+            "<p>🚗 " + esc(car.brand || "") + " " +
+            esc(car.model || "") + "</p>" +
+            "<p>" + (car.year ? esc(String(car.year)) : "") +
+            (car.condition ? " • " + esc(car.condition) : "") + "</p>" +
+            "<strong>" + Number(car.price || 0).toLocaleString() +
+            " " + esc(car.price_unit || "") + "</strong>" +
+            "</div></article>";
+    }).join("");
+}
+
+function showMarketplaceLoading() {
+    const area = document.getElementById("homeMarketplaceArea");
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading marketplace...</p>
+        </div>
+    `;
+}
+
+async function loadHomeMarketplace(cityId = "all", listingType = "all") {
+    showMarketplaceLoading();
+
+    const area =
+        document.getElementById(
+            "homeMarketplaceArea"
+        );
+
+    if (!db) {
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        }
+        return;
+    }
+
+    try {
+        let query = db
+            .from("marketplace_items")
+            .select("id,title,description,category,condition,listing_type,price,price_unit,city_id,contact_phone,photo_urls,status,created_at")
+            .eq("status", "published")
+            .order("created_at", {ascending:false});
+
+        if (cityId !== "all") {
+            query = query.eq("city_id", cityId);
+        }
+
+        if (listingType === "rent" || listingType === "sell") {
+            query = query.eq("listing_type", listingType);
+        }
+
+        const result = await query;
+
+        if (result.error) {
+            throw result.error;
+        }
+
+        homeMarketplaceItems = result.data || [];
+
+        renderHomeMarketplace(homeMarketplaceItems);
+
+    } catch (error) {
+        console.error("HOME MARKETPLACE ERROR:", error);
+
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">HOME MARKETPLACE ERROR: ' +
+                String(error.message || error) +
+                '</div>';
+        }
+    }
+}
+
+function showCarLoading() {
+    const area = document.getElementById("homeCarsArea");
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading cars...</p>
+        </div>
+    `;
+}
+
+async function loadHomeCars(cityId = "all", listingType = "all") {
+    showCarLoading();
+
+    const area =
+        document.getElementById(
+            "homeCarsArea"
+        );
+
+    if (!db) {
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        }
+        return;
+    }
+
+    try {
+        let query = db
+            .from("cars")
+            .select("id,title,description,brand,model,year,condition,transmission,fuel_type,color,mileage,listing_type,price,price_unit,city_id,contact_phone,photo_urls,status,created_at")
+            .eq("status", "published")
+            .order("created_at", {ascending:false});
+
+        if (cityId !== "all") {
+            query = query.eq("city_id", cityId);
+        }
+
+        if (listingType === "rent" || listingType === "sell") {
+            query = query.eq("listing_type", listingType);
+        }
+
+        const result = await query;
+
+        if (result.error) {
+            throw result.error;
+        }
+
+        homeCars = result.data || [];
+
+        renderHomeCars(homeCars);
+
+    } catch (error) {
+        console.error("HOME CARS ERROR:", error);
+
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">HOME CARS ERROR: ' +
+                String(error.message || error) +
+                '</div>';
+        }
+    }
+}
+
+async function loadHomeJobs(cityId = "all") {
 
     const area =
         document.getElementById(
             "homeJobsArea"
         );
 
-    if (!area || !db) return;
+    if (!area) return;
+
+    if (!db) {
+        area.innerHTML =
+            '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        return;
+    }
 
     try {
 
-        const { data, error } =
-            await db
+        let query =
+            db
                 .from("jobs")
                 .select(
                     "id,city_id,title,description,category,job_type,salary,company_name,application_deadline,status,created_at"
@@ -4848,13 +4485,26 @@ async function loadHomeJobs() {
                 .eq(
                     "status",
                     "published"
-                )
-                .order(
-                    "created_at",
-                    {
-                        ascending:false
-                    }
                 );
+
+        if (
+            cityId &&
+            cityId !== "all"
+        ) {
+            query =
+                query.eq(
+                    "city_id",
+                    cityId
+                );
+        }
+
+        const { data, error } =
+            await query.order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
 
         if (error) {
             throw error;
@@ -5936,211 +5586,258 @@ function viewProperty(
 ========================================================= */
 
 function applyFilters() {
+    const searchElement = document.getElementById("searchInput");
+    const typeElement = document.getElementById("typeFilter");
+    const cityElement = document.getElementById("cityFilter");
 
-    const search =
-        document
-            .getElementById(
-                "searchInput"
-            )
-            .value
-            .toLowerCase()
-            .trim();
+    const search = searchElement
+        ? searchElement.value.toLowerCase().trim()
+        : "";
 
+    const type = typeElement
+        ? typeElement.value.toLowerCase()
+        : "all";
 
-    const type =
-        document
-            .getElementById(
-                "typeFilter"
-            )
-            .value
-            .toLowerCase();
+    const cityId = cityElement
+        ? cityElement.value
+        : "all";
 
+    const propertySection =
+        document.getElementById("propertiesSection");
 
-    if (type === "job") {
-        const propertyArea = document.getElementById("propertyArea");
-        const jobsSection = document.getElementById("jobsSection");
+    const propertyArea =
+        document.getElementById("propertyArea");
 
-        if (propertyArea) propertyArea.innerHTML = "";
+    const jobsSection =
+        document.getElementById("jobsSection");
 
-        if (jobsSection) {
-            jobsSection.style.display = "";
-            loadHomeJobs();
-            jobsSection.scrollIntoView({behavior:"smooth"});
+    const marketplaceSection =
+        document.getElementById("marketplaceSection");
+
+    const carsSection =
+        document.getElementById("carsSection");
+
+    const showJobs =
+        type === "all" || type === "job";
+
+    const showMarketplace =
+        type === "all" ||
+        type === "rent" ||
+        type === "sell" ||
+        type === "marketplace";
+
+    const showCars =
+        type === "all" ||
+        type === "rent" ||
+        type === "sell" ||
+        type === "car";
+
+    const showProperties =
+        type === "all" ||
+        type === "rent" ||
+        type === "sell";
+
+    if (propertySection) {
+        propertySection.style.display = "";
+    }
+
+    if (jobsSection) {
+        jobsSection.style.display =
+            showJobs ? "" : "none";
+    }
+
+    if (marketplaceSection) {
+        marketplaceSection.style.display =
+            showMarketplace ? "" : "none";
+    }
+
+    if (carsSection) {
+        carsSection.style.display =
+            showCars ? "" : "none";
+    }
+
+    /*
+     * JOBS
+     * Job filter always respects selected city.
+     */
+    if (showJobs) {
+        loadHomeJobs(cityId);
+    }
+
+    /*
+     * MARKETPLACE
+     * Rent/Sell type is passed to the database loader.
+     */
+    if (showMarketplace) {
+        const marketplaceType =
+            type === "rent" || type === "sell"
+                ? type
+                : "all";
+
+        loadHomeMarketplace(
+            cityId,
+            marketplaceType
+        );
+    }
+
+    /*
+     * CARS
+     * Rent/Sell type is passed to the database loader.
+     */
+    if (showCars) {
+        const carType =
+            type === "rent" || type === "sell"
+                ? type
+                : "all";
+
+        loadHomeCars(
+            cityId,
+            carType
+        );
+    }
+
+    /*
+     * PROPERTY FILTER
+     */
+    if (!showProperties) {
+        if (propertyArea) {
+            propertyArea.innerHTML = "";
         }
 
         return;
     }
 
-    const cityId =
-        document
-            .getElementById(
-                "cityFilter"
-            )
-            .value;
+    const minPriceElement =
+        document.getElementById("minPrice");
 
+    const maxPriceElement =
+        document.getElementById("maxPrice");
 
     const minPriceValue =
-        document
-            .getElementById(
-                "minPrice"
-            )
-            .value;
-
+        minPriceElement
+            ? minPriceElement.value
+            : "";
 
     const maxPriceValue =
-        document
-            .getElementById(
-                "maxPrice"
-            )
-            .value;
-
+        maxPriceElement
+            ? maxPriceElement.value
+            : "";
 
     const minPrice =
         minPriceValue === ""
             ? null
-            : Number(
-                minPriceValue
-            );
-
+            : Number(minPriceValue);
 
     const maxPrice =
         maxPriceValue === ""
             ? null
-            : Number(
-                maxPriceValue
-            );
-
+            : Number(maxPriceValue);
 
     if (
         minPrice !== null &&
         maxPrice !== null &&
         minPrice > maxPrice
     ) {
-
         showPropertyError(
             "Minimum price cannot be greater than maximum price."
         );
-
         return;
     }
 
-
     const filtered =
-        allProperties.filter(
-            function(property) {
+        allProperties.filter(function(property) {
 
-                const propertyType =
-                    normalizePropertyType(
+            const normalized =
+                normalizePropertyType(property);
+
+            const propertyType =
+                normalized === "sale"
+                    ? "sell"
+                    : normalized;
+
+            /*
+             * TYPE
+             * Property participates only in:
+             * All / Rent / Sell.
+             */
+            if (
+                type !== "all" &&
+                propertyType !== type
+            ) {
+                return false;
+            }
+
+            /*
+             * CITY
+             */
+            if (
+                cityId !== "all" &&
+                property.city_id !== cityId
+            ) {
+                return false;
+            }
+
+            /*
+             * PRICE
+             */
+            const price =
+                Number(property.price);
+
+            if (
+                minPrice !== null &&
+                !Number.isNaN(price) &&
+                price < minPrice
+            ) {
+                return false;
+            }
+
+            if (
+                maxPrice !== null &&
+                !Number.isNaN(price) &&
+                price > maxPrice
+            ) {
+                return false;
+            }
+
+            /*
+             * SEARCH
+             */
+            if (search) {
+                const location =
+                    getPropertyLocationText(
                         property
-                    ) === 'sale' ? 'sell' : normalizePropertyType(property);
-
-
-                if (
-                    type !== "all" &&
-                    propertyType !== type
-                ) {
-
-                    return false;
-                }
-
-
-                if (
-                    cityId !== "all" &&
-                    property.city_id !== cityId
-                ) {
-
-                    return false;
-                }
-
-
-                const price =
-                    Number(
-                        property.price
                     );
 
+                const searchableText = [
+                    property.title,
+                    property.description,
+                    property.city,
+                    property.location,
+                    propertyType,
+                    location
+                ]
+                .filter(function(item) {
+                    return (
+                        item !== null &&
+                        item !== undefined &&
+                        String(item).trim() !== ""
+                    );
+                })
+                .join(" ")
+                .toLowerCase();
 
                 if (
-                    minPrice !== null &&
-                    !Number.isNaN(price) &&
-                    price < minPrice
+                    !searchableText.includes(search)
                 ) {
-
                     return false;
                 }
-
-
-                if (
-                    maxPrice !== null &&
-                    !Number.isNaN(price) &&
-                    price > maxPrice
-                ) {
-
-                    return false;
-                }
-
-
-                if (search) {
-
-                    const location =
-                        getPropertyLocationText(
-                            property
-                        );
-
-
-                    const searchableText =
-                        [
-
-                            property.title,
-
-                            property.description,
-
-                            property.city,
-
-                            property.location,
-
-                            propertyType,
-
-                            location
-
-                        ]
-
-                        .filter(
-                            function(item) {
-
-                                return (
-                                    item !== null &&
-                                    item !== undefined &&
-                                    String(item).trim() !== ""
-                                );
-                            }
-                        )
-
-                        .join(" ")
-
-                        .toLowerCase();
-
-
-                    if (
-                        !searchableText.includes(
-                            search
-                        )
-                    ) {
-
-                        return false;
-                    }
-                }
-
-
-                return true;
             }
-        );
 
+            return true;
+        });
 
-    renderProperties(
-        filtered
-    );
+    renderProperties(filtered);
 }
-
 
 /* =========================================================
    RESET FILTERS
@@ -6188,9 +5885,7 @@ function resetFilters() {
         "";
 
 
-    renderProperties(
-        allProperties
-    );
+    applyFilters();
 }
 
 
@@ -6298,50 +5993,50 @@ function showPropertyError(
    INITIAL PAGE START
 ========================================================= */
 
+function ensureSupabaseReady() {
+    if (typeof db !== "undefined" && db) {
+        console.log("SHARED SUPABASE CLIENT READY");
+        return true;
+    }
+
+    console.error("SHARED SUPABASE CLIENT IS NOT READY");
+    return false;
+}
+
 async function initializeApp() {
 
     /*
      * Apply saved language first.
      */
-
     applyLanguage(
         getCurrentLanguage()
     );
 
-
-    const initialized =
-        initializeSupabase();
-
-
-    if (!initialized) {
-
+    /*
+     * Use the shared Supabase client loaded
+     * from supabase.js.
+     */
+    if (!ensureSupabaseReady()) {
         return;
     }
 
-
     setupAuthListener();
 
-
-    await checkCurrentUser();
-
-
     /*
-     * Locations first.
+     * Keep the stable old-release startup order:
+     * authentication -> locations -> properties -> jobs.
      */
+    await checkCurrentUser();
 
     await loadLocations();
 
-
-    /*
-     * Then properties.
-     */
-
     await loadProperties();
     await loadHomeJobs();
-
+    await loadHomeMarketplace();
+    await loadHomeCars();
 
     console.log(
-        "EASTERN ETHIOPIA DIGITAL BROKER INDEX READY"
+        "EASTERN ETHIOPIA GENERAL DIGITAL BROKER INDEX READY"
     );
 }
 

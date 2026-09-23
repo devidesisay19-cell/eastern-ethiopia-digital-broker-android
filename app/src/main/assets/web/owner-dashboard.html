@@ -5,1147 +5,1002 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#155EEF">
 
-<title>Owner Dashboard | Eastern Ethiopia Digital Broker</title>
+<title>Owner Dashboard | Eastern Ethiopia General Digital Broker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
 
+
 <style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0
-}
+*{box-sizing:border-box;margin:0;padding:0}
 
 :root{
-    --p:#155EEF;
-    --pd:#0B4ACB;
-    --pl:#EEF4FF;
-    --bg:#F5F7FB;
-    --card:#fff;
-    --text:#101828;
-    --muted:#667085;
-    --line:#E4E7EC;
-    --soft:#F8FAFC;
-
-    --green:#12B76A;
-    --gbg:#ECFDF3;
-
-    --orange:#F79009;
-    --obg:#FFFAEB;
-
-    --red:#F04438;
-    --rbg:#FEF3F2;
-
-    --purple:#7F56D9;
-    --pb:#F9F5FF;
-
-    --shadow:0 10px 35px rgba(16,24,40,.08);
-    --shadow2:0 20px 65px rgba(16,24,40,.18);
-
-    --radius:18px;
+  --primary:#0f766e;
+  --primary2:#115e59;
+  --primary-soft:#ecfdf5;
+  --accent:#f59e0b;
+  --bg:#f4f7fb;
+  --card:#ffffff;
+  --text:#0f172a;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --success:#16a34a;
+  --warning:#d97706;
+  --danger:#dc2626;
+  --blue:#2563eb;
+  --shadow:0 8px 30px rgba(15,23,42,.07);
+  --shadow2:0 20px 55px rgba(15,23,42,.14);
+  --radius:20px;
 }
 
-html{
-    scroll-behavior:smooth
+html,body{
+  margin:0;
+  padding:0;
+  min-height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
-body{
-    font-family:Inter,Arial,sans-serif;
-    background:var(--bg);
-    color:var(--text);
-    min-height:100vh
-}
-
-button,
-input,
-select,
-textarea{
-    font:inherit
+button,input,select,textarea{
+  font:inherit;
 }
 
 button{
-    cursor:pointer
+  cursor:pointer;
 }
-
-button:disabled{
-    opacity:.55;
-    cursor:not-allowed
-}
-
-.hidden{
-    display:none!important
-}
-
-/* =========================
-   LOGIN
-========================= */
-
-#loginPage{
-    min-height:100vh;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px;
-
-    background:
-        radial-gradient(circle at 0 0,#DCE9FF,transparent 36%),
-        radial-gradient(circle at 100% 100%,#E8F0FF,transparent 38%),
-        #F7FAFF;
-}
-
-.login-card{
-    width:100%;
-    max-width:440px;
-    background:#fff;
-    border:1px solid #fff;
-    border-radius:28px;
-    padding:32px 24px;
-    box-shadow:var(--shadow2)
-}
-
-.logo{
-    width:72px;
-    height:72px;
-    margin:0 auto 18px;
-    border-radius:22px;
-
-    background:linear-gradient(135deg,#155EEF,#4C8DFF);
-
-    display:grid;
-    place-items:center;
-
-    color:#fff;
-    font-size:31px;
-    font-weight:900;
-
-    box-shadow:0 12px 28px rgba(21,94,239,.25)
-}
-
-.login-card h1{
-    text-align:center;
-    font-size:22px
-}
-
-.login-card .sub{
-    text-align:center;
-    color:var(--muted);
-    font-size:13px;
-    margin:7px 0 26px
-}
-
-/* =========================
-   FORM
-========================= */
-
-.field{
-    margin-bottom:14px
-}
-
-.field label{
-    display:block;
-    color:#344054;
-    font-size:12px;
-    font-weight:800;
-    margin-bottom:7px
-}
-
-input,
-select,
-textarea{
-    width:100%;
-    border:1px solid var(--line);
-    border-radius:12px;
-    padding:12px 13px;
-    background:#fff;
-    color:var(--text);
-    outline:0;
-    font-size:13px;
-    transition:.2s
-}
-
-input:focus,
-select:focus,
-textarea:focus{
-    border-color:var(--p);
-    box-shadow:0 0 0 4px rgba(21,94,239,.09)
-}
-
-select:disabled{
-    background:#F2F4F7;
-    color:#98A2B3;
-    cursor:not-allowed
-}
-
-textarea{
-    min-height:120px;
-    resize:vertical
-}
-
-.btn{
-    border:0;
-    border-radius:12px;
-    padding:11px 15px;
-    font-size:12px;
-    font-weight:850;
-
-    display:inline-flex;
-    align-items:center;
-    justify-content:center;
-    gap:7px;
-
-    transition:.2s
-}
-
-.primary{
-    background:var(--p);
-    color:#fff;
-    box-shadow:0 6px 18px rgba(21,94,239,.2)
-}
-
-.primary:hover{
-    background:var(--pd)
-}
-
-.secondary{
-    background:#F2F4F7;
-    color:#344054
-}
-
-.danger{
-    background:var(--rbg);
-    color:#B42318
-}
-
-.success{
-    background:var(--gbg);
-    color:#067647
-}
-
-.full{
-    width:100%
-}
-
-/* =========================
-   APP
-========================= */
 
 #app{
-    display:none;
-    min-height:100vh
+  min-height:100vh;
+  background:
+    radial-gradient(circle at top right,rgba(15,118,110,.08),transparent 28%),
+    var(--bg);
 }
 
+/* TOP BAR */
 .topbar{
-    height:68px;
-
-    position:sticky;
-    top:0;
-    z-index:40;
-
-    background:rgba(255,255,255,.94);
-    backdrop-filter:blur(14px);
-
-    border-bottom:1px solid var(--line);
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-
-    padding:0 22px
+  position:sticky;
+  top:0;
+  z-index:50;
+  min-height:76px;
+  padding:12px 28px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:20px;
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(16px);
+  border-bottom:1px solid rgba(226,232,240,.9);
+  box-shadow:0 4px 20px rgba(15,23,42,.05);
 }
 
 .brand{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    min-width:0
+  display:flex;
+  align-items:center;
+  gap:13px;
+  min-width:0;
 }
 
 .brand-icon{
-    width:41px;
-    height:41px;
-    border-radius:12px;
-
-    background:linear-gradient(135deg,#155EEF,#4C8DFF);
-
-    display:grid;
-    place-items:center;
-
-    color:#fff;
-    font-weight:900
+  width:46px;
+  height:46px;
+  flex:0 0 46px;
+  display:grid;
+  place-items:center;
+  border-radius:15px;
+  background:linear-gradient(135deg,var(--primary),#14b8a6);
+  color:#fff;
+  font-weight:900;
+  font-size:22px;
+  box-shadow:0 8px 22px rgba(15,118,110,.25);
 }
 
 .brand strong{
-    display:block;
-    font-size:14px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis
+  display:block;
+  font-size:16px;
+  font-weight:800;
+  line-height:1.2;
 }
 
 .brand span{
-    display:block;
-    color:var(--muted);
-    font-size:10px;
-    margin-top:2px
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:11px;
 }
 
 .user-area{
-    display:flex;
-    align-items:center;
-    gap:9px
+  display:flex;
+  align-items:center;
+  gap:10px;
 }
 
 .avatar{
-    width:35px;
-    height:35px;
-    border-radius:50%;
-
-    display:grid;
-    place-items:center;
-
-    background:var(--pl);
-    color:var(--p);
-
-    font-weight:900;
-    font-size:12px
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  background:var(--primary-soft);
+  color:var(--primary2);
+  font-weight:800;
 }
 
 .user-name{
-    font-size:12px;
-    font-weight:800;
-    max-width:130px;
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap
+  font-weight:700;
+  font-size:13px;
 }
 
 .logout{
-    border:1px solid var(--line);
-    background:#fff;
-    border-radius:10px;
-    padding:8px 11px;
-    font-size:11px;
-    font-weight:800
+  border:1px solid var(--line);
+  background:#fff;
+  color:#334155;
+  border-radius:11px;
+  padding:9px 13px;
+  font-weight:700;
 }
 
-/* =========================
-   MAIN
-========================= */
+.logout:hover{
+  background:#f8fafc;
+}
+
+/* MAIN */
+
+.section-tabs{
+    display:flex;
+    gap:10px;
+    margin:22px 0;
+    padding:6px;
+    background:#ffffff;
+    border:1px solid #e5e7eb;
+    border-radius:16px;
+    overflow-x:auto;
+}
+
+.section-tab{
+    flex:1;
+    min-width:120px;
+    border:0;
+    padding:13px 16px;
+    border-radius:12px;
+    background:transparent;
+    color:#64748b;
+    font-weight:700;
+    cursor:pointer;
+    white-space:nowrap;
+}
+
+.section-tab:hover{
+    background:#f1f5f9;
+}
+
+.section-tab.active{
+    background:#0f766e;
+    color:#ffffff;
+    box-shadow:0 4px 12px rgba(15,118,110,.18);
+}
+
+.owner-section{
+    display:none;
+}
+
+.owner-section.active{
+    display:block;
+}
+
+@media(max-width:600px){
+    .section-tabs{
+        margin:16px 0;
+    }
+
+    .section-tab{
+        flex:0 0 auto;
+        min-width:115px;
+    }
+}
 
 .main{
-    max-width:1450px;
-    margin:auto;
-    padding:24px 22px 55px
+  width:min(1380px,calc(100% - 36px));
+  margin:0 auto;
+  padding:30px 0 60px;
 }
 
+/* HERO */
 .hero{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:18px;
-    margin-bottom:20px
+  position:relative;
+  overflow:hidden;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:24px;
+  padding:30px;
+  border-radius:26px;
+  background:
+    linear-gradient(135deg,#0f766e 0%,#115e59 55%,#134e4a 100%);
+  color:#fff;
+  box-shadow:0 18px 50px rgba(15,118,110,.22);
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  width:260px;
+  height:260px;
+  right:-90px;
+  top:-120px;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
 }
 
 .hero h2{
-    font-size:27px
+  position:relative;
+  z-index:1;
+  font-size:28px;
+  line-height:1.2;
+  margin-bottom:9px;
 }
 
 .hero p{
-    color:var(--muted);
-    font-size:13px;
-    margin-top:6px
+  position:relative;
+  z-index:1;
+  max-width:680px;
+  color:rgba(255,255,255,.82);
+  line-height:1.6;
+  font-size:14px;
 }
 
-/* =========================
-   STATS
-========================= */
+.hero-action{
+  position:relative;
+  z-index:2;
+  flex-shrink:0;
+}
 
+.btn{
+  border:0;
+  border-radius:12px;
+  padding:11px 16px;
+  font-weight:800;
+  transition:.2s ease;
+}
+
+.btn:hover{
+  transform:translateY(-1px);
+}
+
+.btn.primary{
+  background:#fff;
+  color:var(--primary2);
+  box-shadow:0 8px 20px rgba(0,0,0,.12);
+}
+
+.btn.secondary{
+  background:#fff;
+  color:#334155;
+  border:1px solid var(--line);
+}
+
+.btn.danger{
+  background:#dc2626;
+  color:#fff;
+}
+
+/* STATS */
 .stats{
-    display:grid;
-    grid-template-columns:repeat(4,1fr);
-    gap:13px;
-    margin-bottom:20px
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:16px;
+  margin-top:20px;
 }
 
 .stat{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:17px;
-    padding:17px;
-    box-shadow:0 2px 8px rgba(16,24,40,.04)
+  position:relative;
+  padding:21px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:var(--card);
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
 
-.stat .num{
-    font-size:27px;
-    font-weight:900;
-    margin-top:12px
-}
-
-.stat small{
-    color:var(--muted);
-    font-size:11px
+.stat:after{
+  content:"";
+  position:absolute;
+  right:-30px;
+  bottom:-45px;
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  background:var(--primary-soft);
 }
 
 .stat .ico{
-    width:38px;
-    height:38px;
-    border-radius:11px;
-    background:var(--pl);
-    color:var(--p);
-
-    display:grid;
-    place-items:center;
-
-    font-weight:900
+  width:42px;
+  height:42px;
+  display:grid;
+  place-items:center;
+  border-radius:13px;
+  background:var(--primary-soft);
+  color:var(--primary);
+  font-size:19px;
+  margin-bottom:14px;
 }
 
-/* =========================
-   PROFILE
-========================= */
+.stat .num{
+  font-size:27px;
+  font-weight:900;
+  letter-spacing:-.5px;
+}
 
-.profile,
-.toolbar{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:17px;
-    padding:17px;
-    margin-bottom:18px;
-    box-shadow:0 2px 8px rgba(16,24,40,.04)
+.stat small{
+  display:block;
+  margin-top:4px;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:600;
+}
+
+/* PROFILE */
+.profile{
+  margin-top:20px;
+  padding:22px;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:var(--shadow);
 }
 
 .section-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom:13px
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:18px;
 }
 
 .section-head h3{
-    font-size:15px
+  font-size:17px;
 }
 
 .section-head span{
-    color:var(--muted);
-    font-size:10px
+  color:var(--muted);
+  font-size:12px;
 }
 
 .profile-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
 }
 
 .info{
-    background:var(--soft);
-    border:1px solid #EEF2F6;
-    border-radius:11px;
-    padding:11px
+  padding:15px;
+  border-radius:14px;
+  background:#f8fafc;
+  border:1px solid #edf2f7;
 }
 
 .info small{
-    display:block;
-    color:var(--muted);
-    font-size:9px;
-    margin-bottom:4px
+  display:block;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:6px;
 }
 
 .info strong{
-    font-size:12px;
-    word-break:break-word
+  display:block;
+  font-size:13px;
+  word-break:break-word;
 }
 
-/* =========================
-   TOOLBAR
-========================= */
+/* TOOLBAR */
+.toolbar{
+  margin-top:20px;
+  padding:15px;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:var(--shadow);
+}
 
 .toolbar-grid{
-    display:grid;
-    grid-template-columns:2fr 1fr 1fr auto;
-    gap:9px
+  display:grid;
+  grid-template-columns:minmax(220px,1fr) 180px 180px auto;
+  gap:10px;
 }
 
 .search{
-    position:relative
+  display:flex;
+  align-items:center;
+  gap:9px;
+  min-height:44px;
+  padding:0 13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
 }
 
 .search span{
-    position:absolute;
-    left:12px;
-    top:50%;
-    transform:translateY(-50%);
-    color:#98A2B3
+  color:var(--muted);
 }
 
 .search input{
-    padding-left:36px
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
 }
 
-/* =========================
-   PROPERTY CARDS
-========================= */
+.toolbar select{
+  width:100%;
+  min-height:44px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fff;
+  color:#334155;
+  outline:none;
+}
+
+/* PROPERTY AREA */
+#propertyContainer{
+  margin-top:22px;
+}
 
 .grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:16px
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:18px;
 }
 
 .card{
-    background:#fff;
-    border:1px solid var(--line);
-    border-radius:17px;
-    overflow:hidden;
-    box-shadow:0 2px 9px rgba(16,24,40,.05);
-    transition:.2s
+  overflow:hidden;
+  border:1px solid var(--line);
+  border-radius:20px;
+  background:#fff;
+  box-shadow:var(--shadow);
+  transition:.22s ease;
 }
 
 .card:hover{
-    transform:translateY(-2px);
-    box-shadow:var(--shadow)
+  transform:translateY(-3px);
+  box-shadow:var(--shadow2);
 }
 
 .media{
-    height:205px;
-    background:#EEF2F6;
-    position:relative;
-    overflow:hidden
+  position:relative;
+  height:210px;
+  background:#e2e8f0;
+  overflow:hidden;
 }
 
 .media img{
-    width:100%;
-    height:100%;
-    object-fit:cover
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
 }
 
 .media-empty{
-    height:100%;
-    display:grid;
-    place-items:center;
-    text-align:center;
-    color:#98A2B3;
-    font-size:11px
+  width:100%;
+  height:100%;
+  display:grid;
+  place-items:center;
+  color:var(--muted);
+  text-align:center;
+  font-size:12px;
 }
 
 .media-empty b{
-    display:block;
-    font-size:32px;
-    margin-bottom:5px
+  display:block;
+  font-size:30px;
+  margin-bottom:6px;
 }
 
 .pill{
-    position:absolute;
-    top:10px;
-    padding:5px 8px;
-    border-radius:999px;
-    font-size:9px;
-    font-weight:900;
-    background:rgba(255,255,255,.95)
+  position:absolute;
+  top:12px;
+  padding:6px 9px;
+  border-radius:999px;
+  background:rgba(255,255,255,.93);
+  font-size:10px;
+  font-weight:800;
+  box-shadow:0 4px 12px rgba(0,0,0,.08);
 }
 
-.featured{
-    left:10px;
-    color:#B54708
+.pill.type{
+  left:12px;
 }
 
-.type{
-    right:10px;
-    background:rgba(16,24,40,.8);
-    color:#fff
+.pill.featured{
+  right:12px;
+  color:#92400e;
 }
 
 .card-body{
-    padding:15px
+  padding:17px;
 }
 
 .title{
-    font-size:15px;
-    font-weight:850;
-    line-height:1.35
+  font-size:16px;
+  font-weight:850;
+  line-height:1.35;
 }
 
 .loc{
-    font-size:11px;
-    color:var(--muted);
-    margin-top:6px;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis
+  margin-top:8px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.5;
 }
 
 .price{
-    font-size:18px;
-    color:var(--p);
-    font-weight:900;
-    margin-top:10px
+  margin-top:12px;
+  color:var(--primary2);
+  font-size:18px;
+  font-weight:900;
 }
 
 .meta{
-    display:flex;
-    gap:10px;
-    color:var(--muted);
-    font-size:10px;
-    margin-top:9px;
-    flex-wrap:wrap
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:11px;
+  color:#64748b;
+  font-size:11px;
 }
 
 .badges{
-    display:flex;
-    gap:5px;
-    flex-wrap:wrap;
-    margin-top:10px
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:13px;
 }
 
 .badge{
-    padding:5px 8px;
-    border-radius:999px;
-    font-size:9px;
-    font-weight:900
+  display:inline-flex;
+  align-items:center;
+  padding:6px 9px;
+  border-radius:999px;
+  background:#f1f5f9;
+  color:#475569;
+  font-size:10px;
+  font-weight:800;
 }
 
-.pending{
-    background:var(--obg);
-    color:#B54708
+.badge.published{
+  background:#dcfce7;
+  color:#166534;
 }
 
-.published{
-    background:var(--gbg);
-    color:#067647
+.badge.pending{
+  background:#fef3c7;
+  color:#92400e;
 }
 
-.rejected{
-    background:var(--rbg);
-    color:#B42318
+.badge.rejected{
+  background:#fee2e2;
+  color:#991b1b;
 }
 
-.rent{
-    background:var(--pl);
-    color:#175CD3
+.badge.rent{
+  background:#dbeafe;
+  color:#1d4ed8;
 }
 
-.sell{
-    background:var(--pb);
-    color:#6941C6
+.badge.sell{
+  background:#ede9fe;
+  color:#6d28d9;
 }
 
-.feat{
-    background:#FFF0D6;
-    color:#B54708
+.badge.feat{
+  background:#fef3c7;
+  color:#92400e;
 }
 
 .actions{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:6px;
-    margin-top:14px
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:7px;
+  margin-top:16px;
 }
 
 .action{
-    border:1px solid var(--line);
-    background:#fff;
-    border-radius:9px;
-    padding:8px 4px;
-    font-size:10px;
-    font-weight:800;
-    color:#344054
+  min-height:38px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#fff;
+  color:#334155;
+  font-size:11px;
+  font-weight:800;
+}
+
+.action:hover{
+  background:#f8fafc;
 }
 
 .action.del{
-    color:#B42318
+  color:#b91c1c;
+  border-color:#fecaca;
+  background:#fff7f7;
 }
 
-/* =========================
-   EMPTY / LOADING
-========================= */
-
-.empty,
-.loading{
-    background:#fff;
-    border:1px dashed #CBD5E1;
-    border-radius:17px;
-    padding:55px 20px;
-    text-align:center;
-    color:var(--muted);
-    grid-column:1/-1
+.full{
+  width:100%;
 }
 
-.empty b{
-    display:block;
-    color:var(--text);
-    font-size:15px
-}
-
-.empty p{
-    font-size:11px;
-    margin-top:6px
+/* EMPTY / LOADING */
+.empty{
+  padding:55px 20px;
+  text-align:center;
+  border:1px dashed #cbd5e1;
+  border-radius:20px;
+  background:#fff;
+  color:var(--muted);
 }
 
 .empty .big{
-    font-size:30px;
-    margin-bottom:10px
+  font-size:38px;
+  margin-bottom:10px;
+}
+
+.loading{
+  min-height:180px;
+  display:grid;
+  place-items:center;
+  align-content:center;
+  gap:10px;
+  color:var(--muted);
 }
 
 .spinner{
-    width:32px;
-    height:32px;
-    margin:0 auto 12px;
-
-    border:3px solid #E4E7EC;
-    border-top-color:var(--p);
-    border-radius:50%;
-
-    animation:spin .8s linear infinite
+  width:30px;
+  height:30px;
+  border:3px solid #dbe4ec;
+  border-top-color:var(--primary);
+  border-radius:50%;
+  animation:spin .8s linear infinite;
 }
 
 @keyframes spin{
-    to{
-        transform:rotate(360deg)
-    }
+  to{transform:rotate(360deg)}
 }
 
-/* =========================
-   MODALS
-========================= */
-
+/* MODALS */
 .modal{
-    position:fixed;
-    inset:0;
-    z-index:100;
-
-    background:rgba(16,24,40,.64);
-
-    display:none;
-    align-items:center;
-    justify-content:center;
-
-    padding:14px;
-
-    backdrop-filter:blur(4px)
+  position:fixed;
+  inset:0;
+  z-index:100;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:rgba(15,23,42,.62);
+  backdrop-filter:blur(5px);
 }
 
 .modal.show{
-    display:flex
+  display:flex;
 }
 
 .modal-box{
-    width:100%;
-    max-width:900px;
-    max-height:94vh;
-    overflow:auto;
-
-    background:#fff;
-    border-radius:21px;
-
-    box-shadow:var(--shadow2)
+  width:min(850px,100%);
+  max-height:92vh;
+  overflow:hidden;
+  border-radius:22px;
+  background:#fff;
+  box-shadow:0 30px 90px rgba(0,0,0,.25);
 }
 
 .modal-head{
-    position:sticky;
-    top:0;
-    z-index:5;
-
-    background:#fff;
-    border-bottom:1px solid var(--line);
-
-    padding:15px 18px;
-
-    display:flex;
-    align-items:center;
-    justify-content:space-between
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:18px 21px;
+  border-bottom:1px solid var(--line);
 }
 
 .modal-head h3{
-    font-size:16px
+  font-size:17px;
 }
 
 .close{
-    border:0;
-    background:#F2F4F7;
-    border-radius:9px;
-    width:34px;
-    height:34px;
-    font-size:20px
+  width:36px;
+  height:36px;
+  border:0;
+  border-radius:10px;
+  background:#f1f5f9;
+  color:#475569;
+  font-size:22px;
 }
 
 .modal-body{
-    padding:18px
+  padding:21px;
+  overflow:auto;
+  max-height:calc(92vh - 130px);
 }
 
 .modal-foot{
-    position:sticky;
-    bottom:0;
-
-    background:#fff;
-    border-top:1px solid var(--line);
-
-    padding:12px 18px;
-
-    display:flex;
-    justify-content:flex-end;
-    gap:8px
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  padding:15px 21px;
+  border-top:1px solid var(--line);
 }
 
-/* =========================
-   PROPERTY FORM
-========================= */
-
+/* FORM */
 .form-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:15px;
 }
 
-.full-field{
-    grid-column:1/-1
+.full-field,
+.form-grid>.full{
+  grid-column:1/-1;
 }
 
-.req{
-    color:var(--red)
+.field label{
+  display:block;
+  margin-bottom:7px;
+  color:#334155;
+  font-size:12px;
+  font-weight:800;
 }
 
-.location-note{
-    background:#EEF4FF;
-    border:1px solid #D6E4FF;
-    border-radius:12px;
-    padding:10px;
-    font-size:10px;
-    color:#175CD3;
-    margin-bottom:12px
+.field input,
+.field select,
+.field textarea{
+  width:100%;
+  min-height:44px;
+  padding:10px 12px;
+  border:1px solid #d7dee8;
+  border-radius:11px;
+  outline:none;
+  background:#fff;
+}
+
+.field textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+.field input:focus,
+.field select:focus,
+.field textarea:focus,
+.search:focus-within{
+  border-color:#5eead4;
+  box-shadow:0 0 0 3px rgba(20,184,166,.10);
 }
 
 .location-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:10px
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
 }
 
-/* =========================
-   PHOTO UPLOAD
-========================= */
+.location-note{
+  margin-top:7px;
+  color:var(--muted);
+  font-size:11px;
+}
 
+/* PHOTOS */
 .upload{
-    border:2px dashed #CBD5E1;
-    background:#F8FAFC;
-    border-radius:15px;
-    padding:19px;
-    text-align:center
-}
-
-.upload .camera{
-    font-size:28px
-}
-
-.upload strong{
-    display:block;
-    font-size:13px;
-    margin-top:6px
-}
-
-.upload small{
-    display:block;
-    color:var(--muted);
-    font-size:10px;
-    margin-top:4px
-}
-
-.photo-btn{
-    display:inline-flex;
-    margin-top:10px;
-    background:var(--p);
-    color:#fff;
-    border-radius:10px;
-    padding:10px 14px;
-    font-size:11px;
-    font-weight:850;
-    cursor:pointer
-}
-
-.photo-btn input{
-    display:none
-}
-
-.count{
-    font-size:10px;
-    color:var(--muted);
-    margin-top:8px
+  border:1px dashed #94a3b8;
+  border-radius:15px;
+  padding:20px;
+  text-align:center;
+  background:#f8fafc;
 }
 
 .photo-grid{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:8px;
-    margin-top:11px
+  display:grid;
+  grid-template-columns:repeat(5,1fr);
+  gap:9px;
+  margin-top:12px;
 }
 
 .photo{
-    position:relative;
-    height:88px;
-    border-radius:10px;
-    overflow:hidden;
-    border:1px solid var(--line)
+  position:relative;
+  aspect-ratio:1;
+  overflow:hidden;
+  border-radius:10px;
+  background:#e2e8f0;
 }
 
 .photo img{
-    width:100%;
-    height:100%;
-    object-fit:cover
+  width:100%;
+  height:100%;
+  object-fit:cover;
 }
 
-.remove{
-    position:absolute;
-    right:4px;
-    top:4px;
-
-    border:0;
-    border-radius:50%;
-
-    width:23px;
-    height:23px;
-
-    background:rgba(16,24,40,.78);
-    color:#fff
+.photo .remove{
+  position:absolute;
+  top:5px;
+  right:5px;
+  width:25px;
+  height:25px;
+  border:0;
+  border-radius:50%;
+  background:rgba(15,23,42,.78);
+  color:#fff;
+  font-weight:900;
 }
 
-.existing{
-    margin-top:16px
-}
-
-.existing h4{
-    font-size:12px;
-    margin-bottom:8px
-}
-
-/* =========================
-   VIEW
-========================= */
-
+/* GALLERY */
 .gallery{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:8px;
-    margin-bottom:16px
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:18px;
 }
 
 .gallery img{
-    width:100%;
-    height:165px;
-    object-fit:cover;
-    border-radius:10px;
-    border:1px solid var(--line)
+  width:100%;
+  aspect-ratio:4/3;
+  object-fit:cover;
+  border-radius:13px;
 }
 
 .detail-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:9px
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
 }
 
 .detail{
-    background:var(--soft);
-    border:1px solid #EEF2F6;
-    border-radius:10px;
-    padding:11px
+  padding:13px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#f8fafc;
 }
 
 .detail.full{
-    grid-column:1/-1
+  grid-column:1/-1;
 }
 
 .detail small{
-    display:block;
-    color:var(--muted);
-    font-size:9px;
-    margin-bottom:4px
+  display:block;
+  color:var(--muted);
+  font-size:10px;
+  margin-bottom:5px;
 }
 
 .detail strong{
-    font-size:11px;
-    line-height:1.45;
-    word-break:break-word
+  display:block;
+  font-size:12px;
+  line-height:1.5;
 }
 
-/* =========================
-   TOAST
-========================= */
-
+/* TOAST */
 #toast{
-    position:fixed;
-    left:50%;
-    bottom:20px;
-    z-index:500;
-
-    max-width:92%;
-
-    padding:11px 15px;
-
-    border-radius:11px;
-
-    background:#101828;
-    color:#fff;
-
-    font-size:11px;
-    font-weight:750;
-    text-align:center;
-
-    opacity:0;
-
-    transform:translate(-50%,90px);
-
-    pointer-events:none;
-
-    transition:.25s;
-
-    box-shadow:var(--shadow)
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  z-index:200;
+  transform:translate(-50%,20px);
+  opacity:0;
+  pointer-events:none;
+  padding:12px 17px;
+  border-radius:12px;
+  background:#0f172a;
+  color:#fff;
+  box-shadow:0 12px 35px rgba(0,0,0,.2);
+  font-size:12px;
+  font-weight:700;
+  transition:.25s ease;
 }
 
 #toast.show{
-    opacity:1;
-    transform:translate(-50%,0)
+  opacity:1;
+  transform:translate(-50%,0);
 }
 
-#toast.success{
-    background:#067647
+#toast.success{background:#166534}
+#toast.warning{background:#92400e}
+#toast.error{background:#991b1b}
+
+/* RESPONSIVE */
+@media(max-width:1050px){
+  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .toolbar-grid{grid-template-columns:1fr 1fr}
+  .toolbar-grid .search{grid-column:1/-1}
+  .toolbar-grid .btn{min-height:44px}
 }
 
-#toast.error{
-    background:#B42318
+@media(max-width:760px){
+  .topbar{
+    padding:10px 14px;
+  }
+
+  .brand span,
+  .user-name{
+    display:none;
+  }
+
+  .main{
+    width:min(100% - 20px,1380px);
+    padding-top:18px;
+  }
+
+  .hero{
+    padding:22px;
+    flex-direction:column;
+    align-items:flex-start;
+  }
+
+  .hero h2{
+    font-size:23px;
+  }
+
+  .hero-action,
+  .hero-action .btn{
+    width:100%;
+  }
+
+  .stats{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .profile-grid{
+    grid-template-columns:1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .toolbar-grid{
+    grid-template-columns:1fr;
+  }
+
+  .form-grid{
+    grid-template-columns:1fr;
+  }
+
+  .location-grid{
+    grid-template-columns:1fr;
+  }
+
+  .photo-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+
+  .gallery{
+    grid-template-columns:repeat(2,1fr);
+  }
+
+  .detail-grid{
+    grid-template-columns:1fr;
+  }
+
+  .detail.full{
+    grid-column:auto;
+  }
 }
 
-#toast.warning{
-    background:#B54708
-}
+@media(max-width:430px){
+  .stats{
+    gap:9px;
+  }
 
-/* =========================
-   RESPONSIVE
-========================= */
+  .stat{
+    padding:15px;
+  }
 
-@media(max-width:1100px){
+  .stat .num{
+    font-size:22px;
+  }
 
-    .grid{
-        grid-template-columns:repeat(2,1fr)
-    }
+  .actions{
+    grid-template-columns:1fr;
+  }
 
-    .stats{
-        grid-template-columns:repeat(2,1fr)
-    }
-}
-
-@media(max-width:800px){
-
-    .main{
-        padding:19px 13px 45px
-    }
-
-    .topbar{
-        padding:0 13px
-    }
-
-    .hero{
-        flex-direction:column;
-        align-items:flex-start
-    }
-
-    .hero-action,
-    .hero-action .btn{
-        width:100%
-    }
-
-    .toolbar-grid{
-        grid-template-columns:1fr
-    }
-
-    .profile-grid{
-        grid-template-columns:1fr
-    }
-
-    .form-grid,
-    .location-grid{
-        grid-template-columns:1fr
-    }
-
-    .full-field{
-        grid-column:auto
-    }
-
-    .gallery{
-        grid-template-columns:repeat(2,1fr)
-    }
-
-    .detail-grid{
-        grid-template-columns:1fr
-    }
-
-    .detail.full{
-        grid-column:auto
-    }
-}
-
-@media(max-width:650px){
-
-    .brand span,
-    .user-name,
-    .avatar{
-        display:none
-    }
-
-    .brand strong{
-        font-size:12px;
-        max-width:175px
-    }
-
-    .hero h2{
-        font-size:22px
-    }
-
-    .stats{
-        gap:8px
-    }
-
-    .stat{
-        padding:13px
-    }
-
-    .stat .num{
-        font-size:22px
-    }
-
-    .grid{
-        grid-template-columns:1fr
-    }
-
-    .media{
-        height:220px
-    }
-
-    .photo-grid{
-        grid-template-columns:repeat(3,1fr)
-    }
-
-    .modal{
-        padding:0;
-        align-items:flex-end
-    }
-
-    .modal-box{
-        max-height:96vh;
-        border-radius:20px 20px 0 0
-    }
-
-    .modal-foot{
-        padding-bottom:max(12px,env(safe-area-inset-bottom))
-    }
-}
-
-@media(max-width:390px){
-
-    .stats{
-        grid-template-columns:1fr
-    }
-
-    .photo-grid{
-        grid-template-columns:repeat(2,1fr)
-    }
+  .photo-grid{
+    grid-template-columns:repeat(2,1fr);
+  }
 }
 </style>
+
 </head>
 
 <body>
@@ -1161,7 +1016,7 @@ textarea{
         <div class="logo">E</div>
 
         <h1>
-            Eastern Ethiopia Digital Broker
+            Eastern Ethiopia General Digital Broker
         </h1>
 
         <div class="sub">
@@ -1219,11 +1074,11 @@ textarea{
 
         <div>
             <strong>
-                Eastern Ethiopia Digital Broker
+                Eastern Ethiopia General Digital Broker
             </strong>
 
             <span>
-                Professional Property Marketplace • Owner
+                Properties • Marketplace • Cars • Owner
             </span>
         </div>
 
@@ -1274,8 +1129,7 @@ textarea{
         </h2>
 
         <p>
-            Manage listings, photos, location and approval status
-            from one professional workspace.
+            Manage your properties, marketplace items and cars from one secure professional workspace.
         </p>
 
     </div>
@@ -1286,13 +1140,31 @@ textarea{
             class="btn primary"
             onclick="openAddModal()"
         >
-            ＋ Add New Property
+            ＋ Add Property
         </button>
 
     </div>
 
 </section>
 
+
+<!-- LISTING SECTIONS -->
+<section class="section-tabs">
+    <button class="section-tab active" type="button"
+            onclick="switchOwnerSection('properties')">
+        🏠 Properties
+    </button>
+
+    <button class="section-tab" type="button"
+            onclick="switchOwnerSection('marketplace')">
+        🛍️ Marketplace
+    </button>
+
+    <button class="section-tab" type="button"
+            onclick="switchOwnerSection('cars')">
+        🚗 Cars
+    </button>
+</section>
 
 <!-- STATS -->
 
@@ -1441,6 +1313,7 @@ textarea{
 </section>
 
 
+<section id="owner-section-properties" class="owner-section active">
 <!-- TOOLBAR -->
 
 <section class="toolbar">
@@ -1546,6 +1419,150 @@ textarea{
         Loading your properties...
 
     </div>
+
+</section>
+
+
+</section>
+<!-- MARKETPLACE SECTION -->
+<section id="owner-section-marketplace" class="owner-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>🛍️ Marketplace</h2>
+            <p>Manage items for sale or rent.</p>
+        </div>
+
+        <button
+            class="btn primary"
+            type="button"
+            onclick="openMarketplaceModal()"
+        >
+            ＋ Add Item
+        </button>
+    </div>
+
+    <div class="toolbar marketplace-toolbar">
+
+        <div class="search">
+            <span>🔍</span>
+
+            <input
+                id="marketplaceSearch"
+                type="search"
+                placeholder="Search marketplace items..."
+                oninput="renderMarketplace()"
+            >
+        </div>
+
+        <select
+            id="marketplaceStatusFilter"
+            onchange="renderMarketplace()"
+        >
+            <option value="">All Status</option>
+            <option value="pending_review">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="published">Published</option>
+            <option value="sold">Sold</option>
+            <option value="rented">Rented</option>
+            <option value="hidden">Hidden</option>
+            <option value="rejected">Rejected</option>
+        </select>
+
+        <select
+            id="marketplaceTypeFilter"
+            onchange="renderMarketplace()"
+        >
+            <option value="">Sell & Rent</option>
+            <option value="sell">Sell</option>
+            <option value="rent">Rent</option>
+        </select>
+
+        <button
+            class="btn secondary"
+            type="button"
+            onclick="loadMarketplace()"
+        >
+            ↻ Refresh
+        </button>
+
+    </div>
+
+    <section id="marketplaceContainer">
+
+        <div class="loading">
+            <div class="spinner"></div>
+            Loading marketplace items...
+        </div>
+
+    </section>
+
+</section>
+
+
+<!-- CARS SECTION -->
+<section id="owner-section-cars" class="owner-section">
+
+    <div class="section-heading">
+        <div>
+            <h2>🚗 Cars</h2>
+            <p>Manage cars for sale or rent.</p>
+        </div>
+
+        <button
+            class="btn primary"
+            type="button"
+            onclick="openCarModal()"
+        >
+            ＋ Add Car
+        </button>
+    </div>
+
+    <div class="toolbar cars-toolbar">
+
+        <div class="search">
+            <span>🔍</span>
+            <input
+                id="carsSearch"
+                type="search"
+                placeholder="Search cars..."
+                oninput="renderCars()"
+            >
+        </div>
+
+        <select id="carsStatusFilter" onchange="renderCars()">
+            <option value="">All Status</option>
+            <option value="pending_review">Pending Review</option>
+            <option value="approved">Approved</option>
+            <option value="published">Published</option>
+            <option value="sold">Sold</option>
+            <option value="rented">Rented</option>
+            <option value="hidden">Hidden</option>
+            <option value="rejected">Rejected</option>
+        </select>
+
+        <select id="carsTypeFilter" onchange="renderCars()">
+            <option value="">Sell & Rent</option>
+            <option value="sell">Sell</option>
+            <option value="rent">Rent</option>
+        </select>
+
+        <button
+            class="btn secondary"
+            type="button"
+            onclick="loadCars()"
+        >
+            ↻ Refresh
+        </button>
+
+    </div>
+
+    <section id="carsContainer">
+        <div class="loading">
+            <div class="spinner"></div>
+            Loading cars...
+        </div>
+    </section>
 
 </section>
 
@@ -2049,6 +2066,822 @@ Photo upload does not depend on Area.
 </div>
 
 
+
+<!-- =========================
+     MARKETPLACE MODAL
+========================= -->
+
+<div
+    class="modal"
+    id="marketplaceModal"
+>
+
+<div class="modal-box">
+
+<div class="modal-head">
+
+<h3 id="marketplaceModalTitle">
+    Add Marketplace Item
+</h3>
+
+<button
+    class="close"
+    type="button"
+    onclick="closeModal('marketplaceModal')"
+>
+    ×
+</button>
+
+</div>
+
+<div class="modal-body">
+
+<form id="marketplaceForm">
+
+<input
+    type="hidden"
+    id="marketplaceEditingId"
+>
+
+<div class="form-grid">
+
+<!-- TITLE -->
+
+<div class="field">
+
+<label>
+    Item Title
+    <span class="req">*</span>
+</label>
+
+<input
+    id="marketplaceTitle"
+    required
+    placeholder="e.g. Samsung Galaxy Phone"
+>
+
+</div>
+
+
+<!-- CATEGORY -->
+
+<div class="field">
+
+<label>
+    Category
+    <span class="req">*</span>
+</label>
+
+<select
+    id="marketplaceCategory"
+    required
+>
+
+<option value="">
+    Select Category
+</option>
+
+<option value="Phone">Phone</option>
+<option value="TV">TV</option>
+<option value="Fridge">Fridge</option>
+<option value="Sofa">Sofa</option>
+<option value="Furniture">Furniture</option>
+<option value="Laptop">Laptop</option>
+<option value="Household Equipment">
+    Household Equipment
+</option>
+<option value="Work Equipment">
+    Work Equipment
+</option>
+<option value="Other">Other</option>
+
+</select>
+
+</div>
+
+
+<!-- CONDITION -->
+
+<div class="field">
+
+<label>
+    Condition
+    <span class="req">*</span>
+</label>
+
+<select
+    id="marketplaceCondition"
+    required
+>
+
+<option value="">
+    Select Condition
+</option>
+
+<option value="Used">Used</option>
+<option value="Like New">Like New</option>
+<option value="Good">Good</option>
+<option value="Fair">Fair</option>
+
+</select>
+
+</div>
+
+
+<!-- LISTING TYPE -->
+
+<div class="field">
+
+<label>
+    Listing Type
+    <span class="req">*</span>
+</label>
+
+<select
+    id="marketplaceListingType"
+    required
+>
+
+<option value="">
+    Select Type
+</option>
+
+<option value="sell">
+    Sell
+</option>
+
+<option value="rent">
+    Rent
+</option>
+
+</select>
+
+</div>
+
+
+<!-- PRICE -->
+
+<div class="field">
+
+<label>
+    Price (ETB)
+    <span class="req">*</span>
+</label>
+
+<input
+    id="marketplacePrice"
+    type="number"
+    min="0"
+    step="0.01"
+    required
+    placeholder="Enter price"
+>
+
+</div>
+
+
+<!-- PRICE UNIT -->
+
+<div class="field">
+
+<label>
+    Price Unit
+    <span class="req">*</span>
+</label>
+
+<select
+    id="marketplacePriceUnit"
+    required
+>
+
+<option value="total">
+    Total
+</option>
+
+<option value="day">
+    Per Day
+</option>
+
+<option value="week">
+    Per Week
+</option>
+
+<option value="month">
+    Per Month
+</option>
+
+</select>
+
+</div>
+
+
+<!-- LOCATION -->
+
+<div class="full-field">
+
+<div class="location-note">
+
+📍 Choose the item location from the database.
+
+<br>
+
+<b>
+Area / Kebele is optional.
+</b>
+
+</div>
+
+<div class="location-grid">
+
+<!-- REGION -->
+
+<div class="field">
+
+<label>
+    Region
+    <span class="req">*</span>
+</label>
+
+<select id="marketplaceRegionSelect">
+
+<option value="">
+    Loading regions...
+</option>
+
+</select>
+
+</div>
+
+
+<!-- ZONE -->
+
+<div class="field">
+
+<label>
+    Zone
+</label>
+
+<select
+    id="marketplaceZoneSelect"
+    disabled
+>
+
+<option value="">
+    Select Region first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- CITY -->
+
+<div class="field">
+
+<label>
+    City / Town
+    <span class="req">*</span>
+</label>
+
+<select
+    id="marketplaceCitySelect"
+    disabled
+>
+
+<option value="">
+    Select Region first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- WOREDA -->
+
+<div class="field">
+
+<label>
+    Woreda
+</label>
+
+<select
+    id="marketplaceWoredaSelect"
+    disabled
+>
+
+<option value="">
+    Select City first
+</option>
+
+</select>
+
+</div>
+
+
+<!-- AREA -->
+
+<div class="field">
+
+<label>
+    Area / Kebele
+</label>
+
+<select
+    id="marketplaceAreaSelect"
+    disabled
+>
+
+<option value="">
+    Select Woreda first
+</option>
+
+</select>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- CONTACT -->
+
+<div class="field">
+
+<label>
+    Contact Phone
+</label>
+
+<input
+    id="marketplaceContactPhone"
+    type="tel"
+    placeholder="e.g. 09XXXXXXXX"
+>
+
+</div>
+
+
+<!-- DESCRIPTION -->
+
+<div class="field full-field">
+
+<label>
+    Description
+</label>
+
+<textarea
+    id="marketplaceDescription"
+    placeholder="Describe the item, condition, features and other details..."
+></textarea>
+
+</div>
+
+
+<!-- PHOTOS -->
+
+<div class="field full-field">
+
+<label>
+    Marketplace Photos
+</label>
+
+<div class="upload">
+
+<div class="camera">
+    📷
+</div>
+
+<strong>
+    Upload item photos
+</strong>
+
+<small>
+    JPG / PNG / WEBP • max 5MB each • up to 5 photos
+</small>
+
+<label class="photo-btn">
+
+    Select Photos
+
+    <input
+        id="marketplacePhotoInput"
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        multiple
+    >
+
+</label>
+
+<div
+    class="count"
+    id="marketplacePhotoCount"
+>
+    No new photos selected
+</div>
+
+</div>
+
+
+<div
+    class="photo-grid"
+    id="marketplacePreviewGrid"
+></div>
+
+
+<div
+    class="existing"
+    id="marketplaceExistingSection"
+    style="display:none"
+>
+
+<h4>
+    Existing Photos
+</h4>
+
+<div
+    class="photo-grid"
+    id="marketplaceExistingGrid"
+></div>
+
+</div>
+
+</div>
+
+</div>
+
+</form>
+
+</div>
+
+
+<div class="modal-foot">
+
+<button
+    class="btn secondary"
+    type="button"
+    onclick="closeModal('marketplaceModal')"
+>
+    Cancel
+</button>
+
+<button
+    class="btn primary"
+    type="button"
+    id="marketplaceSaveBtn"
+    onclick="saveMarketplaceItem()"
+>
+    Submit for Review
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<!-- =========================
+     CAR MODAL
+========================= -->
+<div class="modal" id="carModal">
+    <div class="modal-box">
+
+        <div class="modal-head">
+            <h3 id="carModalTitle">Add Car</h3>
+
+            <button
+                class="close"
+                type="button"
+                onclick="closeModal('carModal')"
+            >
+                ×
+            </button>
+        </div>
+
+        <div class="modal-body">
+
+            <form id="carForm">
+
+                <input
+                    type="hidden"
+                    id="carEditingId"
+                >
+
+                <div class="form-grid">
+
+                    <!-- TITLE -->
+                    <div class="field">
+                        <label>
+                            Car Title
+                            <span class="req">*</span>
+                        </label>
+
+                        <input
+                            id="carTitle"
+                            required
+                            placeholder="e.g. Toyota Corolla 2020"
+                        >
+                    </div>
+
+                    <!-- BRAND -->
+                    <div class="field">
+                        <label>Brand</label>
+
+                        <input
+                            id="carBrand"
+                            placeholder="e.g. Toyota"
+                        >
+                    </div>
+
+                    <!-- MODEL -->
+                    <div class="field">
+                        <label>Model</label>
+
+                        <input
+                            id="carModel"
+                            placeholder="e.g. Corolla"
+                        >
+                    </div>
+
+                    <!-- YEAR -->
+                    <div class="field">
+                        <label>Year</label>
+
+                        <input
+                            id="carYear"
+                            type="number"
+                            min="1950"
+                            max="2100"
+                            placeholder="e.g. 2020"
+                        >
+                    </div>
+
+                    <!-- CONDITION -->
+                    <div class="field">
+                        <label>
+                            Condition
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carCondition" required>
+                            <option value="Used">Used</option>
+                            <option value="Like New">Like New</option>
+                            <option value="Good">Good</option>
+                            <option value="Fair">Fair</option>
+                        </select>
+                    </div>
+
+                    <!-- TRANSMISSION -->
+                    <div class="field">
+                        <label>
+                            Transmission
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carTransmission" required>
+                            <option value="Manual">Manual</option>
+                            <option value="Automatic">Automatic</option>
+                            <option value="Semi-Automatic">Semi-Automatic</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- FUEL -->
+                    <div class="field">
+                        <label>
+                            Fuel Type
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carFuelType" required>
+                            <option value="Petrol">Petrol</option>
+                            <option value="Diesel">Diesel</option>
+                            <option value="Hybrid">Hybrid</option>
+                            <option value="Electric">Electric</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <!-- COLOR -->
+                    <div class="field">
+                        <label>
+                            Color
+                            <span class="req">*</span>
+                        </label>
+
+                        <input
+                            id="carColor"
+                            required
+                            placeholder="e.g. White"
+                        >
+                    </div>
+
+                    <!-- MILEAGE -->
+                    <div class="field">
+                        <label>Mileage</label>
+
+                        <input
+                            id="carMileage"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            placeholder="e.g. 85000"
+                        >
+                    </div>
+
+                    <!-- LISTING TYPE -->
+                    <div class="field">
+                        <label>
+                            Listing Type
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carListingType" required>
+                            <option value="sell">Sell</option>
+                            <option value="rent">Rent</option>
+                        </select>
+                    </div>
+
+                    <!-- PRICE -->
+                    <div class="field">
+                        <label>
+                            Price
+                            <span class="req">*</span>
+                        </label>
+
+                        <input
+                            id="carPrice"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            required
+                            placeholder="e.g. 2500000"
+                        >
+                    </div>
+
+                    <!-- PRICE UNIT -->
+                    <div class="field">
+                        <label>
+                            Price Unit
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carPriceUnit" required>
+                            <option value="total">Total</option>
+                            <option value="day">Per Day</option>
+                            <option value="week">Per Week</option>
+                            <option value="month">Per Month</option>
+                        </select>
+                    </div>
+
+                    <!-- REGION -->
+                    <div class="field">
+                        <label>
+                            Region
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carRegionSelect" required>
+                            <option value="">Select Region</option>
+                        </select>
+                    </div>
+
+                    <!-- ZONE -->
+                    <div class="field">
+                        <label>Zone</label>
+
+                        <select id="carZoneSelect">
+                            <option value="">Select Zone</option>
+                        </select>
+                    </div>
+
+                    <!-- CITY -->
+                    <div class="field">
+                        <label>
+                            City / Town
+                            <span class="req">*</span>
+                        </label>
+
+                        <select id="carCitySelect" required>
+                            <option value="">Select City / Town</option>
+                        </select>
+                    </div>
+
+                    <!-- WOREDA -->
+                    <div class="field">
+                        <label>Woreda</label>
+
+                        <select id="carWoredaSelect">
+                            <option value="">Select Woreda</option>
+                        </select>
+                    </div>
+
+                    <!-- AREA -->
+                    <div class="field">
+                        <label>Area</label>
+
+                        <select id="carAreaSelect">
+                            <option value="">Select Area</option>
+                        </select>
+                    </div>
+
+                    <!-- PHONE -->
+                    <div class="field">
+                        <label>Contact Phone</label>
+
+                        <input
+                            id="carContactPhone"
+                            type="tel"
+                            placeholder="e.g. 09xxxxxxxx"
+                        >
+                    </div>
+
+                    <!-- DESCRIPTION -->
+                    <div class="field full">
+                        <label>Description</label>
+
+                        <textarea
+                            id="carDescription"
+                            rows="5"
+                            placeholder="Describe the car..."
+                        ></textarea>
+                    </div>
+
+                    <!-- PHOTOS -->
+                    <div class="field full">
+
+                        <label>
+                            Car Photos
+                        </label>
+
+                        <input
+                            id="carPhotoInput"
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp"
+                            multiple
+                        >
+
+                        <div
+                            class="hint"
+                            id="carPhotoCount"
+                        >
+                            0 / 5 photo(s) selected
+                        </div>
+
+                        <div
+                            class="photo-grid"
+                            id="carPreviewGrid"
+                        ></div>
+
+                        <div
+                            id="carExistingSection"
+                            style="display:none;"
+                        >
+                            <div class="hint">
+                                Existing Photos
+                            </div>
+
+                            <div
+                                class="photo-grid"
+                                id="carExistingGrid"
+                            ></div>
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </form>
+
+        </div>
+
+        <div class="modal-foot">
+
+            <button
+                class="btn secondary"
+                type="button"
+                onclick="closeModal('carModal')"
+            >
+                Cancel
+            </button>
+
+            <button
+                class="btn primary"
+                type="button"
+                id="carSaveBtn"
+                onclick="saveCar()"
+            >
+                Submit for Review
+            </button>
+
+        </div>
+
+    </div>
+</div>
+
 <div id="toast"></div>
 
 
@@ -2087,10 +2920,18 @@ let currentUser = null;
 let currentProfile = null;
 
 let properties = [];
+let marketplaceItems = [];
 
 let selectedFiles = [];
 
 let existingPhotos = [];
+
+/* MARKETPLACE STATE */
+let carSelectedFiles = [];
+let carExistingPhotos = [];
+
+let marketplaceSelectedFiles = [];
+let marketplaceExistingPhotos = [];
 
 let saving = false;
 
@@ -2105,6 +2946,12 @@ document.addEventListener(
     "DOMContentLoaded",
     () => {
 
+        /* MARKETPLACE LOCATION CASCADE */
+
+        setupMarketplaceLocationCascade();
+        setupCarLocationCascade();
+
+
         /* PHOTO INPUT */
 
         const photoInput =
@@ -2117,6 +2964,33 @@ document.addEventListener(
                 handlePhotos
             );
 
+        }
+
+
+        /* MARKETPLACE PHOTO INPUT */
+
+        const marketplacePhotoInput =
+            document.getElementById("marketplacePhotoInput");
+
+        if(marketplacePhotoInput){
+
+            marketplacePhotoInput.addEventListener(
+                "change",
+                handleMarketplacePhotos
+            );
+        }
+
+        /* CAR PHOTO INPUT */
+
+        const carPhotoInput =
+            document.getElementById("carPhotoInput");
+
+        if(carPhotoInput){
+
+            carPhotoInput.addEventListener(
+                "change",
+                handleCarPhotos
+            );
         }
 
 
@@ -2358,6 +3232,3213 @@ document.addEventListener(
    SESSION
 ========================================================= */
 
+
+function switchOwnerSection(section){
+
+    const tabs =
+        document.querySelectorAll(".section-tab");
+
+    tabs.forEach(function(tab){
+        tab.classList.remove("active");
+    });
+
+    const sections =
+        document.querySelectorAll(".owner-section");
+
+    sections.forEach(function(item){
+        item.classList.remove("active");
+    });
+
+    const selectedTab =
+        document.querySelector(
+            '.section-tab[onclick="switchOwnerSection(\'' +
+            section +
+            '\')"]'
+        );
+
+    if(selectedTab){
+        selectedTab.classList.add("active");
+    }
+
+    const selectedSection =
+        document.getElementById(
+            "owner-section-" + section
+        );
+
+    if(selectedSection){
+        selectedSection.classList.add("active");
+    }
+
+}
+
+
+/* =========================================================
+   MARKETPLACE PHOTO FUNCTIONS
+========================================================= */
+
+function handleCarPhotos(e){
+
+    const files =
+        Array.from(e.target.files || []);
+
+    const MAX_PHOTOS = 5;
+    const MAX_SIZE = 5 * 1024 * 1024;
+
+    for(const file of files){
+
+        if(carSelectedFiles.length >= MAX_PHOTOS){
+            alert("You can select up to 5 photos.");
+            break;
+        }
+
+        if(!file.type.startsWith("image/")){
+            alert("Only image files are allowed.");
+            continue;
+        }
+
+        if(file.size > MAX_SIZE){
+            alert(
+                "Each car photo must be 5 MB or smaller."
+            );
+            continue;
+        }
+
+        carSelectedFiles.push(file);
+    }
+
+    e.target.value = "";
+
+    renderCarPhotos();
+}
+
+
+function renderCarPhotos(){
+
+    const count =
+        document.getElementById("carPhotoCount");
+
+    const grid =
+        document.getElementById("carPreviewGrid");
+
+    if(count){
+
+        count.textContent =
+            carSelectedFiles.length +
+            " / 5 photo(s) selected";
+    }
+
+    if(!grid) return;
+
+    grid.innerHTML = "";
+
+    carSelectedFiles.forEach(
+        (file,index)=>{
+
+            const url =
+                URL.createObjectURL(file);
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "photo-preview";
+
+            item.innerHTML = `
+                <img
+                    src="${url}"
+                    alt="Car photo ${index + 1}"
+                >
+
+                <button
+                    type="button"
+                    class="photo-remove"
+                    onclick="removeCarPhoto(${index})"
+                    aria-label="Remove photo"
+                >
+                    ×
+                </button>
+            `;
+
+            grid.appendChild(item);
+        }
+    );
+}
+
+
+function removeCarPhoto(index){
+
+    if(
+        index < 0 ||
+        index >= carSelectedFiles.length
+    ){
+        return;
+    }
+
+    carSelectedFiles.splice(index,1);
+
+    renderCarPhotos();
+}
+
+
+function handleMarketplacePhotos(e){
+
+    const files =
+        Array.from(e.target.files || []);
+
+    const MAX_PHOTOS = 5;
+    const MAX_SIZE = 5 * 1024 * 1024;
+
+    for(const file of files){
+
+        if(marketplaceSelectedFiles.length >= MAX_PHOTOS){
+            alert("You can select up to 5 photos.");
+            break;
+        }
+
+        if(!file.type.startsWith("image/")){
+            alert("Only image files are allowed.");
+            continue;
+        }
+
+        if(file.size > MAX_SIZE){
+            alert(
+                "Each marketplace photo must be 5 MB or smaller."
+            );
+            continue;
+        }
+
+        marketplaceSelectedFiles.push(file);
+    }
+
+    e.target.value = "";
+
+    renderMarketplacePhotos();
+}
+
+
+function renderMarketplacePhotos(){
+
+    const count =
+        document.getElementById(
+            "marketplacePhotoCount"
+        );
+
+    const grid =
+        document.getElementById(
+            "marketplacePreviewGrid"
+        );
+
+    if(count){
+
+        count.textContent =
+            marketplaceSelectedFiles.length +
+            " / 5 photo(s) selected";
+    }
+
+    if(!grid) return;
+
+    grid.innerHTML = "";
+
+    marketplaceSelectedFiles.forEach(
+        (file, index) => {
+
+            const url =
+                URL.createObjectURL(file);
+
+            const item =
+                document.createElement("div");
+
+            item.className = "photo-preview";
+
+            item.innerHTML = `
+                <img
+                    src="${url}"
+                    alt="Marketplace photo ${index + 1}"
+                >
+                <button
+                    type="button"
+                    class="photo-remove"
+                    onclick="removeMarketplacePhoto(${index})"
+                    aria-label="Remove photo"
+                >
+                    ×
+                </button>
+            `;
+
+            grid.appendChild(item);
+        }
+    );
+}
+
+
+function removeMarketplacePhoto(index){
+
+    if(
+        index < 0 ||
+        index >= marketplaceSelectedFiles.length
+    ){
+        return;
+    }
+
+    marketplaceSelectedFiles.splice(index, 1);
+
+    renderMarketplacePhotos();
+}
+
+
+
+
+
+/* =========================================================
+   CAR MODAL
+========================================================= */
+
+function openCarModal(){
+
+    const modal =
+        document.getElementById("carModal");
+
+    const form =
+        document.getElementById("carForm");
+
+    const title =
+        document.getElementById("carModalTitle");
+
+    const editingId =
+        document.getElementById("carEditingId");
+
+    const saveBtn =
+        document.getElementById("carSaveBtn");
+
+
+    if(!modal || !form){
+        return;
+    }
+
+
+    form.reset();
+
+
+    if(editingId){
+        editingId.value = "";
+    }
+
+
+    carSelectedFiles = [];
+    carExistingPhotos = [];
+
+
+    const previewGrid =
+        document.getElementById(
+            "carPreviewGrid"
+        );
+
+    if(previewGrid){
+        previewGrid.innerHTML = "";
+    }
+
+
+    const photoCount =
+        document.getElementById(
+            "carPhotoCount"
+        );
+
+    if(photoCount){
+        photoCount.textContent =
+            "0 / 5 photo(s) selected";
+    }
+
+
+    const existingSection =
+        document.getElementById(
+            "carExistingSection"
+        );
+
+    if(existingSection){
+        existingSection.style.display =
+            "none";
+    }
+
+
+    if(title){
+        title.textContent =
+            "Add Car";
+    }
+
+
+    if(saveBtn){
+        saveBtn.textContent =
+            "Submit for Review";
+    }
+
+
+    modal.classList.add("show");
+    modal.style.display = "flex";
+}
+
+
+function resetCarForm(){
+
+    const form =
+        document.getElementById("carForm");
+
+    if(form){
+        form.reset();
+    }
+
+
+    const editingId =
+        document.getElementById("carEditingId");
+
+    if(editingId){
+        editingId.value = "";
+    }
+
+
+    carSelectedFiles = [];
+    carExistingPhotos = [];
+
+
+    const previewGrid =
+        document.getElementById(
+            "carPreviewGrid"
+        );
+
+    if(previewGrid){
+        previewGrid.innerHTML = "";
+    }
+
+
+    const photoCount =
+        document.getElementById(
+            "carPhotoCount"
+        );
+
+    if(photoCount){
+        photoCount.textContent =
+            "0 / 5 photo(s) selected";
+    }
+
+
+    const existingSection =
+        document.getElementById(
+            "carExistingSection"
+        );
+
+    if(existingSection){
+        existingSection.style.display =
+            "none";
+    }
+
+
+    const title =
+        document.getElementById(
+            "carModalTitle"
+        );
+
+    if(title){
+        title.textContent =
+            "Add Car";
+    }
+
+
+    const saveBtn =
+        document.getElementById(
+            "carSaveBtn"
+        );
+
+    if(saveBtn){
+        saveBtn.textContent =
+            "Submit for Review";
+    }
+}
+
+
+
+/* =========================================================
+   SAVE CAR
+========================================================= */
+
+async function saveCar(){
+
+    if(!currentUser){
+        toast(
+            "Please login first.",
+            "error"
+        );
+        return;
+    }
+
+
+    const editingId =
+        document.getElementById(
+            "carEditingId"
+        )?.value || "";
+
+
+    const title =
+        document.getElementById(
+            "carTitle"
+        )?.value.trim() || "";
+
+
+    const brand =
+        document.getElementById(
+            "carBrand"
+        )?.value.trim() || "";
+
+
+    const model =
+        document.getElementById(
+            "carModel"
+        )?.value.trim() || "";
+
+
+    const yearValue =
+        document.getElementById(
+            "carYear"
+        )?.value.trim() || "";
+
+
+    const condition =
+        document.getElementById(
+            "carCondition"
+        )?.value || "";
+
+
+    const transmission =
+        document.getElementById(
+            "carTransmission"
+        )?.value || "";
+
+
+    const fuelType =
+        document.getElementById(
+            "carFuelType"
+        )?.value || "";
+
+
+    const color =
+        document.getElementById(
+            "carColor"
+        )?.value.trim() || "";
+
+
+    const mileageValue =
+        document.getElementById(
+            "carMileage"
+        )?.value.trim() || "";
+
+
+    const listingType =
+        document.getElementById(
+            "carListingType"
+        )?.value || "sell";
+
+
+    const priceValue =
+        document.getElementById(
+            "carPrice"
+        )?.value.trim() || "";
+
+
+    const priceUnit =
+        document.getElementById(
+            "carPriceUnit"
+        )?.value || "total";
+
+
+    const regionId =
+        document.getElementById(
+            "carRegionSelect"
+        )?.value || "";
+
+
+    const zoneId =
+        document.getElementById(
+            "carZoneSelect"
+        )?.value || null;
+
+
+    const cityId =
+        document.getElementById(
+            "carCitySelect"
+        )?.value || "";
+
+
+    const woredaId =
+        document.getElementById(
+            "carWoredaSelect"
+        )?.value || null;
+
+
+    const areaId =
+        document.getElementById(
+            "carAreaSelect"
+        )?.value || null;
+
+
+    const contactPhone =
+        document.getElementById(
+            "carContactPhone"
+        )?.value.trim() || "";
+
+
+    const description =
+        document.getElementById(
+            "carDescription"
+        )?.value.trim() || "";
+
+
+    if(!title){
+        toast(
+            "Car title is required.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!condition){
+        toast(
+            "Select car condition.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!transmission){
+        toast(
+            "Select transmission.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!fuelType){
+        toast(
+            "Select fuel type.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!color){
+        toast(
+            "Car color is required.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!listingType){
+        toast(
+            "Select listing type.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(
+        priceValue === "" ||
+        Number.isNaN(Number(priceValue)) ||
+        Number(priceValue) < 0
+    ){
+        toast(
+            "Enter a valid price.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!priceUnit){
+        toast(
+            "Select price unit.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!regionId){
+        toast(
+            "Select region.",
+            "error"
+        );
+        return;
+    }
+
+
+    if(!cityId){
+        toast(
+            "Select city / town.",
+            "error"
+        );
+        return;
+    }
+
+
+    let year = null;
+
+    if(yearValue !== ""){
+
+        year = Number(yearValue);
+
+        if(
+            !Number.isInteger(year) ||
+            year < 1950 ||
+            year > 2100
+        ){
+            toast(
+                "Enter a valid year between 1950 and 2100.",
+                "error"
+            );
+            return;
+        }
+    }
+
+
+    let mileage = null;
+
+    if(mileageValue !== ""){
+
+        mileage = Number(mileageValue);
+
+        if(
+            Number.isNaN(mileage) ||
+            mileage < 0
+        ){
+            toast(
+                "Enter a valid mileage.",
+                "error"
+            );
+            return;
+        }
+    }
+
+
+    const price =
+        Number(priceValue);
+
+
+    const payload = {
+
+        seller_id:
+            currentUser.id,
+
+        posted_by:
+            currentUser.id,
+
+        title:
+            title,
+
+        description:
+            description || null,
+
+        brand:
+            brand || null,
+
+        model:
+            model || null,
+
+        year:
+            year,
+
+        condition:
+            condition,
+
+        transmission:
+            transmission,
+
+        fuel_type:
+            fuelType,
+
+        color:
+            color,
+
+        mileage:
+            mileage,
+
+        listing_type:
+            listingType,
+
+        price:
+            price,
+
+        price_unit:
+            priceUnit,
+
+        region_id:
+            regionId,
+
+        zone_id:
+            zoneId,
+
+        city_id:
+            cityId,
+
+        woreda_id:
+            woredaId,
+
+        area_id:
+            areaId,
+
+        contact_phone:
+            contactPhone || null,
+
+        status:
+            "pending_review",
+
+        updated_at:
+            new Date().toISOString()
+    };
+
+
+    const saveBtn =
+        document.getElementById(
+            "carSaveBtn"
+        );
+
+
+    if(saveBtn){
+
+        saveBtn.disabled = true;
+
+        saveBtn.textContent =
+            editingId
+                ? "Updating..."
+                : "Submitting...";
+    }
+
+
+    try{
+
+        let carId = editingId;
+
+
+        if(editingId){
+
+            const {
+                error
+            } =
+            await supabaseClient
+                .from("cars")
+                .update(payload)
+                .eq(
+                    "id",
+                    editingId
+                )
+                .eq(
+                    "seller_id",
+                    currentUser.id
+                );
+
+
+            if(error){
+                throw error;
+            }
+
+        }else{
+
+            const {
+                data,
+                error
+            } =
+            await supabaseClient
+                .from("cars")
+                .insert(
+                    payload
+                )
+                .select("id")
+                .single();
+
+
+            if(error){
+                throw error;
+            }
+
+
+            carId =
+                data.id;
+        }
+
+
+        if(carSelectedFiles.length){
+
+            await uploadCarPhotos(
+                carId
+            );
+        }
+
+
+        toast(
+            editingId
+                ? "Car updated successfully."
+                : "Car submitted for review.",
+            "success"
+        );
+
+
+        const modal =
+            document.getElementById(
+                "carModal"
+            );
+
+
+        if(modal){
+
+            modal.classList.remove(
+                "show"
+            );
+
+            modal.style.display =
+                "none";
+        }
+
+
+        resetCarForm();
+
+
+        await loadCars();
+
+    }catch(error){
+
+        console.error(
+            "SAVE CAR ERROR:",
+            error
+        );
+
+
+        toast(
+            error.message ||
+            "Unable to save car.",
+            "error"
+        );
+
+    }finally{
+
+        if(saveBtn){
+
+            saveBtn.disabled =
+                false;
+
+            saveBtn.textContent =
+                editingId
+                    ? "Update Car"
+                    : "Submit for Review";
+        }
+    }
+}
+
+
+function openMarketplaceModal(){
+
+    const modal =
+        document.getElementById("marketplaceModal");
+
+    const form =
+        document.getElementById("marketplaceForm");
+
+    const title =
+        document.getElementById("marketplaceModalTitle");
+
+    const editingId =
+        document.getElementById("marketplaceEditingId");
+
+    const saveBtn =
+        document.getElementById("marketplaceSaveBtn");
+
+    if(!modal || !form){
+        return;
+    }
+
+    form.reset();
+
+    if(editingId){
+        editingId.value = "";
+    }
+
+    marketplaceSelectedFiles = [];
+    marketplaceExistingPhotos = [];
+
+    const previewGrid =
+        document.getElementById(
+            "marketplacePreviewGrid"
+        );
+
+    if(previewGrid){
+        previewGrid.innerHTML = "";
+    }
+
+    const photoCount =
+        document.getElementById(
+            "marketplacePhotoCount"
+        );
+
+    if(photoCount){
+        photoCount.textContent =
+            "0 / 5 photo(s) selected";
+    }
+
+    const existingSection =
+        document.getElementById(
+            "marketplaceExistingSection"
+        );
+
+    if(existingSection){
+        existingSection.style.display = "none";
+    }
+
+    if(title){
+        title.textContent =
+            "Add Marketplace Item";
+    }
+
+    if(saveBtn){
+        saveBtn.textContent =
+            "Submit for Review";
+    }
+
+    modal.classList.add("show");
+    modal.style.display = "flex";
+}
+
+
+
+/* =========================================================
+   MARKETPLACE LOCATION CASCADE
+========================================================= */
+
+function setupCarLocationCascade(){
+
+    const region =
+        document.getElementById("carRegionSelect");
+
+    const zone =
+        document.getElementById("carZoneSelect");
+
+    const city =
+        document.getElementById("carCitySelect");
+
+    const woreda =
+        document.getElementById("carWoredaSelect");
+
+    const area =
+        document.getElementById("carAreaSelect");
+
+    if(
+        !region ||
+        !zone ||
+        !city ||
+        !woreda ||
+        !area
+    ){
+        return;
+    }
+
+    region.addEventListener(
+        "change",
+        async function(){
+
+            const regionId = this.value;
+
+            resetSelects([
+                "carZoneSelect",
+                "carCitySelect",
+                "carWoredaSelect",
+                "carAreaSelect"
+            ]);
+
+            if(!regionId){
+                return;
+            }
+
+            await loadLocations(
+                "zone",
+                regionId,
+                "carZoneSelect",
+                "Select Zone"
+            );
+
+            await loadLocations(
+                "city",
+                regionId,
+                "carCitySelect",
+                "Select City / Town"
+            );
+        }
+    );
+
+    zone.addEventListener(
+        "change",
+        async function(){
+
+            const zoneId = this.value;
+
+            resetSelects([
+                "carCitySelect",
+                "carWoredaSelect",
+                "carAreaSelect"
+            ]);
+
+            if(!zoneId){
+                return;
+            }
+
+            await loadLocations(
+                "city",
+                zoneId,
+                "carCitySelect",
+                "Select City / Town"
+            );
+        }
+    );
+
+    city.addEventListener(
+        "change",
+        async function(){
+
+            const cityId = this.value;
+
+            resetSelects([
+                "carWoredaSelect",
+                "carAreaSelect"
+            ]);
+
+            if(!cityId){
+                return;
+            }
+
+            await loadLocations(
+                "woreda",
+                cityId,
+                "carWoredaSelect",
+                "Select Woreda"
+            );
+        }
+    );
+
+    woreda.addEventListener(
+        "change",
+        async function(){
+
+            const woredaId = this.value;
+
+            resetSelects([
+                "carAreaSelect"
+            ]);
+
+            if(!woredaId){
+                return;
+            }
+
+            await loadLocations(
+                "area",
+                woredaId,
+                "carAreaSelect",
+                "Select Area"
+            );
+        }
+    );
+}
+
+
+function setupMarketplaceLocationCascade(){
+
+    const region =
+        document.getElementById("marketplaceRegionSelect");
+
+    const zone =
+        document.getElementById("marketplaceZoneSelect");
+
+    const city =
+        document.getElementById("marketplaceCitySelect");
+
+    const woreda =
+        document.getElementById("marketplaceWoredaSelect");
+
+    const area =
+        document.getElementById("marketplaceAreaSelect");
+
+    if(!region || !zone || !city || !woreda || !area){
+        return;
+    }
+
+    region.addEventListener(
+        "change",
+        async function(){
+
+            const regionId = this.value;
+
+            resetSelects([
+                "marketplaceZoneSelect",
+                "marketplaceCitySelect",
+                "marketplaceWoredaSelect",
+                "marketplaceAreaSelect"
+            ]);
+
+            if(!regionId){
+                return;
+            }
+
+            await loadLocations(
+                "zone",
+                regionId,
+                "marketplaceZoneSelect",
+                "Select Zone"
+            );
+
+            await loadLocations(
+                "city",
+                regionId,
+                "marketplaceCitySelect",
+                "Select City / Town"
+            );
+        }
+    );
+
+    zone.addEventListener(
+        "change",
+        async function(){
+
+            const zoneId = this.value;
+
+            resetSelects([
+                "marketplaceCitySelect",
+                "marketplaceWoredaSelect",
+                "marketplaceAreaSelect"
+            ]);
+
+            if(!zoneId){
+                return;
+            }
+
+            await loadLocations(
+                "city",
+                zoneId,
+                "marketplaceCitySelect",
+                "Select City / Town"
+            );
+        }
+    );
+
+    city.addEventListener(
+        "change",
+        async function(){
+
+            const cityId = this.value;
+
+            resetSelects([
+                "marketplaceWoredaSelect",
+                "marketplaceAreaSelect"
+            ]);
+
+            if(!cityId){
+                return;
+            }
+
+            await loadLocations(
+                "woreda",
+                cityId,
+                "marketplaceWoredaSelect",
+                "Select Woreda"
+            );
+        }
+    );
+
+    woreda.addEventListener(
+        "change",
+        async function(){
+
+            const woredaId = this.value;
+
+            resetSelects([
+                "marketplaceAreaSelect"
+            ]);
+
+            if(!woredaId){
+                return;
+            }
+
+            await loadLocations(
+                "area",
+                woredaId,
+                "marketplaceAreaSelect",
+                "Select Area"
+            );
+        }
+    );
+}
+
+
+
+/* =========================================================
+   SAVE MARKETPLACE ITEM
+========================================================= */
+
+async function saveMarketplaceItem(){
+
+    if(saving){
+        return;
+    }
+
+    const title =
+        document.getElementById(
+            "marketplaceTitle"
+        ).value.trim();
+
+    const category =
+        document.getElementById(
+            "marketplaceCategory"
+        ).value;
+
+    const condition =
+        document.getElementById(
+            "marketplaceCondition"
+        ).value;
+
+    const listingType =
+        document.getElementById(
+            "marketplaceListingType"
+        ).value;
+
+    const priceValue =
+        document.getElementById(
+            "marketplacePrice"
+        ).value;
+
+    const priceUnit =
+        document.getElementById(
+            "marketplacePriceUnit"
+        ).value;
+
+    const region =
+        document.getElementById(
+            "marketplaceRegionSelect"
+        ).value;
+
+    const zone =
+        document.getElementById(
+            "marketplaceZoneSelect"
+        ).value;
+
+    const city =
+        document.getElementById(
+            "marketplaceCitySelect"
+        ).value;
+
+    const woreda =
+        document.getElementById(
+            "marketplaceWoredaSelect"
+        ).value;
+
+    const area =
+        document.getElementById(
+            "marketplaceAreaSelect"
+        ).value;
+
+    const contactPhone =
+        document.getElementById(
+            "marketplaceContactPhone"
+        ).value.trim();
+
+    const description =
+        document.getElementById(
+            "marketplaceDescription"
+        ).value.trim();
+
+    const editingId =
+        document.getElementById(
+            "marketplaceEditingId"
+        ).value;
+
+    const saveButton =
+        document.getElementById(
+            "marketplaceSaveBtn"
+        );
+
+    /* VALIDATION */
+
+    if(!title){
+        toast(
+            "Item title is required.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!category){
+        toast(
+            "Please select a category.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!condition){
+        toast(
+            "Please select item condition.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!["sell","rent"].includes(listingType)){
+        toast(
+            "Select Sell or Rent.",
+            "warning"
+        );
+        return;
+    }
+
+    if(
+        priceValue === "" ||
+        Number(priceValue) < 0 ||
+        Number.isNaN(Number(priceValue))
+    ){
+        toast(
+            "Enter a valid price.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!priceUnit){
+        toast(
+            "Please select Price Unit.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!region){
+        toast(
+            "Please select Region.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!city){
+        toast(
+            "Please select City/Town.",
+            "warning"
+        );
+        return;
+    }
+
+    if(!currentUser){
+        toast(
+            "Please login first.",
+            "warning"
+        );
+        return;
+    }
+
+    saving = true;
+
+    if(saveButton){
+        saveButton.disabled = true;
+        saveButton.textContent =
+            editingId
+            ? "Updating..."
+            : "Submitting...";
+    }
+
+    try{
+
+        const payload = {
+
+            title,
+
+            description:
+                description || null,
+
+            category,
+
+            condition,
+
+            listing_type:
+                listingType,
+
+            price:
+                Number(priceValue),
+
+            price_unit:
+                priceUnit,
+
+            region_id:
+                region || null,
+
+            zone_id:
+                zone || null,
+
+            city_id:
+                city || null,
+
+            woreda_id:
+                woreda || null,
+
+            area_id:
+                area || null,
+
+            contact_phone:
+                contactPhone || null,
+
+            status:
+                "pending_review"
+        };
+
+        let itemId =
+            editingId;
+
+        /* UPDATE */
+
+        if(editingId){
+
+            const { data, error } =
+                await supabaseClient
+                    .from("marketplace_items")
+                    .update(payload)
+                    .eq("id", editingId)
+                    .eq(
+                        "seller_id",
+                        currentUser.id
+                    )
+                    .select("id")
+                    .single();
+
+            if(error){
+                throw error;
+            }
+
+            itemId = data.id;
+        }
+
+        /* INSERT */
+
+        else{
+
+            const { data, error } =
+                await supabaseClient
+                    .from("marketplace_items")
+                    .insert({
+                        seller_id:
+                            currentUser.id,
+
+                        posted_by:
+                            currentUser.id,
+
+                        ...payload
+                    })
+                    .select("id")
+                    .single();
+
+            if(error){
+                throw error;
+            }
+
+            itemId = data.id;
+        }
+
+        /* UPLOAD NEW PHOTOS */
+
+        if(
+            marketplaceSelectedFiles.length
+        ){
+
+            await uploadMarketplacePhotos(
+                itemId
+            );
+        }
+
+        closeModal(
+            "marketplaceModal"
+        );
+
+        toast(
+            editingId
+            ?
+            "Marketplace item updated and resubmitted for review."
+            :
+            "Marketplace item submitted successfully for review.",
+            "success"
+        );
+
+        await loadMarketplace();
+
+    }
+    catch(e){
+
+        console.error(
+            "Save marketplace item error:",
+            e
+        );
+
+        toast(
+            e.message ||
+            "Failed to save marketplace item.",
+            "error"
+        );
+
+    }
+    finally{
+
+        saving = false;
+
+        if(saveButton){
+
+            saveButton.disabled = false;
+
+            saveButton.textContent =
+                editingId
+                ?
+                "Update & Resubmit"
+                :
+                "Submit for Review";
+        }
+    }
+}
+
+
+
+
+/* =========================================================
+   UPLOAD MARKETPLACE PHOTOS
+========================================================= */
+
+async function uploadCarPhotos(
+    carId
+){
+
+    if(!carId){
+        throw new Error(
+            "Car ID is missing."
+        );
+    }
+
+    if(!carSelectedFiles.length){
+        return;
+    }
+
+    const uploadedUrls = [];
+
+    for(
+        let i = 0;
+        i < carSelectedFiles.length;
+        i++
+    ){
+
+        const file =
+            carSelectedFiles[i];
+
+        const safeName =
+            sanitize(file.name);
+
+        const path =
+            `${currentUser.id}/${carId}/` +
+            `${Date.now()}-${createId()}-${safeName}`;
+
+        const { data, error } =
+            await supabaseClient
+                .storage
+                .from("car-images")
+                .upload(
+                    path,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false,
+                        contentType: file.type
+                    }
+                );
+
+        if(error){
+            throw new Error(
+                "Car photo upload failed: " +
+                error.message
+            );
+        }
+
+        const publicResult =
+            supabaseClient
+                .storage
+                .from("car-images")
+                .getPublicUrl(data.path);
+
+        const publicUrl =
+            publicResult &&
+            publicResult.data
+            ?
+            publicResult.data.publicUrl
+            :
+            null;
+
+        if(!publicUrl){
+            throw new Error(
+                "Could not create car photo URL."
+            );
+        }
+
+        uploadedUrls.push(
+            publicUrl
+        );
+    }
+
+    const existingUrls =
+        Array.isArray(carExistingPhotos)
+        ?
+        carExistingPhotos.slice(0,5)
+        :
+        [];
+
+    const photoUrls =
+        existingUrls
+            .concat(uploadedUrls)
+            .slice(0,5);
+
+    const { error: updateError } =
+        await supabaseClient
+            .from("cars")
+            .update({
+                photo_urls: photoUrls,
+                updated_at: new Date().toISOString()
+            })
+            .eq("id", carId)
+            .eq("seller_id", currentUser.id);
+
+    if(updateError){
+        throw new Error(
+            "Car photo URLs could not be saved: " +
+            updateError.message
+        );
+    }
+}
+
+async function saveCarPhotoUrls(carId){
+
+    if(!carId){
+        throw new Error(
+            "Car ID is missing."
+        );
+    }
+
+    const existingUrls =
+        Array.isArray(carExistingPhotos)
+        ?
+        carExistingPhotos.slice(0,5)
+        :
+        [];
+
+    const { error } =
+        await supabaseClient
+            .from("cars")
+            .update({
+                photo_urls: existingUrls,
+                updated_at:
+                    new Date().toISOString()
+            })
+            .eq("id", carId)
+            .eq(
+                "seller_id",
+                currentUser.id
+            );
+
+    if(error){
+        throw new Error(
+            "Car photos could not be updated: " +
+            error.message
+        );
+    }
+}
+
+
+async function uploadMarketplacePhotos(
+    itemId
+){
+
+    if(!itemId){
+        throw new Error(
+            "Marketplace item ID is missing."
+        );
+    }
+
+    if(
+        !marketplaceSelectedFiles.length
+    ){
+        return;
+    }
+
+    const uploadedUrls = [];
+
+    for(
+        let i = 0;
+        i < marketplaceSelectedFiles.length;
+        i++
+    ){
+
+        const file =
+            marketplaceSelectedFiles[i];
+
+        const safeName =
+            sanitize(file.name);
+
+        const path =
+            `${currentUser.id}/${itemId}/` +
+            `${Date.now()}-${createId()}-${safeName}`;
+
+        const { data, error } =
+            await supabaseClient
+                .storage
+                .from("marketplace-images")
+                .upload(
+                    path,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false,
+                        contentType: file.type
+                    }
+                );
+
+        if(error){
+            throw new Error(
+                "Marketplace photo upload failed: " +
+                error.message
+            );
+        }
+
+        const publicResult =
+            supabaseClient
+                .storage
+                .from("marketplace-images")
+                .getPublicUrl(data.path);
+
+        const publicUrl =
+            publicResult &&
+            publicResult.data
+            ?
+            publicResult.data.publicUrl
+            :
+            null;
+
+        if(!publicUrl){
+            throw new Error(
+                "Could not create marketplace photo URL."
+            );
+        }
+
+        uploadedUrls.push(
+            publicUrl
+        );
+    }
+
+    /*
+     * Keep existing photo URLs when editing.
+     * New URLs are appended to the existing array.
+     */
+
+    const { data: item, error: fetchError } =
+        await supabaseClient
+            .from("marketplace_items")
+            .select("photo_urls")
+            .eq("id", itemId)
+            .single();
+
+    if(fetchError){
+        throw fetchError;
+    }
+
+    const existingUrls =
+        Array.isArray(item.photo_urls)
+        ?
+        item.photo_urls
+        :
+        [];
+
+    const combinedUrls =
+        existingUrls
+            .concat(uploadedUrls)
+            .slice(0, 5);
+
+    const { error: updateError } =
+        await supabaseClient
+            .from("marketplace_items")
+            .update({
+                photo_urls: combinedUrls
+            })
+            .eq("id", itemId)
+            .eq(
+                "seller_id",
+                currentUser.id
+            );
+
+    if(updateError){
+        throw updateError;
+    }
+
+    marketplaceSelectedFiles = [];
+
+    renderMarketplacePhotos();
+}
+
+
+
+
+/* =========================================================
+   EDIT MARKETPLACE ITEM
+========================================================= */
+
+async function editCar(id){
+
+    const car =
+        cars.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!car){
+        toast(
+            "Car not found.",
+            "error"
+        );
+        return;
+    }
+
+    openCarModal();
+
+    const editingId =
+        document.getElementById(
+            "carEditingId"
+        );
+
+    const title =
+        document.getElementById(
+            "carModalTitle"
+        );
+
+    const saveButton =
+        document.getElementById(
+            "carSaveBtn"
+        );
+
+    if(editingId){
+        editingId.value = car.id;
+    }
+
+    if(title){
+        title.textContent =
+            "Edit Car";
+    }
+
+    if(saveButton){
+        saveButton.textContent =
+            "Update & Resubmit";
+    }
+
+    document.getElementById(
+        "carTitle"
+    ).value =
+        car.title || "";
+
+    document.getElementById(
+        "carBrand"
+    ).value =
+        car.brand || "";
+
+    document.getElementById(
+        "carModel"
+    ).value =
+        car.model || "";
+
+    document.getElementById(
+        "carYear"
+    ).value =
+        car.year ?? "";
+
+    document.getElementById(
+        "carCondition"
+    ).value =
+        car.condition || "Used";
+
+    document.getElementById(
+        "carTransmission"
+    ).value =
+        car.transmission || "";
+
+    document.getElementById(
+        "carFuelType"
+    ).value =
+        car.fuel_type || "";
+
+    document.getElementById(
+        "carColor"
+    ).value =
+        car.color || "";
+
+    document.getElementById(
+        "carMileage"
+    ).value =
+        car.mileage ?? "";
+
+    document.getElementById(
+        "carListingType"
+    ).value =
+        car.listing_type || "sell";
+
+    document.getElementById(
+        "carPrice"
+    ).value =
+        car.price ?? "";
+
+    document.getElementById(
+        "carPriceUnit"
+    ).value =
+        car.price_unit || "total";
+
+    document.getElementById(
+        "carContactPhone"
+    ).value =
+        car.contact_phone || "";
+
+    document.getElementById(
+        "carDescription"
+    ).value =
+        car.description || "";
+
+    carSelectedFiles = [];
+
+    renderCarPhotos();
+
+    carExistingPhotos =
+        Array.isArray(car.photo_urls)
+        ?
+        car.photo_urls.slice(0,5)
+        :
+        [];
+
+    renderCarExistingPhotos();
+
+    /*
+     * Restore location cascade:
+     * Region -> Zone -> City -> Woreda -> Area
+     */
+
+    const region =
+        document.getElementById(
+            "carRegionSelect"
+        );
+
+    const zone =
+        document.getElementById(
+            "carZoneSelect"
+        );
+
+    const city =
+        document.getElementById(
+            "carCitySelect"
+        );
+
+    const woreda =
+        document.getElementById(
+            "carWoredaSelect"
+        );
+
+    const area =
+        document.getElementById(
+            "carAreaSelect"
+        );
+
+    if(region && car.region_id){
+
+        region.value =
+            car.region_id;
+
+        await loadLocations(
+            "zone",
+            car.region_id,
+            "carZoneSelect",
+            "Select Zone"
+        );
+
+        if(zone && car.zone_id){
+
+            zone.value =
+                car.zone_id;
+
+            await loadLocations(
+                "city",
+                car.zone_id,
+                "carCitySelect",
+                "Select City / Town"
+            );
+        }
+
+        if(city && car.city_id){
+
+            city.value =
+                car.city_id;
+
+            await loadLocations(
+                "woreda",
+                car.city_id,
+                "carWoredaSelect",
+                "Select Woreda"
+            );
+        }
+
+        if(woreda && car.woreda_id){
+
+            woreda.value =
+                car.woreda_id;
+
+            await loadLocations(
+                "area",
+                car.woreda_id,
+                "carAreaSelect",
+                "Select Area"
+            );
+        }
+
+        if(area && car.area_id){
+            area.value =
+                car.area_id;
+        }
+    }
+}
+
+
+function renderCarExistingPhotos(){
+
+    const section =
+        document.getElementById(
+            "carExistingSection"
+        );
+
+    const grid =
+        document.getElementById(
+            "carExistingGrid"
+        );
+
+    if(!section || !grid){
+        return;
+    }
+
+    grid.innerHTML = "";
+
+    if(!carExistingPhotos.length){
+
+        section.style.display =
+            "none";
+
+        return;
+    }
+
+    section.style.display =
+        "block";
+
+    carExistingPhotos.forEach(
+        function(url,index){
+
+            const item =
+                document.createElement("div");
+
+            item.className =
+                "photo-preview";
+
+            item.innerHTML = `
+                <img
+                    src="${escAttr(url)}"
+                    alt="Existing car photo ${index + 1}"
+                >
+
+                <button
+                    type="button"
+                    class="photo-remove"
+                    onclick="removeCarExistingPhoto(${index})"
+                    aria-label="Remove existing photo"
+                >
+                    ×
+                </button>
+            `;
+
+            grid.appendChild(item);
+        }
+    );
+}
+
+
+async function removeCarExistingPhoto(index){
+
+    if(
+        index < 0 ||
+        index >= carExistingPhotos.length
+    ){
+        return;
+    }
+
+    if(!currentUser){
+        toast(
+            "Please login first.",
+            "warning"
+        );
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Delete this car photo?"
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    const removedUrl =
+        carExistingPhotos[index];
+
+    carExistingPhotos.splice(
+        index,
+        1
+    );
+
+    renderCarExistingPhotos();
+
+    const editingId =
+        document.getElementById(
+            "carEditingId"
+        )?.value || "";
+
+    if(!editingId){
+        toast(
+            "Photo removed from the current selection.",
+            "success"
+        );
+        return;
+    }
+
+    try{
+
+        await saveCarPhotoUrls(
+            editingId
+        );
+
+        toast(
+            "Car photo deleted.",
+            "success"
+        );
+
+        await loadCars();
+
+    }catch(error){
+
+        console.error(
+            "Delete car photo error:",
+            error
+        );
+
+        carExistingPhotos.splice(
+            index,
+            0,
+            removedUrl
+        );
+
+        renderCarExistingPhotos();
+
+        toast(
+            String(
+                error.message ||
+                "Unable to delete car photo."
+            ),
+            "error"
+        );
+    }
+}
+
+
+async function editMarketplaceItem(id){
+
+    const item =
+        marketplaceItems.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!item){
+        toast(
+            "Marketplace item not found.",
+            "error"
+        );
+        return;
+    }
+
+    openMarketplaceModal();
+
+    const editingId =
+        document.getElementById(
+            "marketplaceEditingId"
+        );
+
+    const title =
+        document.getElementById(
+            "marketplaceModalTitle"
+        );
+
+    const saveButton =
+        document.getElementById(
+            "marketplaceSaveBtn"
+        );
+
+    if(editingId){
+        editingId.value = item.id;
+    }
+
+    if(title){
+        title.textContent =
+            "Edit Marketplace Item";
+    }
+
+    if(saveButton){
+        saveButton.textContent =
+            "Update & Resubmit";
+    }
+
+    document.getElementById(
+        "marketplaceTitle"
+    ).value =
+        item.title || "";
+
+    document.getElementById(
+        "marketplaceCategory"
+    ).value =
+        item.category || "";
+
+    document.getElementById(
+        "marketplaceCondition"
+    ).value =
+        item.condition || "Used";
+
+    document.getElementById(
+        "marketplaceListingType"
+    ).value =
+        item.listing_type || "sell";
+
+    document.getElementById(
+        "marketplacePrice"
+    ).value =
+        item.price ?? "";
+
+    document.getElementById(
+        "marketplacePriceUnit"
+    ).value =
+        item.price_unit || "total";
+
+    document.getElementById(
+        "marketplaceContactPhone"
+    ).value =
+        item.contact_phone || "";
+
+    document.getElementById(
+        "marketplaceDescription"
+    ).value =
+        item.description || "";
+
+    marketplaceSelectedFiles = [];
+
+    renderMarketplacePhotos();
+
+    marketplaceExistingPhotos =
+        Array.isArray(item.photo_urls)
+        ?
+        item.photo_urls.slice(0, 5)
+        :
+        [];
+
+    renderMarketplaceExistingPhotos();
+
+    const region =
+        document.getElementById(
+            "marketplaceRegionSelect"
+        );
+
+    const zone =
+        document.getElementById(
+            "marketplaceZoneSelect"
+        );
+
+    const city =
+        document.getElementById(
+            "marketplaceCitySelect"
+        );
+
+    const woreda =
+        document.getElementById(
+            "marketplaceWoredaSelect"
+        );
+
+    const area =
+        document.getElementById(
+            "marketplaceAreaSelect"
+        );
+
+    resetSelects([
+        "marketplaceZoneSelect",
+        "marketplaceCitySelect",
+        "marketplaceWoredaSelect",
+        "marketplaceAreaSelect"
+    ]);
+
+    if(region){
+        region.value =
+            item.region_id || "";
+    }
+
+    if(item.region_id){
+
+        await loadLocations(
+            "zone",
+            item.region_id,
+            "marketplaceZoneSelect",
+            "Select Zone"
+        );
+
+        if(zone){
+            zone.value =
+                item.zone_id || "";
+        }
+    }
+
+    if(item.zone_id){
+
+        await loadLocations(
+            "city",
+            item.zone_id,
+            "marketplaceCitySelect",
+            "Select City / Town"
+        );
+
+        if(city){
+            city.value =
+                item.city_id || "";
+        }
+    }
+    else if(item.region_id){
+
+        await loadLocations(
+            "city",
+            item.region_id,
+            "marketplaceCitySelect",
+            "Select City / Town"
+        );
+
+        if(city){
+            city.value =
+                item.city_id || "";
+        }
+    }
+
+    if(item.city_id){
+
+        await loadLocations(
+            "woreda",
+            item.city_id,
+            "marketplaceWoredaSelect",
+            "Select Woreda"
+        );
+
+        if(woreda){
+            woreda.value =
+                item.woreda_id || "";
+        }
+    }
+
+    if(item.woreda_id){
+
+        await loadLocations(
+            "area",
+            item.woreda_id,
+            "marketplaceAreaSelect",
+            "Select Area"
+        );
+
+        if(area){
+            area.value =
+                item.area_id || "";
+        }
+    }
+}
+
+
+/* =========================================================
+   RENDER EXISTING MARKETPLACE PHOTOS
+========================================================= */
+
+function renderMarketplaceExistingPhotos(){
+
+    const section =
+        document.getElementById(
+            "marketplaceExistingSection"
+        );
+
+    const grid =
+        document.getElementById(
+            "marketplaceExistingGrid"
+        );
+
+    if(!section || !grid){
+        return;
+    }
+
+    if(
+        !Array.isArray(
+            marketplaceExistingPhotos
+        ) ||
+        !marketplaceExistingPhotos.length
+    ){
+
+        section.style.display =
+            "none";
+
+        grid.innerHTML = "";
+
+        return;
+    }
+
+    section.style.display =
+        "block";
+
+    grid.innerHTML = "";
+
+    marketplaceExistingPhotos
+        .forEach(
+            (url, index) => {
+
+                const item =
+                    document.createElement(
+                        "div"
+                    );
+
+                item.className =
+                    "photo-preview";
+
+                item.innerHTML = `
+                    <img
+                        src="${escAttr(url)}"
+                        alt="Existing marketplace photo ${index + 1}"
+                    >
+
+                    <button
+                        type="button"
+                        class="photo-remove"
+                        onclick="removeMarketplaceExistingPhoto(${index})"
+                        aria-label="Delete existing marketplace photo"
+                    >
+                        ×
+                    </button>
+                `;
+
+                grid.appendChild(item);
+            }
+        );
+}
+
+
+async function removeMarketplaceExistingPhoto(index){
+
+    if(
+        !Array.isArray(marketplaceExistingPhotos) ||
+        index < 0 ||
+        index >= marketplaceExistingPhotos.length
+    ){
+        return;
+    }
+
+    if(!currentUser){
+        toast(
+            "Please login first.",
+            "warning"
+        );
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Delete this marketplace photo?"
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    const removedUrl =
+        marketplaceExistingPhotos[index];
+
+    marketplaceExistingPhotos.splice(
+        index,
+        1
+    );
+
+    renderMarketplaceExistingPhotos();
+
+    const editingId =
+        document.getElementById(
+            "marketplaceEditingId"
+        )?.value ||
+        document.getElementById(
+            "editingMarketplaceId"
+        )?.value ||
+        "";
+
+    if(!editingId){
+        toast(
+            "Photo removed from the current selection.",
+            "success"
+        );
+        return;
+    }
+
+    try{
+
+        const { error } =
+            await supabaseClient
+                .from("marketplace_items")
+                .update({
+                    photo_urls:
+                        marketplaceExistingPhotos.slice(
+                            0,
+                            5
+                        ),
+                    updated_at:
+                        new Date().toISOString()
+                })
+                .eq("id", editingId)
+                .eq(
+                    "seller_id",
+                    currentUser.id
+                );
+
+        if(error){
+            throw error;
+        }
+
+        toast(
+            "Marketplace photo deleted.",
+            "success"
+        );
+
+        await loadMarketplace();
+
+    }catch(error){
+
+        console.error(
+            "Delete marketplace photo error:",
+            error
+        );
+
+        marketplaceExistingPhotos.splice(
+            index,
+            0,
+            removedUrl
+        );
+
+        renderMarketplaceExistingPhotos();
+
+        toast(
+            String(
+                error.message ||
+                "Unable to delete marketplace photo."
+            ),
+            "error"
+        );
+    }
+}
+
+
+/* =========================================================
+   VIEW MARKETPLACE ITEM
+========================================================= */
+
+function viewCar(id){
+
+    const car =
+        cars.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!car){
+        toast(
+            "Car not found.",
+            "error"
+        );
+        return;
+    }
+
+    const photos =
+        Array.isArray(car.photo_urls)
+        ?
+        car.photo_urls.slice(0,5)
+        :
+        [];
+
+    const photoHtml =
+        photos.length
+        ?
+        `
+        <div class="detail-gallery">
+            ${photos.map(
+                (url,index) => `
+                    <img
+                        src="${escAttr(url)}"
+                        alt="Car photo ${index + 1}"
+                        loading="lazy"
+                    >
+                `
+            ).join("")}
+        </div>
+        `
+        :
+        `
+        <div class="media-empty">
+            <div>
+                <b>🚗</b>
+                No photo
+            </div>
+        </div>
+        `;
+
+    const detailHtml = `
+        <div class="detail-content">
+
+            ${photoHtml}
+
+            <h2>
+                ${esc(car.title || "Untitled Car")}
+            </h2>
+
+            <div class="badges">
+
+                <span class="badge ${
+                    statusClass(
+                        car.status || "pending_review"
+                    )
+                }">
+                    ${esc(
+                        statusText(
+                            car.status || "pending_review"
+                        )
+                    )}
+                </span>
+
+                <span class="badge ${
+                    car.listing_type === "rent"
+                    ? "rent"
+                    : "sell"
+                }">
+                    ${esc(
+                        cap(
+                            car.listing_type || "sell"
+                        )
+                    )}
+                </span>
+
+            </div>
+
+            ${
+                car.brand || car.model
+                ?
+                `
+                <p>
+                    <strong>Brand / Model:</strong>
+                    ${esc(
+                        [car.brand,car.model]
+                            .filter(Boolean)
+                            .join(" ")
+                        || "Not specified"
+                    )}
+                </p>
+                `
+                :
+                ""
+            }
+
+            ${
+                car.year
+                ?
+                `
+                <p>
+                    <strong>Year:</strong>
+                    ${esc(String(car.year))}
+                </p>
+                `
+                :
+                ""
+            }
+
+            <p>
+                <strong>Condition:</strong>
+                ${esc(car.condition || "Used")}
+            </p>
+
+            <p>
+                <strong>Transmission:</strong>
+                ${esc(
+                    car.transmission || "Not specified"
+                )}
+            </p>
+
+            <p>
+                <strong>Fuel:</strong>
+                ${esc(
+                    car.fuel_type || "Not specified"
+                )}
+            </p>
+
+            <p>
+                <strong>Color:</strong>
+                ${esc(
+                    car.color || "Not specified"
+                )}
+            </p>
+
+            ${
+                car.mileage !== null &&
+                car.mileage !== undefined &&
+                car.mileage !== ""
+                ?
+                `
+                <p>
+                    <strong>Mileage:</strong>
+                    ${esc(String(car.mileage))}
+                </p>
+                `
+                :
+                ""
+            }
+
+            <p>
+                <strong>Price:</strong>
+                ${price(car.price)}
+                ${
+                    car.price_unit
+                    ?
+                    " / " +
+                    esc(car.price_unit)
+                    :
+                    ""
+                }
+            </p>
+
+            ${
+                car.description
+                ?
+                `
+                <p>
+                    <strong>Description:</strong><br>
+                    ${esc(car.description)}
+                </p>
+                `
+                :
+                ""
+            }
+
+            ${
+                car.contact_phone
+                ?
+                `
+                <p>
+                    <strong>Contact:</strong>
+                    ${esc(car.contact_phone)}
+                </p>
+                `
+                :
+                ""
+            }
+
+        </div>
+    `;
+
+    const modalId =
+        "carViewModal";
+
+    let modal =
+        document.getElementById(modalId);
+
+    if(!modal){
+
+        modal =
+            document.createElement("div");
+
+        modal.id =
+            modalId;
+
+        modal.className =
+            "modal";
+
+        modal.innerHTML = `
+            <div class="modal-box">
+
+                <div class="modal-head">
+
+                    <h3>
+                        Car Details
+                    </h3>
+
+                    <button
+                        class="close"
+                        type="button"
+                        onclick="closeModal('${modalId}')"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+                <div
+                    class="modal-body"
+                    id="carViewBody"
+                ></div>
+
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    }
+
+    const body =
+        document.getElementById(
+            "carViewBody"
+        );
+
+    if(body){
+        body.innerHTML =
+            detailHtml;
+    }
+
+    modal.classList.add("show");
+
+    modal.style.display =
+        "flex";
+}
+
+
+async function deleteCar(id){
+
+    const car =
+        cars.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!car){
+        toast(
+            "Car not found.",
+            "error"
+        );
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            "Delete this car listing permanently?"
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        const { error } =
+            await supabaseClient
+                .from("cars")
+                .delete()
+                .eq("id", car.id)
+                .eq(
+                    "seller_id",
+                    currentUser.id
+                );
+
+        if(error){
+            throw error;
+        }
+
+        toast(
+            "Car deleted successfully.",
+            "success"
+        );
+
+        await loadCars();
+
+    }catch(error){
+
+        console.error(
+            "DELETE CAR ERROR:",
+            error
+        );
+
+        toast(
+            String(
+                error.message ||
+                "Unable to delete car."
+            ),
+            "error"
+        );
+    }
+}
+
+
+function viewMarketplaceItem(id){
+
+    const item =
+        marketplaceItems.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!item){
+        toast(
+            "Marketplace item not found.",
+            "error"
+        );
+        return;
+    }
+
+    const photos =
+        Array.isArray(item.photo_urls)
+        ? item.photo_urls
+        : [];
+
+    const photoHtml =
+        photos.length
+        ?
+        `
+        <div class="detail-gallery">
+            ${photos.map(
+                (url, index) => `
+                    <img
+                        src="${escAttr(url)}"
+                        alt="Marketplace photo ${index + 1}"
+                        loading="lazy"
+                    >
+                `
+            ).join("")}
+        </div>
+        `
+        :
+        `
+        <div class="media-empty">
+            <div>
+                <b>🛍️</b>
+                No photo
+            </div>
+        </div>
+        `;
+
+    const detailHtml = `
+        <div class="detail-content">
+
+            ${photoHtml}
+
+            <h2>
+                ${esc(item.title || "Untitled Item")}
+            </h2>
+
+            <div class="badges">
+                <span class="badge ${statusClass(item.status || "pending_review")}">
+                    ${esc(statusText(item.status || "pending_review"))}
+                </span>
+
+                <span class="badge ${
+                    item.listing_type === "rent"
+                    ? "rent"
+                    : "sell"
+                }">
+                    ${esc(cap(item.listing_type || "sell"))}
+                </span>
+            </div>
+
+            <p>
+                <strong>Category:</strong>
+                ${esc(item.category || "Other")}
+            </p>
+
+            <p>
+                <strong>Condition:</strong>
+                ${esc(item.condition || "Used")}
+            </p>
+
+            <p>
+                <strong>Price:</strong>
+                ${price(item.price)}
+                ${
+                    item.price_unit
+                    ? " / " + esc(item.price_unit)
+                    : ""
+                }
+            </p>
+
+            ${
+                item.description
+                ?
+                `
+                <p>
+                    <strong>Description:</strong><br>
+                    ${esc(item.description)}
+                </p>
+                `
+                :
+                ""
+            }
+
+            ${
+                item.contact_phone
+                ?
+                `
+                <p>
+                    <strong>Contact:</strong>
+                    ${esc(item.contact_phone)}
+                </p>
+                `
+                :
+                ""
+            }
+
+        </div>
+    `;
+
+    const modalId =
+        "marketplaceViewModal";
+
+    let modal =
+        document.getElementById(modalId);
+
+    if(!modal){
+
+        modal =
+            document.createElement("div");
+
+        modal.id =
+            modalId;
+
+        modal.className =
+            "modal";
+
+        modal.innerHTML = `
+            <div class="modal-box">
+
+                <div class="modal-head">
+
+                    <h3>
+                        Marketplace Item
+                    </h3>
+
+                    <button
+                        class="close"
+                        type="button"
+                        onclick="closeModal('${modalId}')"
+                    >
+                        ×
+                    </button>
+
+                </div>
+
+                <div
+                    class="modal-body"
+                    id="marketplaceViewBody"
+                ></div>
+
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+    }
+
+    const body =
+        document.getElementById(
+            "marketplaceViewBody"
+        );
+
+    if(body){
+        body.innerHTML =
+            detailHtml;
+    }
+
+    modal.classList.add("show");
+    modal.style.display =
+        "flex";
+}
+
+
+/* =========================================================
+   DELETE MARKETPLACE ITEM
+========================================================= */
+
+async function deleteMarketplaceItem(id){
+
+    const item =
+        marketplaceItems.find(
+            x => String(x.id) === String(id)
+        );
+
+    if(!item){
+        toast(
+            "Marketplace item not found.",
+            "error"
+        );
+        return;
+    }
+
+    const confirmed =
+        confirm(
+            `Delete "${item.title || "this marketplace item"}"?`
+        );
+
+    if(!confirmed){
+        return;
+    }
+
+    try{
+
+        const { error } =
+            await supabaseClient
+                .from("marketplace_items")
+                .delete()
+                .eq("id", id)
+                .eq(
+                    "seller_id",
+                    currentUser.id
+                );
+
+        if(error){
+            throw error;
+        }
+
+        toast(
+            "Marketplace item deleted successfully.",
+            "success"
+        );
+
+        await loadMarketplace();
+    await loadCars();
+
+    }
+    catch(error){
+
+        console.error(
+            "Delete marketplace item error:",
+            error
+        );
+
+        toast(
+            error.message ||
+            "Failed to delete marketplace item.",
+            "error"
+        );
+    }
+}
+
 async function checkSession(){
 
     try{
@@ -2592,6 +6673,9 @@ async function startDashboard(){
 
 
     await loadProperties();
+
+    await loadMarketplace();
+    await loadCars();
 
 }
 
@@ -2984,6 +7068,829 @@ function updateLocationText(){
 /* =========================================================
    LOAD PROPERTIES
 ========================================================= */
+
+
+
+function renderMarketplace(){
+
+    const container =
+        document.getElementById(
+            "marketplaceContainer"
+        );
+
+    if(!container) return;
+
+    const searchInput =
+        document.getElementById(
+            "marketplaceSearch"
+        );
+
+    const statusInput =
+        document.getElementById(
+            "marketplaceStatusFilter"
+        );
+
+    const typeInput =
+        document.getElementById(
+            "marketplaceTypeFilter"
+        );
+
+    const search =
+        searchInput
+            ? searchInput.value
+                .toLowerCase()
+                .trim()
+            : "";
+
+    const status =
+        statusInput
+            ? statusInput.value
+            : "";
+
+    const type =
+        typeInput
+            ? typeInput.value
+            : "";
+
+    const list =
+        marketplaceItems.filter(
+            function(item){
+
+                const text =
+                    (
+                        (item.title || "") +
+                        " " +
+                        (item.category || "") +
+                        " " +
+                        (item.condition || "") +
+                        " " +
+                        (item.description || "")
+                    ).toLowerCase();
+
+                return (
+                    (!search ||
+                        text.includes(search)) &&
+
+                    (!status ||
+                        item.status === status) &&
+
+                    (!type ||
+                        item.listing_type === type)
+                );
+            }
+        );
+
+    if(!list.length){
+
+        container.innerHTML = `
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🛍️
+                </div>
+
+                <h3>
+                    No marketplace items found
+                </h3>
+
+                <p>
+                    No marketplace items match
+                    your current filters.
+                </p>
+
+                <button
+                    class="btn primary"
+                    type="button"
+                    onclick="openMarketplaceModal()"
+                >
+                    ＋ Add Marketplace Item
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="grid">
+            ${list
+                .map(marketplaceCard)
+                .join("")}
+        </div>
+    `;
+}
+
+
+function marketplaceCard(item){
+
+    const status =
+        item.status ||
+        "pending_review";
+
+    const listingType =
+        item.listing_type ||
+        "sell";
+
+    return `
+        <article class="card">
+
+            <div class="media">
+
+                ${
+                    Array.isArray(item.photo_urls) &&
+                    item.photo_urls.length &&
+                    item.photo_urls[0]
+                    ?
+                    `
+                    <img
+                        src="${escAttr(item.photo_urls[0])}"
+                        alt="${escAttr(item.title || "Marketplace item")}"
+                        loading="lazy"
+                    >
+                    `
+                    :
+                    `
+                    <div class="media-empty">
+                        <div>
+                            <b>🛍️</b>
+                            No photo
+                        </div>
+                    </div>
+                    `
+                }
+            </div>
+
+            <div class="card-body">
+
+                <div class="title">
+                    ${esc(
+                        item.title ||
+                        "Untitled Item"
+                    )}
+                </div>
+
+                <div class="loc">
+
+                    ${esc(
+                        item.category ||
+                        "Other"
+                    )}
+
+                    •
+                    
+                    ${esc(
+                        item.condition ||
+                        "Used"
+                    )}
+
+                </div>
+
+                <div class="price">
+
+                    ${price(item.price)}
+
+                    ${
+                        item.price_unit
+                            ? `
+                                <small>
+                                    / ${esc(
+                                        item.price_unit
+                                    )}
+                                </small>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+                <div class="badges">
+
+                    <span
+                        class="badge ${
+                            statusClass(status)
+                        }"
+                    >
+                        ${esc(
+                            statusText(status)
+                        )}
+                    </span>
+
+                    <span
+                        class="badge ${
+                            listingType === "rent"
+                                ? "rent"
+                                : "sell"
+                        }"
+                    >
+                        ${esc(
+                            cap(listingType)
+                        )}
+                    </span>
+
+                </div>
+
+                <div class="actions">
+
+                    <button
+                        class="action"
+                        type="button"
+                        onclick="viewMarketplaceItem('${item.id}')"
+                    >
+                        👁 View
+                    </button>
+
+                    <button
+                        class="action"
+                        type="button"
+                        onclick="editMarketplaceItem('${item.id}')"
+                    >
+                        ✏️ Edit
+                    </button>
+
+                    <button
+                        class="action del"
+                        type="button"
+                        onclick="deleteMarketplaceItem('${item.id}')"
+                    >
+                        🗑 Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+async function loadMarketplace(){
+
+    const container =
+        document.getElementById("marketplaceContainer");
+
+    if(!container) return;
+
+    container.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            Loading marketplace items...
+        </div>
+    `;
+
+    try{
+
+        const {
+            data,
+            error
+        } = await supabaseClient
+            .from("marketplace_items")
+            .select(`
+                id,
+                seller_id,
+                posted_by,
+                title,
+                description,
+                category,
+                condition,
+                listing_type,
+                price,
+                price_unit,
+                region_id,
+                zone_id,
+                city_id,
+                woreda_id,
+                area_id,
+                contact_phone,
+                photo_urls,
+                status,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                "seller_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+        if(error){
+            throw error;
+        }
+
+        marketplaceItems = data || [];
+
+        renderMarketplace();
+
+    }catch(error){
+
+        console.error(
+            "MARKETPLACE LOAD ERROR:",
+            error
+        );
+
+        marketplaceItems = [];
+
+        container.innerHTML = `
+            <div class="empty">
+                <div class="empty-icon">⚠️</div>
+                <h3>Unable to load marketplace</h3>
+                <p>${esc(
+                    error.message ||
+                    "Something went wrong."
+                )}</p>
+
+                <button
+                    class="btn secondary"
+                    type="button"
+                    onclick="loadMarketplace()"
+                >
+                    ↻ Try Again
+                </button>
+            </div>
+        `;
+    }
+}
+
+
+
+/* =========================================================
+   CARS MANAGEMENT
+========================================================= */
+
+let cars = [];
+
+
+function renderCars(){
+
+    const container =
+        document.getElementById("carsContainer");
+
+    if(!container) return;
+
+    const searchInput =
+        document.getElementById("carsSearch");
+
+    const statusInput =
+        document.getElementById("carsStatusFilter");
+
+    const typeInput =
+        document.getElementById("carsTypeFilter");
+
+
+    const search =
+        searchInput
+            ? searchInput.value
+                .toLowerCase()
+                .trim()
+            : "";
+
+
+    const status =
+        statusInput
+            ? statusInput.value
+            : "";
+
+
+    const type =
+        typeInput
+            ? typeInput.value
+            : "";
+
+
+    const list =
+        cars.filter(
+            function(car){
+
+                const text =
+                    (
+                        (car.title || "") +
+                        " " +
+                        (car.brand || "") +
+                        " " +
+                        (car.model || "") +
+                        " " +
+                        (car.year || "") +
+                        " " +
+                        (car.condition || "") +
+                        " " +
+                        (car.transmission || "") +
+                        " " +
+                        (car.fuel_type || "") +
+                        " " +
+                        (car.color || "") +
+                        " " +
+                        (car.description || "")
+                    ).toLowerCase();
+
+
+                return (
+
+                    (!search ||
+                        text.includes(search)
+                    )
+
+                    &&
+
+                    (!status ||
+                        car.status === status
+                    )
+
+                    &&
+
+                    (!type ||
+                        car.listing_type === type
+                    )
+                );
+            }
+        );
+
+
+    if(!list.length){
+
+        container.innerHTML = `
+            <div class="empty">
+
+                <div class="empty-icon">
+                    🚗
+                </div>
+
+                <h3>
+                    No cars found
+                </h3>
+
+                <p>
+                    No cars match your current
+                    search or filters.
+                </p>
+
+                <button
+                    class="btn primary"
+                    type="button"
+                    onclick="openCarModal()"
+                >
+                    ＋ Add Car
+                </button>
+
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML = `
+        <div class="grid">
+            ${list
+                .map(carCard)
+                .join("")
+            }
+        </div>
+    `;
+}
+
+
+function carCard(car){
+
+    const status =
+        car.status || "pending_review";
+
+
+    const listingType =
+        car.listing_type || "sell";
+
+
+    const vehicleName =
+        [
+            car.brand,
+            car.model
+        ]
+        .filter(Boolean)
+        .join(" ");
+
+
+    const year =
+        car.year
+            ? ` • ${esc(car.year)}`
+            : "";
+
+
+    const mileage =
+        car.mileage !== null &&
+        car.mileage !== undefined &&
+        car.mileage !== ""
+            ? `
+                <span>
+                    ${esc(car.mileage)} km
+                </span>
+              `
+            : "";
+
+
+    return `
+        <article class="card">
+
+            <div class="media">
+
+                ${
+                    Array.isArray(car.photo_urls) &&
+                    car.photo_urls.length &&
+                    car.photo_urls[0]
+
+                    ?
+
+                    `
+                    <img
+                        src="${escAttr(car.photo_urls[0])}"
+                        alt="${escAttr(
+                            car.title ||
+                            "Car"
+                        )}"
+                        loading="lazy"
+                    >
+                    `
+
+                    :
+
+                    `
+                    <div class="media-empty">
+                        <div>
+                            <b>🚗</b>
+                            No photo
+                        </div>
+                    </div>
+                    `
+                }
+
+            </div>
+
+
+            <div class="card-body">
+
+                <div class="title">
+                    ${esc(
+                        car.title ||
+                        vehicleName ||
+                        "Untitled Car"
+                    )}
+                </div>
+
+
+                <div class="loc">
+
+                    ${esc(
+                        vehicleName ||
+                        "Vehicle"
+                    )}
+
+                    ${year}
+
+                </div>
+
+
+                <div class="loc">
+
+                    ${esc(
+                        car.condition ||
+                        "Used"
+                    )}
+
+                    •
+                    ${esc(
+                        car.transmission ||
+                        "Other"
+                    )}
+
+                    •
+                    ${esc(
+                        car.fuel_type ||
+                        "Other"
+                    )}
+
+                </div>
+
+
+                ${
+                    mileage
+                        ? `
+                            <div class="loc">
+                                ${mileage}
+                            </div>
+                          `
+                        : ""
+                }
+
+
+                <div class="price">
+
+                    ${price(car.price)}
+
+                    ${
+                        car.price_unit
+                            ? `
+                                <small>
+                                    / ${esc(
+                                        car.price_unit
+                                    )}
+                                </small>
+                              `
+                            : ""
+                    }
+
+                </div>
+
+
+                <div class="badges">
+
+                    <span
+                        class="badge ${
+                            statusClass(status)
+                        }"
+                    >
+                        ${esc(
+                            statusText(status)
+                        )}
+                    </span>
+
+
+                    <span
+                        class="badge ${
+                            listingType === "rent"
+                                ? "rent"
+                                : "sell"
+                        }"
+                    >
+                        ${esc(
+                            cap(listingType)
+                        )}
+                    </span>
+
+                </div>
+
+
+                <div class="actions">
+
+                    <button
+                        class="action"
+                        type="button"
+                        onclick="viewCar('${car.id}')"
+                    >
+                        👁 View
+                    </button>
+
+
+                    <button
+                        class="action"
+                        type="button"
+                        onclick="editCar('${car.id}')"
+                    >
+                        ✏️ Edit
+                    </button>
+
+
+                    <button
+                        class="action del"
+                        type="button"
+                        onclick="deleteCar('${car.id}')"
+                    >
+                        🗑 Delete
+                    </button>
+
+                </div>
+
+            </div>
+
+        </article>
+    `;
+}
+
+
+async function loadCars(){
+
+    const container =
+        document.getElementById(
+            "carsContainer"
+        );
+
+    if(!container) return;
+
+
+    container.innerHTML = `
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            Loading cars...
+
+        </div>
+    `;
+
+
+    try{
+
+        const {
+            data,
+            error
+        } =
+        await supabaseClient
+            .from("cars")
+            .select(`
+                id,
+                seller_id,
+                posted_by,
+                title,
+                description,
+                brand,
+                model,
+                year,
+                condition,
+                transmission,
+                fuel_type,
+                color,
+                mileage,
+                listing_type,
+                price,
+                price_unit,
+                region_id,
+                zone_id,
+                city_id,
+                woreda_id,
+                area_id,
+                contact_phone,
+                photo_urls,
+                status,
+                created_at,
+                updated_at
+            `)
+            .eq(
+                "seller_id",
+                currentUser.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+        if(error){
+            throw error;
+        }
+
+
+        cars = data || [];
+
+
+        renderCars();
+
+    }catch(error){
+
+        console.error(
+            "CARS LOAD ERROR:",
+            error
+        );
+
+
+        cars = [];
+
+
+        container.innerHTML = `
+            <div class="empty">
+
+                <div class="empty-icon">
+                    ⚠️
+                </div>
+
+                <h3>
+                    Unable to load cars
+                </h3>
+
+                <p>
+                    ${esc(
+                        error.message ||
+                        "Something went wrong."
+                    )}
+                </p>
+
+                <button
+                    class="btn secondary"
+                    type="button"
+                    onclick="loadCars()"
+                >
+                    ↻ Try Again
+                </button>
+
+            </div>
+        `;
+    }
+}
+
 
 async function loadProperties(){
 

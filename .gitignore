@@ -9,3 +9,4 @@ app/build/
 local.properties
 app/src/main/assets/web/job-details-current-broken.html
 keystore.properties
+*.jks

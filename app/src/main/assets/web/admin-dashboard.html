@@ -1139,6 +1139,14 @@ textarea.input{
     <button data-go="home">⌂ Dashboard</button>
     <button data-go="properties">🏠 Properties</button>
     <button data-go="jobs">💼 Jobs</button>
+  <button data-go="marketplace">
+    🛍️
+    <span>Market</span>
+  </button>
+  <button data-go="cars">
+    🚗
+    <span>Cars</span>
+  </button>
     <button data-go="applications">📄 Applications</button>
 
     <div class="label">MANAGEMENT</div>
@@ -1146,6 +1154,7 @@ textarea.input{
     <button data-go="users">👥 Users</button>
     <button data-go="locations">📍 Locations</button>
     <button id="cityAdminNav" data-go="cityadmins">🛡 City Admins</button>
+    <button id="dailyReportNav" data-go="dailyreport">📊 Daily Report</button>
 
     <div class="label">ACCOUNT</div>
 
@@ -1518,6 +1527,175 @@ textarea.input{
      APPLICATIONS
 ========================= -->
 
+
+<!-- =========================
+     MARKETPLACE
+========================= -->
+
+<section id="marketplace" class="section">
+
+  <div class="head">
+    <div>
+      <h2>Marketplace Management</h2>
+      <p>Review, publish and manage marketplace items.</p>
+    </div>
+  </div>
+
+  <div class="card filter-card">
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Search marketplace</label>
+        <input
+          id="adminMarketplaceSearch"
+          class="input"
+          placeholder="Search title or category..."
+        >
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="adminMarketplaceStatusFilter" class="input">
+          <option value="">All statuses</option>
+          <option value="pending_review">Pending Review</option>
+          <option value="approved">Approved</option>
+          <option value="published">Published</option>
+          <option value="sold">Sold</option>
+          <option value="rented">Rented</option>
+          <option value="hidden">Hidden</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Listing type</label>
+        <select id="adminMarketplaceTypeFilter" class="input">
+          <option value="">Sell & Rent</option>
+          <option value="sell">Sell</option>
+          <option value="rent">Rent</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Category</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="adminMarketplaceRows">
+          <tr>
+            <td colspan="7" class="empty">
+              Loading marketplace items...
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+
+</section>
+
+
+<!-- =========================
+     CARS
+========================= -->
+
+<section id="cars" class="section">
+
+  <div class="head">
+    <div>
+      <h2>Car Management</h2>
+      <p>Review, publish and manage cars for sale or rent.</p>
+    </div>
+  </div>
+
+  <div class="card filter-card">
+    <div class="filter-grid">
+
+      <div class="field">
+        <label>Search cars</label>
+        <input
+          id="adminCarsSearch"
+          class="input"
+          placeholder="Search title, brand or model..."
+        >
+      </div>
+
+      <div class="field">
+        <label>Status</label>
+        <select id="adminCarsStatusFilter" class="input">
+          <option value="">All statuses</option>
+          <option value="pending_review">Pending Review</option>
+          <option value="approved">Approved</option>
+          <option value="published">Published</option>
+          <option value="sold">Sold</option>
+          <option value="rented">Rented</option>
+          <option value="hidden">Hidden</option>
+          <option value="rejected">Rejected</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label>Listing type</label>
+        <select id="adminCarsTypeFilter" class="input">
+          <option value="">Sell & Rent</option>
+          <option value="sell">Sell</option>
+          <option value="rent">Rent</option>
+        </select>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="tablewrap">
+
+      <table class="table">
+
+        <thead>
+          <tr>
+            <th>Car</th>
+            <th>Brand / Model</th>
+            <th>Location</th>
+            <th>Type</th>
+            <th>Price</th>
+            <th>Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+
+        <tbody id="adminCarsRows">
+          <tr>
+            <td colspan="7" class="empty">
+              Loading cars...
+            </td>
+          </tr>
+        </tbody>
+
+      </table>
+
+    </div>
+  </div>
+
+</section>
+
+
 <section id="applications" class="section">
   <div class="card filter-card"><div class="filter-grid"><div class="field"><label>Search applications</label><input id="appSearch" class="input" placeholder="Search applicant or job..."></div><div class="field"><label>Status</label><select id="appStatusFilter" class="input"><option value="">All statuses</option><option value="pending">Pending</option><option value="reviewing">Reviewing</option><option value="shortlisted">Shortlisted</option><option value="accepted">Accepted</option><option value="rejected">Rejected</option><option value="withdrawn">Withdrawn</option></select></div></div></div>
 
@@ -1703,6 +1881,93 @@ textarea.input{
 
 
 <!-- =========================
+     DAILY REPORT MANAGEMENT
+========================= -->
+<section id="dailyreport" class="section">
+
+  <div class="head">
+    <div>
+      <h2>Daily Report Management</h2>
+      <p>Daily activity summary by city.</p>
+    </div>
+  </div>
+
+  <div id="dailyReportLocked" class="danger-note hidden">
+    This section is available only to Super Admin.
+  </div>
+
+  <div id="dailyReportPanel">
+
+    <div class="card">
+      <div class="grid">
+
+        <div class="field">
+          <label>Report Date</label>
+          <input id="dailyReportDate" class="input" type="date">
+        </div>
+
+        <div class="field">
+          <label>City</label>
+          <select id="dailyReportCity" class="input">
+            <option value="all">All Cities</option>
+          </select>
+        </div>
+
+      </div>
+
+      <div class="form-actions">
+        <button type="button" class="btn primary" onclick="loadDailyReport()">
+          🔎 Load Report
+        </button>
+        <button type="button" class="btn light" onclick="resetDailyReportFilters()">
+          Reset
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="tablewrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>City</th>
+              <th>Property Rent</th>
+              <th>Property Sale</th>
+              <th>Jobs</th>
+              <th>Market Sell</th>
+              <th>Market Rent</th>
+              <th>Cars Sell</th>
+              <th>Cars Rent</th>
+              <th>Total</th>
+              <th>Property Sold</th>
+              <th>Property Rented</th>
+              <th>Market Sold</th>
+              <th>Market Rented</th>
+              <th>Cars Sold</th>
+              <th>Cars Rented</th>
+              <th>Jobs Filled</th>
+              <th>Jobs Closed</th>
+              <th>Jobs Expired</th>
+            </tr>
+          </thead>
+
+          <tbody id="dailyReportRows">
+            <tr>
+              <td colspan="19" class="empty">
+                Select a date and load the report.
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- =========================
      CITY ADMINS
 ========================= -->
 
@@ -1828,6 +2093,16 @@ textarea.input{
     <span>Jobs</span>
   </button>
 
+  <button data-go="marketplace">
+    🛍️
+    <span>Market</span>
+  </button>
+
+  <button data-go="cars">
+    🚗
+    <span>Cars</span>
+  </button>
+
   <button data-go="applications">
     📄
     <span>Apps</span>
@@ -1836,6 +2111,11 @@ textarea.input{
   <button data-go="users">
     👤
     <span>Users</span>
+  </button>
+
+  <button id="dailyReportMobileNav" data-go="dailyreport">
+    📊
+    <span>Report</span>
   </button>
 
 </nav>
@@ -2668,10 +2948,13 @@ const go = section => {
     home:'Admin Dashboard',
     properties:'Property Management',
     jobs:'Job Management',
+    marketplace:'Marketplace Management',
+    cars:'Car Management',
     applications:'Applications',
     users:'User Management',
     locations:'Locations',
-    cityadmins:'City Admins'
+    cityadmins:'City Admins',
+    dailyreport:'Daily Report Management'
   };
 
   $('pageTitle').textContent =
@@ -2679,10 +2962,13 @@ const go = section => {
 
   if(section === 'properties') renderProperties();
   if(section === 'jobs') renderJobs();
+  if(section === 'marketplace') loadMarketplaceAdmin();
+  if(section === 'cars') loadCarsAdmin();
   if(section === 'applications') renderApplications();
   if(section === 'users') renderUsers();
   if(section === 'locations') renderLocations();
   if(section === 'cityadmins') renderCityAdmins();
+  if(section === 'dailyreport') loadDailyReport();
 
   $('side').classList.remove('open');
 };
@@ -2894,7 +3180,16 @@ async function loadAll(){
     if(profile.role==='super_admin') { const allLoc=await EEDB.client.from('locations').select('id,parent_id,name,type,is_active,created_at').order('name'); if(!allLoc.error) locations=allLoc.data||[]; }
 
 
-    /* DATA */
+        /* DAILY REPORT INITIALIZATION */
+    if(profile.role === "super_admin"){
+      populateDailyReportCities();
+      const reportDate = $("dailyReportDate");
+      if(reportDate && !reportDate.value){
+        reportDate.value = todayISO();
+      }
+    }
+
+/* DATA */
 
     const results = await Promise.all([
 
@@ -2966,7 +3261,47 @@ async function loadAll(){
 
     renderLocations();
 
-    renderCityAdmins();
+    const dailyReportNav = $("dailyReportNav");
+  const dailyReportMobileNav = $("dailyReportMobileNav");
+  const dailyReportPanel = $("dailyReportPanel");
+  const dailyReportLocked = $("dailyReportLocked");
+
+  const isSuperAdmin =
+    EEDB.normalizeRole(profile?.role) === "super_admin";
+
+  if(dailyReportNav){
+    dailyReportNav.style.display =
+      isSuperAdmin ? "" : "none";
+  }
+
+  if(dailyReportMobileNav){
+    dailyReportMobileNav.style.display =
+      isSuperAdmin ? "" : "none";
+  }
+
+  if(dailyReportPanel){
+    dailyReportPanel.style.display =
+      isSuperAdmin ? "" : "none";
+  }
+
+  if(dailyReportLocked){
+    dailyReportLocked.classList.toggle(
+      "hidden",
+      isSuperAdmin
+    );
+  }
+
+  if(isSuperAdmin){
+    populateDailyReportCities();
+
+    const reportDate = $("dailyReportDate");
+
+    if(reportDate && !reportDate.value){
+      reportDate.value = todayISO();
+    }
+  }
+
+  renderCityAdmins();
 
     setupCascades();
 
@@ -2987,6 +3322,157 @@ async function loadAll(){
 
 }
 
+
+/* =========================================================
+   DAILY REPORT MANAGEMENT
+========================================================= */
+
+let dailyReportRows = [];
+
+function todayISO(){
+  const d = new Date();
+  return d.getFullYear() + "-" +
+    String(d.getMonth()+1).padStart(2,"0") + "-" +
+    String(d.getDate()).padStart(2,"0");
+}
+
+function populateDailyReportCities(){
+
+  const select = $("dailyReportCity");
+  if(!select) return;
+
+  const cities = locations
+    .filter(x =>
+      x.type === "city" &&
+      x.is_active !== false
+    )
+    .sort((a,b) =>
+      String(a.name || "").localeCompare(
+        String(b.name || "")
+      )
+    );
+
+  select.innerHTML =
+    "<option value="all">All Cities</option>" +
+    cities.map(city =>
+      "<option value="" +
+      esc(city.id) +
+      "">" +
+      esc(city.name) +
+      "</option>"
+    ).join("");
+}
+
+function renderDailyReport(){
+
+  const rows = $("dailyReportRows");
+  if(!rows) return;
+
+  if(!dailyReportRows.length){
+    rows.innerHTML =
+      "<tr><td colspan=\"19\" class=\"empty\">" +
+      "No daily report data found." +
+      "</td></tr>";
+    return;
+  }
+
+  rows.innerHTML = dailyReportRows.map(row => `
+    <tr>
+      <td>${esc(row.report_date || "—")}</td>
+      <td>${esc(row.city_name || "—")}</td>
+      <td>${Number(row.property_rent_posts || 0)}</td>
+      <td>${Number(row.property_sale_posts || 0)}</td>
+      <td>${Number(row.job_posts || 0)}</td>
+      <td>${Number(row.marketplace_sell_posts || 0)}</td>
+      <td>${Number(row.marketplace_rent_posts || 0)}</td>
+      <td>${Number(row.cars_sell_posts || 0)}</td>
+      <td>${Number(row.cars_rent_posts || 0)}</td>
+      <td><b>${Number(row.total_posts || 0)}</b></td>
+      <td>${Number(row.property_sold || 0)}</td>
+      <td>${Number(row.property_rented || 0)}</td>
+      <td>${Number(row.marketplace_sold || 0)}</td>
+      <td>${Number(row.marketplace_rented || 0)}</td>
+      <td>${Number(row.cars_sold || 0)}</td>
+      <td>${Number(row.cars_rented || 0)}</td>
+      <td>${Number(row.jobs_filled || 0)}</td>
+      <td>${Number(row.jobs_closed || 0)}</td>
+      <td>${Number(row.jobs_expired || 0)}</td>
+    </tr>
+  `).join("");
+}
+
+async function loadDailyReport(){
+
+  if(profile?.role !== "super_admin"){
+    return;
+  }
+
+  const rows = $("dailyReportRows");
+
+  if(rows){
+    rows.innerHTML =
+      "<tr><td colspan=\"19\" class=\"empty\">" +
+      "Loading daily report..." +
+      "</td></tr>";
+  }
+
+  const date =
+    $("dailyReportDate")?.value || todayISO();
+
+  const cityId =
+    $("dailyReportCity")?.value || "all";
+
+  let query = EEDB.client
+    .from("daily_city_activity_report")
+    .select("*")
+    .eq("report_date", date)
+    .order("city_name", {ascending:true});
+
+  if(cityId !== "all"){
+    query = query.eq("city_id", cityId);
+  }
+
+  const result = await query;
+
+  if(result.error){
+
+    console.error(
+      "DAILY REPORT ERROR:",
+      result.error
+    );
+
+    toast(
+      result.error.message ||
+      "Failed to load daily report.",
+      "error"
+    );
+
+    dailyReportRows = [];
+    renderDailyReport();
+    return;
+  }
+
+  dailyReportRows =
+    result.data || [];
+
+  renderDailyReport();
+}
+
+function resetDailyReportFilters(){
+
+  const date = $("dailyReportDate");
+  const city = $("dailyReportCity");
+
+  if(date){
+    date.value = todayISO();
+  }
+
+  if(city){
+    city.value = "all";
+  }
+
+  loadDailyReport();
+}
 
 /* =========================================================
    STATS
@@ -5543,6 +6029,642 @@ async function deleteJob(id){
 /* =========================================================
    APPLICATIONS
 ========================================================= */
+
+
+/* =========================================================
+   ADMIN MARKETPLACE
+========================================================= */
+
+let adminMarketplaceItems = [];
+let adminCars = [];
+
+async function loadMarketplaceAdmin(){
+
+  const result = await EEDB.client
+    .from('marketplace_items')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(result.error){
+    toast(result.error.message || 'Could not load marketplace items.','error');
+    return;
+  }
+
+  adminMarketplaceItems = result.data || [];
+  renderMarketplaceAdmin();
+}
+
+function renderMarketplaceAdmin(){
+
+  const rows = $('adminMarketplaceRows');
+  if(!rows) return;
+
+  const search = ($('adminMarketplaceSearch')?.value || '').toLowerCase().trim();
+  const status = $('adminMarketplaceStatusFilter')?.value || '';
+  const type = $('adminMarketplaceTypeFilter')?.value || '';
+
+  const list = adminMarketplaceItems.filter(item => {
+
+    const text = (
+      (item.title || '') + ' ' +
+      (item.category || '') + ' ' +
+      (item.condition || '') + ' ' +
+      (item.description || '')
+    ).toLowerCase();
+
+    return (
+      (!search || text.includes(search)) &&
+      (!status || item.status === status) &&
+      (!type || item.listing_type === type) &&
+      (
+        profile?.role !== 'city_admin' ||
+        currentCityAllowed(item.city_id)
+      )
+    );
+  });
+
+  if(!list.length){
+    rows.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty">No marketplace items found.</td>
+      </tr>`;
+    return;
+  }
+
+  rows.innerHTML = list.map(item => {
+
+    const location = EEDB.locationText(locations,{
+      region_id:item.region_id,
+      zone_id:item.zone_id,
+      city_id:item.city_id,
+      woreda_id:item.woreda_id,
+      area_id:item.area_id
+    }) || '—';
+
+    const price = item.price == null
+      ? '—'
+      : EEDB.fmtMoney(item.price);
+
+    return `
+      <tr>
+        <td>
+          <b>${esc(item.title || '—')}</b>
+          <div class="muted">${esc(item.condition || '—')}</div>
+        </td>
+
+        <td>${esc(item.category || '—')}</td>
+        <td>${esc(location)}</td>
+        <td>${esc(item.listing_type || '—')}</td>
+
+        <td>
+          ${price}
+          <div class="muted">${esc(item.price_unit || 'total')}</div>
+        </td>
+
+        <td>${badge(item.status)}</td>
+
+        <td>
+          <button class="btn small"
+            onclick="viewMarketplaceAdmin('${item.id}')">
+            View
+          </button>
+
+          ${
+            item.status === 'pending_review' ||
+            item.status === 'approved'
+            ? `
+              <button class="btn small"
+                onclick="approveMarketplaceAdmin('${item.id}')">
+                Approve
+              </button>
+
+              <button class="btn small danger"
+                onclick="rejectMarketplaceAdmin('${item.id}')">
+                Reject
+              </button>
+            `
+            : ''
+          }
+
+          <button class="btn small danger"
+            onclick="deleteMarketplaceAdmin('${item.id}')">
+            Delete
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function viewMarketplaceAdmin(id){
+
+  const item = adminMarketplaceItems.find(x => x.id === id);
+  if(!item) return;
+
+  const location = EEDB.locationText(locations,{
+    region_id:item.region_id,
+    zone_id:item.zone_id,
+    city_id:item.city_id,
+    woreda_id:item.woreda_id,
+    area_id:item.area_id
+  }) || '—';
+
+  const photos = Array.isArray(item.photo_urls)
+    ? item.photo_urls
+    : [];
+
+  const gallery = photos.length
+    ? `
+      <div style="display:grid;gap:8px;margin-bottom:15px;">
+        ${photos.map(url => `
+          <img
+            src="${esc(url)}"
+            alt="${esc(item.title || 'Marketplace item')}"
+            style="width:100%;max-height:260px;object-fit:cover;border-radius:10px;"
+          >
+        `).join('')}
+      </div>`
+    : '';
+
+  showDetail(
+    '🛍️ Marketplace Item',
+    `
+      ${gallery}
+
+      <div class="detail-grid">
+
+        <div>
+          <b>Title</b>
+          <span>${esc(item.title || '—')}</span>
+        </div>
+
+        <div>
+          <b>Category</b>
+          <span>${esc(item.category || '—')}</span>
+        </div>
+
+        <div>
+          <b>Condition</b>
+          <span>${esc(item.condition || '—')}</span>
+        </div>
+
+        <div>
+          <b>Listing Type</b>
+          <span>${esc(item.listing_type || '—')}</span>
+        </div>
+
+        <div>
+          <b>Price</b>
+          <span>
+            ${item.price == null ? '—' : EEDB.fmtMoney(item.price)}
+            ${esc(item.price_unit || '')}
+          </span>
+        </div>
+
+        <div>
+          <b>Status</b>
+          <span>${badge(item.status)}</span>
+        </div>
+
+        <div class="wide">
+          <b>Location</b>
+          <span>${esc(location)}</span>
+        </div>
+
+        <div>
+          <b>Contact Phone</b>
+          <span>${esc(item.contact_phone || '—')}</span>
+        </div>
+
+        <div class="wide">
+          <b>Description</b>
+          <span>${esc(item.description || '—')}</span>
+        </div>
+
+      </div>
+    `
+  );
+}
+
+async function recordPostStatusHistory(entityType, entityId, cityId, oldStatus, newStatus){
+  if(!cityId) return;
+
+  const result = await EEDB.client
+    .from("post_status_history")
+    .insert({
+      entity_type: entityType,
+      entity_id: entityId,
+      city_id: cityId,
+      old_status: oldStatus || null,
+      new_status: newStatus,
+      changed_by: me.id
+    });
+
+  if(result.error){
+    console.error("STATUS HISTORY ERROR:", result.error);
+  }
+}
+
+async function approveMarketplaceAdmin(id){
+
+  if(!confirm('Publish this marketplace item?')) return;
+
+  const item = adminMarketplaceItems.find(x => x.id === id);
+  if(!item) return;
+
+  const result = await EEDB.client
+    .from('marketplace_items')
+    .update({
+      status:'published',
+      updated_at:new Date().toISOString()
+    })
+    .eq('id',id);
+
+  if(result.error){
+    toast(result.error.message,'error');
+    return;
+  }
+
+  await recordPostStatusHistory(
+    "marketplace",
+    id,
+    item.city_id,
+    item.status,
+    "published"
+  );
+
+  toast('Marketplace item published.','success');
+  await loadMarketplaceAdmin();
+}
+
+async function rejectMarketplaceAdmin(id){
+
+  if(!confirm('Reject this marketplace item?')) return;
+
+  const item = adminMarketplaceItems.find(x => x.id === id);
+  if(!item) return;
+
+  const result = await EEDB.client
+    .from('marketplace_items')
+    .update({
+      status:'rejected',
+      updated_at:new Date().toISOString()
+    })
+    .eq('id',id);
+
+  if(result.error){
+    toast(result.error.message,'error');
+    return;
+  }
+
+  await recordPostStatusHistory(
+    "marketplace",
+    id,
+    item.city_id,
+    item.status,
+    "rejected"
+  );
+
+  toast('Marketplace item rejected.','success');
+  await loadMarketplaceAdmin();
+}
+
+async function deleteMarketplaceAdmin(id){
+
+  if(!confirm('Delete this marketplace item permanently?')) return;
+
+  const result = await EEDB.client
+    .from('marketplace_items')
+    .delete()
+    .eq('id',id);
+
+  if(result.error){
+    toast(result.error.message,'error');
+    return;
+  }
+
+  toast('Marketplace item deleted.','success');
+  await loadMarketplaceAdmin();
+}
+
+
+/* =========================================================
+   ADMIN CARS
+========================================================= */
+
+async function loadCarsAdmin(){
+
+  const result = await EEDB.client
+    .from('cars')
+    .select('*')
+    .order('created_at',{ascending:false});
+
+  if(result.error){
+    toast(result.error.message || 'Could not load cars.','error');
+    return;
+  }
+
+  adminCars = result.data || [];
+  renderCarsAdmin();
+}
+
+function renderCarsAdmin(){
+
+  const rows = $('adminCarsRows');
+  if(!rows) return;
+
+  const search = ($('adminCarsSearch')?.value || '').toLowerCase().trim();
+  const status = $('adminCarsStatusFilter')?.value || '';
+  const type = $('adminCarsTypeFilter')?.value || '';
+
+  const list = adminCars.filter(car => {
+
+    const text = (
+      (car.title || '') + ' ' +
+      (car.brand || '') + ' ' +
+      (car.model || '') + ' ' +
+      (car.description || '')
+    ).toLowerCase();
+
+    return (
+      (!search || text.includes(search)) &&
+      (!status || car.status === status) &&
+      (!type || car.listing_type === type) &&
+      (
+        profile?.role !== 'city_admin' ||
+        currentCityAllowed(car.city_id)
+      )
+    );
+  });
+
+  if(!list.length){
+    rows.innerHTML = `
+      <tr>
+        <td colspan="7" class="empty">No cars found.</td>
+      </tr>`;
+    return;
+  }
+
+  rows.innerHTML = list.map(car => {
+
+    const location = EEDB.locationText(locations,{
+      region_id:car.region_id,
+      zone_id:car.zone_id,
+      city_id:car.city_id,
+      woreda_id:car.woreda_id,
+      area_id:car.area_id
+    }) || '—';
+
+    const brandModel = (
+      (car.brand || '') + ' ' +
+      (car.model || '')
+    ).trim() || '—';
+
+    const price = car.price == null
+      ? '—'
+      : EEDB.fmtMoney(car.price);
+
+    return `
+      <tr>
+        <td>
+          <b>${esc(car.title || '—')}</b>
+          <div class="muted">${esc(car.year || '')}</div>
+        </td>
+
+        <td>${esc(brandModel)}</td>
+        <td>${esc(location)}</td>
+        <td>${esc(car.listing_type || '—')}</td>
+
+        <td>
+          ${price}
+          <div class="muted">${esc(car.price_unit || 'total')}</div>
+        </td>
+
+        <td>${badge(car.status)}</td>
+
+        <td>
+          <button class="btn small"
+            onclick="viewCarAdmin('${car.id}')">
+            View
+          </button>
+
+          ${
+            car.status === 'pending_review' ||
+            car.status === 'approved'
+            ? `
+              <button class="btn small"
+                onclick="approveCarAdmin('${car.id}')">
+                Approve
+              </button>
+
+              <button class="btn small danger"
+                onclick="rejectCarAdmin('${car.id}')">
+                Reject
+              </button>
+            `
+            : ''
+          }
+
+          <button class="btn small danger"
+            onclick="deleteCarAdmin('${car.id}')">
+            Delete
+          </button>
+        </td>
+      </tr>`;
+  }).join('');
+}
+
+function viewCarAdmin(id){
+
+  const car = adminCars.find(x => x.id === id);
+  if(!car) return;
+
+  const location = EEDB.locationText(locations,{
+    region_id:car.region_id,
+    zone_id:car.zone_id,
+    city_id:car.city_id,
+    woreda_id:car.woreda_id,
+    area_id:car.area_id
+  }) || '—';
+
+  const photos = Array.isArray(car.photo_urls)
+    ? car.photo_urls
+    : [];
+
+  const gallery = photos.length
+    ? `
+      <div style="display:grid;gap:8px;margin-bottom:15px;">
+        ${photos.map(url => `
+          <img
+            src="${esc(url)}"
+            alt="${esc(car.title || 'Car')}"
+            style="width:100%;max-height:260px;object-fit:cover;border-radius:10px;"
+          >
+        `).join('')}
+      </div>`
+    : '';
+
+  showDetail(
+    '🚗 Car Details',
+    `
+      ${gallery}
+
+      <div class="detail-grid">
+
+        <div>
+          <b>Title</b>
+          <span>${esc(car.title || '—')}</span>
+        </div>
+
+        <div>
+          <b>Brand / Model</b>
+          <span>
+            ${esc(
+              ((car.brand || '') + ' ' + (car.model || '')).trim() || '—'
+            )}
+          </span>
+        </div>
+
+        <div>
+          <b>Year</b>
+          <span>${esc(car.year || '—')}</span>
+        </div>
+
+        <div>
+          <b>Condition</b>
+          <span>${esc(car.condition || '—')}</span>
+        </div>
+
+        <div>
+          <b>Transmission</b>
+          <span>${esc(car.transmission || '—')}</span>
+        </div>
+
+        <div>
+          <b>Fuel</b>
+          <span>${esc(car.fuel_type || '—')}</span>
+        </div>
+
+        <div>
+          <b>Color</b>
+          <span>${esc(car.color || '—')}</span>
+        </div>
+
+        <div>
+          <b>Mileage</b>
+          <span>${esc(car.mileage ?? '—')}</span>
+        </div>
+
+        <div>
+          <b>Listing Type</b>
+          <span>${esc(car.listing_type || '—')}</span>
+        </div>
+
+        <div>
+          <b>Price</b>
+          <span>
+            ${car.price == null ? '—' : EEDB.fmtMoney(car.price)}
+            ${esc(car.price_unit || '')}
+          </span>
+        </div>
+
+        <div>
+          <b>Status</b>
+          <span>${badge(car.status)}</span>
+        </div>
+
+        <div class="wide">
+          <b>Location</b>
+          <span>${esc(location)}</span>
+        </div>
+
+        <div>
+          <b>Contact Phone</b>
+          <span>${esc(car.contact_phone || '—')}</span>
+        </div>
+
+        <div class="wide">
+          <b>Description</b>
+          <span>${esc(car.description || '—')}</span>
+        </div>
+
+      </div>
+    `
+  );
+}
+
+async function approveCarAdmin(id){
+
+  if(!confirm('Publish this car?')) return;
+
+  const car = adminCars.find(x => x.id === id);
+  if(!car) return;
+
+  const result = await EEDB.client
+    .from('cars')
+    .update({
+      status:'published',
+      updated_at:new Date().toISOString()
+    })
+    .eq('id',id);
+
+  if(result.error){
+    toast(result.error.message,'error');
+    return;
+  }
+
+  toast('Car published.','success');
+  await loadCarsAdmin();
+}
+
+async function rejectCarAdmin(id){
+
+  if(!confirm('Reject this car?')) return;
+
+  const car = adminCars.find(x => x.id === id);
+  if(!car) return;
+
+  const result = await EEDB.client
+    .from('cars')
+    .update({
+      status:'rejected',
+      updated_at:new Date().toISOString()
+    })
+    .eq('id',id);
+
+  if(result.error){
+    toast(result.error.message,'error');
+    return;
+  }
+
+  await recordPostStatusHistory(
+    "car",
+    id,
+    car.city_id,
+    car.status,
+    "rejected"
+  );
+
+  toast('Car rejected.','success');
+  await loadCarsAdmin();
+}
+
+async function deleteCarAdmin(id){
+
+  if(!confirm('Delete this car permanently?')) return;
+
+  const result = await EEDB.client
+    .from('cars')
+    .delete()
+    .eq('id',id);
+
+  if(result.error){
+    toast(result.error.message,'error');
+    return;
+  }
+
+  toast('Car deleted.','success');
+  await loadCarsAdmin();
+}
 
 function renderApplications(){
 
