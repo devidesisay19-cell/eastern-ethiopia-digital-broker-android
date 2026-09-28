@@ -70,3 +70,13 @@ Run its audit query (last statement) after applying it.
   marketplace_items and cars. Only new status changes after running the SQL are counted.
 - First Super Admin (SQL editor, once):
   `update public.profiles set role='super_admin' where id='<AUTH-UUID>';`
+
+## v4.2 fixes
+- Run **`FIX_V4_2.sql`** once in Supabase (after `SUPABASE_FINAL_V4.sql` and `FIX_V4_1.sql`):
+  removes the old `marketplace_category_check` (and other old checks) and adds
+  `get_listing_contacts(city_id)` for the detail pages.
+- Photo picker (native `MainActivity.kt` + web pages) rewritten so photo selection works for
+  admin Property / Marketplace / Car and owner Marketplace / Car. Photos are resized to JPEG.
+- Admin Marketplace category is now a dropdown (same list as owner). Admin-created listings are published immediately.
+- Home page (`index.html`): Marketplace and Cars cards have **View Details** -> `listing-details.html`,
+  which shows the gallery, info and the City Admin (assigned to the item's city) + Super Admin phone / WhatsApp.

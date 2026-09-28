@@ -27,7 +27,16 @@ class MainActivity : AppCompatActivity() {
         val callback = filePathCallback ?: return@registerForActivityResult
         filePathCallback = null
 
-        val uris = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
+        val uris: Array<Uri>? = if (result.resultCode == RESULT_OK) {
+            val data = result.data
+            val clip = data?.clipData
+            when {
+                clip != null && clip.itemCount > 0 ->
+                    Array(clip.itemCount) { clip.getItemAt(it).uri }
+                data?.data != null -> arrayOf(data.data!!)
+                else -> null
+            }
+        } else null
 
         callback.onReceiveValue(uris)
     }
@@ -51,7 +60,7 @@ class MainActivity : AppCompatActivity() {
                 domStorageEnabled = true
                 databaseEnabled = true
                 allowFileAccess = false
-                allowContentAccess = false
+                allowContentAccess = true
                 cacheMode = WebSettings.LOAD_DEFAULT
                 mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
                 builtInZoomControls = false
@@ -72,12 +81,32 @@ class MainActivity : AppCompatActivity() {
                     this@MainActivity.filePathCallback?.onReceiveValue(null)
                     this@MainActivity.filePathCallback = filePathCallback
 
-                    val intent = (fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
-                        addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "image/*"
-                    }).apply {
-                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, fileChooserParams?.mode == FileChooserParams.MODE_OPEN_MULTIPLE)
-                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                    val multiple = fileChooserParams?.mode == FileChooserParams.MODE_OPEN_MULTIPLE
+                    val accept = fileChooserParams?.acceptTypes
+                        ?.map { it.trim() }?.filter { it.isNotEmpty() } ?: emptyList()
+                    val imagesOnly = accept.isNotEmpty() && accept.all { it.startsWith("image/") }
+
+                    val intent: Intent = if (imagesOnly) {
+                        // Simple, widely supported picker for photos (works with Gallery,
+                        // Google Photos, Files). Avoids EXTRA_MIME_TYPES problems.
+                        Intent.createChooser(
+                            Intent(Intent.ACTION_GET_CONTENT).apply {
+                                addCategory(Intent.CATEGORY_OPENABLE)
+                                type = "image/*"
+                                putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple)
+                                addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                            },
+                            "Select photos"
+                        )
+                    } else {
+                        // PDFs / documents (job CV upload etc.)
+                        (fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
+                            addCategory(Intent.CATEGORY_OPENABLE)
+                            type = "*/*"
+                        }).apply {
+                            putExtra(Intent.EXTRA_ALLOW_MULTIPLE, multiple)
+                            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                        }
                     }
 
                     return runCatching {

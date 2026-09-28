@@ -1946,7 +1946,7 @@ Photo upload does not depend on Area.
     <input
         id="photoInput"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/*"
         multiple
     >
 
@@ -2515,7 +2515,7 @@ Area / Kebele is optional.
     <input
         id="marketplacePhotoInput"
         type="file"
-        accept="image/jpeg,image/png,image/webp"
+        accept="image/*"
         multiple
     >
 
@@ -2868,7 +2868,7 @@ Area / Kebele is optional.
                         <input
                             id="carPhotoInput"
                             type="file"
-                            accept="image/jpeg,image/png,image/webp"
+                            accept="image/*"
                             multiple
                         >
 
@@ -3389,7 +3389,7 @@ async function handleCarPhotos(e){
             break;
         }
 
-        if(!file.type.startsWith("image/")){
+        if(file.type && !file.type.startsWith("image/")){
             alert("Only image files are allowed.");
             continue;
         }
@@ -3495,7 +3495,7 @@ async function handleMarketplacePhotos(e){
             break;
         }
 
-        if(!file.type.startsWith("image/")){
+        if(file.type && !file.type.startsWith("image/")){
             alert("Only image files are allowed.");
             continue;
         }

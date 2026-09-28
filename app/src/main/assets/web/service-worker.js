@@ -1,4 +1,4 @@
-const CACHE_NAME = "eedb-pwa-v1";
+const CACHE_NAME = "eedb-pwa-v2";
 
 const APP_SHELL = [
   "./",

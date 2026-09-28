@@ -2429,13 +2429,13 @@ textarea.input{
 
               </div>
 
-              <button
-                type="button"
+              <label
                 class="btn primary"
-                onclick="document.getElementById('propertyPhotos').click()"
+                for="propertyPhotos"
+                style="cursor:pointer;display:inline-flex;align-items:center"
               >
                 ＋ Select Photos
-              </button>
+              </label>
 
             </div>
 
@@ -2443,9 +2443,9 @@ textarea.input{
             <input
               id="propertyPhotos"
               type="file"
-              accept="image/jpeg,image/png,image/webp"
+              accept="image/*"
               multiple
-              hidden
+              style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0"
             >
 
 
@@ -3913,74 +3913,32 @@ function openPropertyForm(){
 
 $('propertyPhotos').addEventListener(
   'change',
-  event => {
+  async event => {
 
-    const files =
-      Array.from(
-        event.target.files || []
-      );
+    const input = event.target;
+    const files = Array.from(input.files || []).filter(f => EEDB.looksLikeImage(f));
+    input.value = '';
 
-
-    if(!files.length) return;
-
-
-    const combined =
-      [
-        ...selectedPropertyFiles,
-        ...files
-      ];
-
-
-    if(combined.length > 5){
-
-      toast(
-        'Maximum 5 photos are allowed.',
-        'error'
-      );
-
-      $('propertyPhotos').value = '';
-
+    if(!files.length){
+      toast('Please choose image files.','error');
       return;
-
     }
 
+    for(const file of files){
 
-    const invalid =
-      combined.find(file => {
+      if(selectedPropertyFiles.length >= 5){
+        toast('Maximum 5 photos are allowed.','error');
+        break;
+      }
 
-        const allowed = [
-          'image/jpeg',
-          'image/png',
-          'image/webp'
-        ];
-
-        return (
-          !allowed.includes(file.type) ||
-          file.size > 5 * 1024 * 1024
-        );
-
-      });
-
-
-    if(invalid){
-
-      toast(
-        `${invalid.name} is invalid. Use JPG, PNG or WEBP under 5 MB.`,
-        'error'
-      );
-
-      $('propertyPhotos').value = '';
-
-      return;
+      try{
+        selectedPropertyFiles.push(await EEDB.prepareImage(file));
+      }catch(err){
+        console.warn('Photo could not be read', file && file.name, err);
+        toast((file.name || 'Photo') + ' could not be read. Choose another (JPG/PNG).','error');
+      }
 
     }
-
-
-    selectedPropertyFiles =
-      combined;
-
-
-    $('propertyPhotos').value = '';
 
     renderPhotoPreviews();
 

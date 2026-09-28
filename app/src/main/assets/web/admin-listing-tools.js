@@ -74,32 +74,38 @@
         <form id="adminListingForm">
           <div class="admin-listing-grid" style="margin-top:16px">
             <label class="wide">Title<input id="adminListingTitleField" class="input" required maxlength="160"></label>
-            <label id="adminListingCategoryLabel">Category<input id="adminListingCategory" class="input" maxlength="80"></label>
+            <label id="adminListingCategoryLabel">Category<select id="adminListingCategory" class="input">
+              <option value="">Select Category</option>
+              <option value="Phone">Phone</option><option value="TV">TV</option><option value="Fridge">Fridge</option>
+              <option value="Sofa">Sofa</option><option value="Furniture">Furniture</option><option value="Laptop">Laptop</option>
+              <option value="Household Equipment">Household Equipment</option><option value="Work Equipment">Work Equipment</option>
+              <option value="Other">Other</option>
+            </select></label>
             <label id="adminListingBrandLabel">Brand / Make<input id="adminListingBrand" class="input" maxlength="80"></label>
             <label id="adminListingModelLabel">Model<input id="adminListingModel" class="input" maxlength="80"></label>
             <label id="adminListingYearLabel">Year<input id="adminListingYear" class="input" type="number" min="1950" max="2100"></label>
             <label id="adminListingMileageLabel">Mileage<input id="adminListingMileage" class="input" type="number" min="0"></label>
             <label id="adminListingTransmissionLabel">Transmission<select id="adminListingTransmission" class="input">
-              <option value="">Select transmission</option><option value="manual">Manual</option><option value="automatic">Automatic</option>
+              <option value="">Select transmission</option><option value="Manual">Manual</option><option value="Automatic">Automatic</option><option value="Semi-Automatic">Semi-Automatic</option><option value="Other">Other</option>
             </select></label>
             <label id="adminListingFuelLabel">Fuel type<select id="adminListingFuel" class="input">
-              <option value="">Select fuel type</option><option value="petrol">Petrol</option><option value="diesel">Diesel</option><option value="hybrid">Hybrid</option><option value="electric">Electric</option>
+              <option value="">Select fuel type</option><option value="Petrol">Petrol</option><option value="Diesel">Diesel</option><option value="Hybrid">Hybrid</option><option value="Electric">Electric</option><option value="Other">Other</option>
             </select></label>
             <label id="adminListingColorLabel">Color<input id="adminListingColor" class="input" maxlength="40"></label>
             <label>Condition<select id="adminListingCondition" class="input" required>
               <option value="">Select condition</option><option value="new">New</option><option value="used">Used</option><option value="excellent">Excellent</option><option value="good">Good</option><option value="fair">Fair</option>
             </select></label>
             <label>Listing type<select id="adminListingType" class="input" required><option value="sell">Sell</option><option value="rent">Rent</option></select></label>
-            <label>Price<input id="adminListingPrice" class="input" type="number" min="0" step="0.01" required></label>
-            <label>Price unit<input id="adminListingPriceUnit" class="input" value="total" maxlength="30"></label>
+            <label>Price<input id="adminListingPrice" class="input" type="number" min="1" step="0.01" required></label>
+            <label>Price unit<select id="adminListingPriceUnit" class="input"><option value="total">Total</option><option value="day">Per Day</option><option value="week">Per Week</option><option value="month">Per Month</option></select></label>
             <label>Contact phone<input id="adminListingPhone" class="input" maxlength="40"></label>
             <label class="wide">Description<textarea id="adminListingDescription" class="input" rows="4" maxlength="5000"></textarea></label>
           </div>
           <div id="adminListingLocationFields"></div>
           <div class="admin-listing-photos">
-            <label>Photos (maximum 5)
-              <input id="adminListingPhotos" class="input" type="file" accept="image/*" multiple>
-            </label>
+            <label class="btn primary" for="adminListingPhotos" style="display:inline-block;cursor:pointer">＋ Select Photos (max 5)</label>
+            <input id="adminListingPhotos" type="file" accept="image/*" multiple
+              style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0">
             <small id="adminListingPhotoCount">0 of 5 photos</small>
             <div id="adminListingPhotoGrid" class="admin-listing-photo-grid"></div>
           </div>
@@ -173,11 +179,17 @@
     });
   }
 
-  function onFiles(event) {
-    const incoming = Array.from(event.target.files || []).filter((file) => file.type.startsWith("image/"));
-    const remaining = Math.max(0, 5 - state.existing.length - state.files.length);
-    state.files = state.files.concat(incoming.slice(0, remaining));
-    event.target.value = "";
+  async function onFiles(event) {
+    const input = event.target;
+    const incoming = Array.from(input.files || []).filter((file) => EEDB.looksLikeImage(file));
+    input.value = "";
+    if (!incoming.length) { toast("Please choose image files.", "error"); return; }
+    let remaining = Math.max(0, 5 - state.existing.length - state.files.length);
+    if (!remaining) { toast("Maximum 5 photos.", "error"); return; }
+    for (const file of incoming.slice(0, remaining)) {
+      try { state.files.push(await EEDB.prepareImage(file)); }
+      catch (e) { toast((file.name || "Photo") + " could not be read. Choose another (JPG/PNG).", "error"); }
+    }
     renderPhotos();
   }
 
@@ -190,13 +202,19 @@
       if (label) label.style.display = isCar ? "grid" : "none";
     });
     setValue("adminListingTitleField", row?.title);
-    setValue("adminListingCategory", row?.category);
+    (function(){
+      const sel = $("adminListingCategory"), v = row?.category || "";
+      if (sel && v && ![...sel.options].some(o => o.value === v)) {
+        const o = document.createElement("option"); o.value = v; o.textContent = v; sel.appendChild(o);
+      }
+      setValue("adminListingCategory", v);
+    })();
     setValue("adminListingBrand", row?.brand);
     setValue("adminListingModel", row?.model);
     setValue("adminListingYear", row?.year);
     setValue("adminListingMileage", row?.mileage);
-    setValue("adminListingTransmission", row?.transmission);
-    setValue("adminListingFuel", row?.fuel_type);
+    (function(){const v=String(row?.transmission||"").toLowerCase();setValue("adminListingTransmission",{manual:"Manual",automatic:"Automatic","semi-automatic":"Semi-Automatic",other:"Other"}[v]||"");})();
+    (function(){const v=String(row?.fuel_type||"").toLowerCase();setValue("adminListingFuel",{petrol:"Petrol",diesel:"Diesel",hybrid:"Hybrid",electric:"Electric",other:"Other"}[v]||"");})();
     setValue("adminListingColor", row?.color);
     setValue("adminListingCondition", row?.condition);
     setValue("adminListingType", row?.listing_type || "sell");
@@ -231,8 +249,8 @@
     const condition = $("adminListingCondition").value;
     const city = currentLocationIds(state.kind === "cars" ? "adminCar" : "adminMarket").city_id;
     const price = Number($("adminListingPrice").value);
-    if (!title || !city || !Number.isFinite(price) || price < 0) {
-      toast("Title, city, and a valid price are required.", "error");
+    if (!title || !city || !Number.isFinite(price) || price <= 0) {
+      toast("Title, city, and a price greater than 0 are required.", "error");
       return false;
     }
     if (state.kind !== "cars" && !category) {
@@ -320,7 +338,7 @@
       } else {
         id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
           : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === "x" ? r : (r & 3 | 8)).toString(16); });
-        Object.assign(payload, { id, seller_id: me.id, posted_by: me.id, status: "pending_review" });
+        Object.assign(payload, { id, seller_id: me.id, posted_by: me.id, status: "published" });
         const result = await EEDB.client.from(tableFor(state.kind)).insert(payload);
         if (result.error) throw result.error;
       }

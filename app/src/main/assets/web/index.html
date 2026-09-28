@@ -4319,13 +4319,23 @@ function homeListingTypeBadge(listingType) {
     return "";
 }
 
-function homeContactButton(phone) {
-    if (!phone) {
+function homeDetailsButton(kind, id) {
+    if (!id) {
         return "";
     }
 
-    return '<a class="view-btn" href="tel:' + escapeHTML(phone) +
-        '" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">📞 Call</a>';
+    return '<button type="button" class="view-btn" onclick="viewListing(\'' + kind + '\',\'' + escapeHTML(id) + '\')">View Details</button>';
+}
+
+function viewListing(kind, id) {
+    if (!id) {
+        alert("Listing ID is missing.");
+        return;
+    }
+
+    window.location.href =
+        "listing-details.html?kind=" + encodeURIComponent(kind) +
+        "&id=" + encodeURIComponent(id);
 }
 
 function updateHomeSectionCount(elementId, count, singular, plural) {
@@ -4375,9 +4385,7 @@ function renderHomeMarketplace(list) {
             (pills ? '<div class="property-details">' + pills + "</div>" : "") +
             '<div class="property-price">' + Number(item.price || 0).toLocaleString() +
             (item.price_unit ? " " + escapeHTML(item.price_unit) : "") + "</div>" +
-            (homeContactButton(item.contact_phone)
-                ? '<div class="property-actions">' + homeContactButton(item.contact_phone) + "</div>"
-                : "") +
+            '<div class="property-actions">' + homeDetailsButton("marketplace", item.id) + "</div>" +
             "</div></article>";
     }).join("");
 
@@ -4430,9 +4438,7 @@ function renderHomeCars(list) {
             (pills ? '<div class="property-details">' + pills + "</div>" : "") +
             '<div class="property-price">' + Number(car.price || 0).toLocaleString() +
             (car.price_unit ? " " + escapeHTML(car.price_unit) : "") + "</div>" +
-            (homeContactButton(car.contact_phone)
-                ? '<div class="property-actions">' + homeContactButton(car.contact_phone) + "</div>"
-                : "") +
+            '<div class="property-actions">' + homeDetailsButton("car", car.id) + "</div>" +
             "</div></article>";
     }).join("");
 

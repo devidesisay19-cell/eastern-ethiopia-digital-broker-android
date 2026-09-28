@@ -41,5 +41,31 @@ const EEDB = (() => {
   }
   function getSelectedIds(els){ return {region_id:els.region?.value||null,zone_id:els.zone?.value||null,city_id:els.city?.value||null,woreda_id:els.woreda?.value||null,area_id:els.area?.value||null}; }
   function locationText(locations, ids){ const last=ids.area_id||ids.woreda_id||ids.city_id||ids.zone_id||ids.region_id; return last?path(locations,last).join(' → '):''; }
-  return {client,esc,fmtMoney,normalizeRole,normalizeListingType,isFeaturedNow,isAdminRole,toast,children,path,sessionProfile,locations,cascade,getSelectedIds,locationText};
+  /* ---- Photo helpers (shared by admin + owner pages) ---- */
+  const IMG_EXT = /\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i;
+  const looksLikeImage = f => !!f && ((f.type && f.type.startsWith('image/')) || IMG_EXT.test(f.name || '') || !f.type);
+  // Reads a picked file, downsizes to max 1600px and re-encodes as JPEG so that
+  // odd formats (HEIC, no mime type) and large camera photos upload reliably.
+  async function prepareImage(file, maxSide = 1600){
+    const buffer = await file.arrayBuffer();
+    if(!buffer || !buffer.byteLength) throw new Error('empty file');
+    const src = new Blob([buffer], {type: file.type || 'image/jpeg'});
+    let bmp = null;
+    if(window.createImageBitmap){ try{ bmp = await createImageBitmap(src); }catch(_){ bmp = null; } }
+    if(!bmp){
+      bmp = await new Promise((res, rej) => { const u=window.URL.createObjectURL(src); const i=new Image(); i.onload=()=>{window.URL.revokeObjectURL(u);res(i)}; i.onerror=()=>{window.URL.revokeObjectURL(u);rej(new Error('cannot decode'))}; i.src=u; });
+    }
+    const w0 = bmp.width || bmp.naturalWidth, h0 = bmp.height || bmp.naturalHeight;
+    const k = Math.min(1, maxSide / Math.max(w0, h0));
+    const c = document.createElement('canvas'); c.width = Math.round(w0*k); c.height = Math.round(h0*k);
+    c.getContext('2d').drawImage(bmp, 0, 0, c.width, c.height);
+    if(bmp.close) bmp.close();
+    const blob = await new Promise(r => c.toBlob(r, 'image/jpeg', 0.82));
+    if(!blob) throw new Error('encode failed');
+    return new File([blob], (file.name||'photo').replace(/\.[^.]+$/, '') + '.jpg', {type:'image/jpeg'});
+  }
+  // Phone helpers for detail pages
+  const waNumber = phone => { let n=String(phone||'').trim().replace(/[^\d+]/g,''); if(n.startsWith('0')) n='251'+n.slice(1); if(n.startsWith('+')) n=n.slice(1); return n; };
+
+  return {prepareImage,looksLikeImage,waNumber,client,esc,fmtMoney,normalizeRole,normalizeListingType,isFeaturedNow,isAdminRole,toast,children,path,sessionProfile,locations,cascade,getSelectedIds,locationText};
 })();

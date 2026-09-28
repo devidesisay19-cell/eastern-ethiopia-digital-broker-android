@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Details | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#0f766e;color:#fff;padding:15px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.logo{font-size:18px;font-weight:800}
+.back-btn{border:none;background:rgba(255,255,255,.15);color:#fff;padding:9px 14px;border-radius:10px;cursor:pointer;font-weight:700}
+.container{width:min(1000px,94%);margin:22px auto 50px}
+.card{background:#fff;border-radius:18px;box-shadow:0 6px 24px rgba(16,24,40,.08);padding:20px;margin-bottom:18px}
+.loading,.error{text-align:center;padding:60px 20px;color:#667085;font-size:17px}
+.error{color:#b42318}
+.gallery-main{position:relative;background:#eef2f6;border-radius:14px;overflow:hidden;aspect-ratio:16/10;display:flex;align-items:center;justify-content:center}
+.gallery-main img{width:100%;height:100%;object-fit:cover;cursor:zoom-in}
+.no-photo{font-size:72px}
+.counter{position:absolute;right:10px;bottom:10px;background:#000a;color:#fff;font-size:12px;padding:4px 10px;border-radius:999px}
+.nav{position:absolute;top:50%;transform:translateY(-50%);border:0;background:#0009;color:#fff;width:38px;height:38px;border-radius:50%;font-size:22px;cursor:pointer}
+.nav.prev{left:10px}.nav.next{right:10px}
+.thumbs{display:flex;gap:8px;margin-top:10px;overflow-x:auto}
+.thumbs img{width:72px;height:56px;object-fit:cover;border-radius:8px;cursor:pointer;border:2px solid transparent;flex:0 0 auto}
+.thumbs img.active{border-color:#0f766e}
+.title-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between}
+h1{font-size:24px;line-height:1.25}
+.badge{display:inline-block;padding:5px 12px;border-radius:999px;font-size:12px;font-weight:800;background:#e0f2fe;color:#075985}
+.badge.rent{background:#fef3c7;color:#92400e}
+.price{font-size:26px;font-weight:800;color:#0f766e;margin:10px 0}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0}
+.pill{background:#f1f5f9;padding:8px 12px;border-radius:10px;font-size:14px}
+h2{font-size:17px;margin:16px 0 8px}
+.description{line-height:1.6;color:#344054;white-space:pre-wrap}
+.contact-sub{color:#667085;font-size:14px;line-height:1.5;margin-bottom:14px}
+.contact-card{border:1px solid #e4e7ec;border-radius:14px;padding:14px;margin-bottom:12px}
+.contact-head{display:flex;gap:12px;align-items:center}
+.avatar{width:44px;height:44px;border-radius:50%;background:#0f766e;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:18px}
+.role{font-size:12px;font-weight:800;color:#0f766e}
+.cname{font-weight:700}
+.cphone{color:#475467;font-size:14px}
+.btns{display:flex;gap:10px;margin-top:12px}
+.btns a{flex:1;text-align:center;text-decoration:none;font-weight:700;padding:11px;border-radius:10px;color:#fff}
+.call{background:#2563eb}.wa{background:#16a34a}
+.no-contact{background:#fff7ed;color:#9a3412;padding:12px;border-radius:12px;font-size:14px;margin-bottom:12px}
+.share{width:100%;border:0;background:#0f766e;color:#fff;font-weight:700;padding:12px;border-radius:12px;cursor:pointer;font-size:15px}
+.lightbox{position:fixed;inset:0;background:#000d;z-index:500;display:none;align-items:center;justify-content:center}
+.lightbox.show{display:flex}
+.lightbox img{max-width:96vw;max-height:90vh}
+.lightbox .x{position:absolute;top:14px;right:20px;color:#fff;font-size:34px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="logo" id="pageLogo">Eastern Ethiopia Digital Broker</div>
+  <button class="back-btn" onclick="goBack()">← Back</button>
+</header>
+
+<main class="container">
+  <div id="loading" class="loading">Loading details...</div>
+  <div id="error" class="error" style="display:none"></div>
+
+  <div id="content" style="display:none">
+    <section class="card">
+      <div class="gallery-main" id="galleryMain"></div>
+      <div class="thumbs" id="thumbs"></div>
+    </section>
+
+    <section class="card">
+      <div class="title-row">
+        <h1 id="title">-</h1>
+        <span id="typeBadge" class="badge"></span>
+      </div>
+      <div class="price" id="price"></div>
+      <div class="meta" id="meta"></div>
+      <h2>Description</h2>
+      <p class="description" id="description">-</p>
+    </section>
+
+    <section class="card">
+      <h2 style="margin-top:0">📞 Contact</h2>
+      <div class="contact-sub" id="contactSub">
+        You can contact the City Admin responsible for this city or the
+        Eastern Ethiopia Digital Broker Super Admin directly.
+      </div>
+      <div id="contactList"></div>
+    </section>
+
+    <button class="share" id="shareBtn" type="button">↗ Share</button>
+  </div>
+</main>
+
+<div class="lightbox" id="lightbox">
+  <span class="x" onclick="closeLightbox()">×</span>
+  <button class="nav prev" onclick="step(-1)">‹</button>
+  <img id="lightboxImg" alt="Photo">
+  <button class="nav next" onclick="step(1)">›</button>
+</div>
+
+<script>
+const client = window.supabase.createClient(
+  "https://ubkfrpkapqnlaiscrxim.supabase.co",
+  "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE"
+);
+
+const params = new URLSearchParams(location.search);
+const kind = params.get("kind") === "car" ? "car" : "marketplace";
+const id = params.get("id");
+const table = kind === "car" ? "cars" : "marketplace_items";
+
+let item = null, photos = [], idx = 0, locations = [];
+
+const $ = (i) => document.getElementById(i);
+const esc = (v) => String(v == null ? "" : v).replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+
+function goBack(){
+  if (history.length > 1) history.back(); else location.href = "index.html";
+}
+
+function fail(msg){
+  $("loading").style.display = "none";
+  $("content").style.display = "none";
+  $("error").style.display = "block";
+  $("error").textContent = msg;
+}
+
+function locationText(){
+  const byId = new Map(locations.map((l) => [l.id, l]));
+  const last = item.area_id || item.woreda_id || item.city_id || item.zone_id || item.region_id;
+  const out = []; let cur = byId.get(last), guard = 0;
+  while (cur && guard++ < 10) { out.unshift(cur.name); cur = byId.get(cur.parent_id); }
+  return out.join(" → ");
+}
+
+function waNumber(phone){
+  let n = String(phone || "").trim().replace(/[^\d+]/g, "");
+  if (n.startsWith("0")) n = "251" + n.slice(1);
+  if (n.startsWith("+")) n = n.slice(1);
+  return n;
+}
+
+function renderGallery(){
+  const main = $("galleryMain");
+  if (!photos.length) {
+    main.innerHTML = '<div class="no-photo">' + (kind === "car" ? "🚗" : "🛍️") + "</div>";
+    $("thumbs").innerHTML = "";
+    return;
+  }
+  main.innerHTML =
+    '<img id="mainImg" src="' + esc(photos[idx]) + '" alt="Photo" onclick="openLightbox()">' +
+    (photos.length > 1
+      ? '<button class="nav prev" onclick="step(-1)">‹</button><button class="nav next" onclick="step(1)">›</button>' +
+        '<div class="counter">' + (idx + 1) + " / " + photos.length + "</div>"
+      : "");
+  $("thumbs").innerHTML = photos.length > 1
+    ? photos.map((u, i) => '<img src="' + esc(u) + '" class="' + (i === idx ? "active" : "") + '" onclick="show(' + i + ')">').join("")
+    : "";
+}
+function show(i){ idx = i; renderGallery(); }
+function step(d){ if (!photos.length) return; idx = (idx + d + photos.length) % photos.length; renderGallery(); if ($("lightbox").classList.contains("show")) $("lightboxImg").src = photos[idx]; }
+function openLightbox(){ if (!photos.length) return; $("lightboxImg").src = photos[idx]; $("lightbox").classList.add("show"); }
+function closeLightbox(){ $("lightbox").classList.remove("show"); }
+
+function renderInfo(){
+  const name = item.title || [item.brand, item.model].filter(Boolean).join(" ") || (kind === "car" ? "Car" : "Marketplace Item");
+  document.title = name + " | Eastern Ethiopia Digital Broker";
+  $("title").textContent = name;
+
+  const lt = String(item.listing_type || "").toLowerCase();
+  const badge = $("typeBadge");
+  if (lt === "rent") { badge.textContent = "For Rent"; badge.className = "badge rent"; }
+  else if (lt === "sell" || lt === "sale") { badge.textContent = "For Sale"; badge.className = "badge"; }
+  else badge.style.display = "none";
+
+  $("price").textContent = Number(item.price || 0).toLocaleString("en-US", {maximumFractionDigits: 2}) +
+    " ETB" + (item.price_unit && item.price_unit !== "total" ? " / " + item.price_unit : "");
+
+  const loc = locationText();
+  const pills = [];
+  if (loc) pills.push("📍 " + loc);
+  if (kind === "car") {
+    if (item.brand || item.model) pills.push("🚗 " + [item.brand, item.model].filter(Boolean).join(" "));
+    if (item.year) pills.push("📅 " + item.year);
+    if (item.mileage) pills.push("🛣️ " + Number(item.mileage).toLocaleString() + " km");
+    if (item.transmission) pills.push("⚙️ " + item.transmission);
+    if (item.fuel_type) pills.push("⛽ " + item.fuel_type);
+    if (item.color) pills.push("🎨 " + item.color);
+  } else if (item.category) {
+    pills.push("🏷️ " + item.category);
+  }
+  if (item.condition) pills.push("✅ " + item.condition);
+  $("meta").innerHTML = pills.map((p) => '<div class="pill">' + esc(p) + "</div>").join("");
+  $("description").textContent = item.description || "No description provided.";
+}
+
+function contactCard(c, label){
+  const name = c.full_name || label;
+  const phone = c.phone || "";
+  const msg = "Hello, I am interested in this " + (kind === "car" ? "car" : "item") + ": " + ($("title").textContent || "");
+  return '<div class="contact-card"><div class="contact-head">' +
+    '<div class="avatar">' + esc(name.charAt(0).toUpperCase()) + "</div><div>" +
+    '<div class="role">' + label + '</div><div class="cname">' + esc(name) + '</div>' +
+    '<div class="cphone">' + esc(phone || "Phone unavailable") + "</div></div></div>" +
+    (phone
+      ? '<div class="btns"><a class="call" href="tel:' + esc(phone) + '">📞 Call</a>' +
+        '<a class="wa" target="_blank" rel="noopener noreferrer" href="https://wa.me/' + waNumber(phone) +
+        "?text=" + encodeURIComponent(msg) + '">💬 WhatsApp</a></div>'
+      : "") + "</div>";
+}
+
+async function loadContacts(){
+  let rows = [];
+  if (item.city_id) {
+    let res = await client.rpc("get_listing_contacts", { p_city_id: item.city_id });
+    if (res.error || !Array.isArray(res.data)) {
+      // Fallback: the contact function already used by property-details.html
+      res = await client.rpc("get_property_contacts", { p_city_id: item.city_id });
+    }
+    if (!res.error && Array.isArray(res.data)) rows = res.data;
+  }
+  const cityAdmins = rows.filter((r) => r.role === "city_admin" || r.role === "admin");
+  const superAdmins = rows.filter((r) => r.role === "super_admin");
+
+  let html = "";
+  cityAdmins.forEach((c) => { html += contactCard(c, "🏙️ City Admin"); });
+  if (!cityAdmins.length) {
+    html += '<div class="no-contact">No City Admin is currently assigned to this city. You can contact the Super Admin below.</div>';
+  }
+  superAdmins.forEach((c) => { html += contactCard(c, "🛡️ Super Admin"); });
+  if (!cityAdmins.length && !superAdmins.length) {
+    html = '<div class="no-contact">No broker contact is currently available for this listing.</div>';
+  }
+  $("contactList").innerHTML = html;
+}
+
+function share(){
+  const url = new URL("listing-details.html?kind=" + kind + "&id=" + encodeURIComponent(id), location.href).href;
+  const title = $("title").textContent;
+  if (navigator.share) { navigator.share({ title, text: title, url }).catch(() => {}); return; }
+  if (navigator.clipboard) { navigator.clipboard.writeText(url).then(() => alert("Link copied.")).catch(() => prompt("Copy link:", url)); return; }
+  prompt("Copy link:", url);
+}
+
+(async function init(){
+  if (!id) { fail("Listing ID is missing."); return; }
+  try {
+    const res = await client.from(table).select("*").eq("id", id).maybeSingle();
+    if (res.error) throw res.error;
+    if (!res.data) { fail("This listing is not available (it may have been sold, hidden, or removed)."); return; }
+    item = res.data;
+    photos = Array.isArray(item.photo_urls) ? item.photo_urls.filter(Boolean) : [];
+
+    const locRes = await client.from("locations").select("id,parent_id,name,type").eq("is_active", true);
+    locations = locRes.data || [];
+
+    renderInfo();
+    renderGallery();
+    $("shareBtn").onclick = share;
+    $("loading").style.display = "none";
+    $("content").style.display = "block";
+    await loadContacts();
+  } catch (e) {
+    console.error(e);
+    fail("Could not load details: " + (e.message || e));
+  }
+})();
+</script>
+</body>
+</html>
