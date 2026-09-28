@@ -1,42 +1,62 @@
-# Eastern Ethiopia Digital Broker — Android
+# Eastern Ethiopia Digital Broker — Android Source
 
-Android Studio project that packages the supplied Eastern Ethiopia Digital Broker web application into a native Android WebView shell.
+This is the complete Android Studio/Gradle source project for the Eastern
+Ethiopia Digital Broker. It packages the existing web application in an
+AndroidX WebView using `WebViewAssetLoader`.
 
-## Open and run
+## Build later in Termux or Android Studio
 
-1. Open this folder in Android Studio.
-2. Let Gradle sync.
-3. Use JDK 17 for the Gradle/Android toolchain.
-4. Install Android SDK Platform 36.
-5. Run the `app` configuration on an emulator or device.
+- Package: `com.easterneethiopia.digitalbroker`
+- `compileSdk`: 36
+- `targetSdk`: 36
+- `minSdk`: 24
+- Java/Kotlin toolchain: JDK 17
+- Supabase JS: `@supabase/supabase-js@2.116.0`
 
-The project uses a standard Android app module structure (`app/src/main/AndroidManifest.xml`, `java`, `res`, and `assets/web`).
+This source package was intentionally not built in Replit. Build an APK/AAB
+later in your Android/Termux environment with the Android SDK installed.
 
-## Architecture
+## Supabase setup
 
-The original HTML/JS pages are retained under `app/src/main/assets/web/`. `MainActivity` serves them through AndroidX WebView's `WebViewAssetLoader`, which provides an HTTPS-style local origin. External Supabase API calls remain HTTPS.
+Run `SUPABASE_CANONICAL_FINAL.sql` in the live Supabase SQL editor after
+reviewing the existing schema. The script creates or extends the
+`marketplace_items` and `cars` tables, enables owner/admin RLS, creates the
+`marketplace-images` and `car-images` public buckets, adds storage policies,
+and includes audit queries.
 
-The Supabase browser SDK is pinned to `@supabase/supabase-js@2.116.0` instead of the original floating `@2` URL.
+The script deliberately does **not** replace `public.can_manage_city(uuid)`.
+That existing helper must remain present and must continue to represent the
+project's city-aware authorization rules. The existing `property-images`
+bucket and Property/Job tables are not replaced by this script.
 
-## Backend
+The browser app uses only the Supabase publishable key in
+`app/src/main/assets/web/supabase.js`; no service-role key belongs in this
+package.
 
-The supplied app already contains its Supabase project URL and publishable key in `app/src/main/assets/web/supabase.js`. Do not replace the publishable key with a Supabase service-role key.
+## Included application features
 
-Run the supplied SQL migrations/patches in Supabase according to the project's deployment notes before production release.
+- Property and Job browsing, details, authentication, and existing dashboards
+- Marketplace listings with owner/admin create, edit, moderation, and up to
+  five photos
+- Car listings with owner/admin create, edit, moderation, and up to five photos
+- Location hierarchy reused for Marketplace and Cars
+- City-aware admin access through the existing `can_manage_city` helper
+- Safe storage paths:
+  - `user-id/marketplace-id/filename`
+  - `user-id/car-id/filename`
 
-## GitHub
+Historical backups, nested duplicate Android projects, generated build
+directories, `.git`, `local.properties`, signing properties, APKs, and AABs
+were intentionally excluded.
 
-Recommended repository name: `eastern-ethiopia-digital-broker-android`.
+## Storage buckets and paths (matched to code)
 
-```bash
-git init
-git add .
-git commit -m "Create Android Studio project for Eastern Ethiopia Digital Broker"
-git branch -M main
-git remote add origin <YOUR_GITHUB_REPOSITORY_URL>
-git push -u origin main
-```
+| Bucket | Access | Upload path |
+|---|---|---|
+| `property-images` | public | `user-id/property-id/file` (owner) or `property-id/file` (admin) |
+| `marketplace-images` | public | `user-id/item-id/file` |
+| `car-images` | public | `user-id/car-id/file` |
+| `job-cvs` | private | `user-id/file` (signed URLs for employers) |
 
-## Production signing
-
-Configure a release keystore and signing settings in your private CI/release environment. Never commit keystore files or passwords.
+`SUPABASE_CANONICAL_FINAL.sql` creates all four buckets and their policies.
+Run its audit query (last statement) after applying it.

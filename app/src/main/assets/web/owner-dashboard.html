@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#155EEF">
+<meta name="theme-color" content="#0f766e">
 
 <title>Owner Dashboard | Eastern Ethiopia General Digital Broker</title>
 
@@ -997,6 +997,52 @@ button{
 
   .photo-grid{
     grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* =========================================================
+   V2 POLISH LAYER
+   Additive-only refinements: motion, focus states, hover
+   depth. Nothing above is overridden structurally.
+========================================================= */
+
+.card{
+  transition:box-shadow .2s ease, transform .2s ease;
+}
+
+.owner-section.active{
+  animation:eedbOwnerFadeIn .22s ease;
+}
+
+@keyframes eedbOwnerFadeIn{
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.btn{
+  box-shadow:0 1px 2px rgba(15,23,42,.06);
+}
+
+.btn:active{
+  transform:translateY(0);
+  filter:brightness(.96);
+}
+
+.section-tab{
+  transition:background .15s ease, color .15s ease;
+}
+
+.input:focus-visible,
+.btn:focus-visible,
+.section-tab:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:2px;
+}
+
+@media (prefers-reduced-motion: reduce){
+  .card, .owner-section.active, .btn{
+    animation:none !important;
+    transition:none !important;
   }
 }
 </style>
@@ -9697,134 +9743,174 @@ async function uploadPhotos(
     propertyId
 ){
 
-    const rows = [];
+    /*
+     * Take a fixed snapshot so the selected
+     * files cannot change while uploading.
+     */
+    const filesToUpload =
+        selectedFiles.slice();
 
+    if(!filesToUpload.length){
+        return;
+    }
 
     /*
      * Continue display order after
      * existing photos.
      */
-
     const start =
         existingPhotos.length;
 
+    /*
+     * Build unique upload jobs first.
+     */
+    const uploadJobs =
+        filesToUpload.map(
+            (file,index) => {
 
-    for(
-        let i = 0;
-        i < selectedFiles.length;
-        i++
+                const safeName =
+                    sanitize(
+                        file.name
+                    );
+
+                const path =
+                    `
+                    ${currentUser.id}/
+                    ${propertyId}/
+                    ${Date.now()}-
+                    ${createId()}-
+                    ${index}-
+                    ${safeName}
+                    `
+                    .replace(/\s+/g,"");
+
+                return {
+                    file,
+                    path,
+                    display_order:
+                        start + index
+                };
+
+            }
+        );
+
+    /*
+     * Upload ALL selected photos.
+     * Promise.all makes every selected
+     * photo upload instead of waiting
+     * sequentially for each one.
+     */
+    const results =
+        await Promise.all(
+            uploadJobs.map(
+                async job => {
+
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .storage
+                        .from("property-images")
+                        .upload(
+                            job.path,
+                            job.file,
+                            {
+                                cacheControl:
+                                    "3600",
+
+                                upsert:
+                                    false,
+
+                                contentType:
+                                    job.file.type
+                            }
+                        );
+
+                    if(error){
+
+                        throw new Error(
+                            `${job.file.name}: Photo upload failed: ` +
+                            error.message
+                        );
+
+                    }
+
+                    return {
+                        property_id:
+                            propertyId,
+
+                        owner_id:
+                            currentUser.id,
+
+                        storage_path:
+                            data.path,
+
+                        display_order:
+                            job.display_order
+                    };
+
+                }
+            )
+        );
+
+    /*
+     * At this point ALL selected photos
+     * must have uploaded successfully.
+     */
+    if(
+        results.length !==
+        filesToUpload.length
     ){
 
-        const file =
-            selectedFiles[i];
-
-
-        const safeName =
-            sanitize(
-                file.name
-            );
-
-
-        const path =
-            `
-            ${currentUser.id}/
-            ${propertyId}/
-            ${Date.now()}-
-            ${createId()}-
-            ${safeName}
-            `
-            .replace(/\s+/g,"");
-
-
-        const {
-            data,
-            error
-        } =
+        /*
+         * Safety rollback.
+         */
         await supabaseClient
             .storage
             .from("property-images")
-            .upload(
-                path,
-                file,
-                {
-                    cacheControl:
-                        "3600",
-
-                    upsert:
-                        false,
-
-                    contentType:
-                        file.type
-                }
+            .remove(
+                results.map(
+                    x =>
+                        x.storage_path
+                )
             );
 
-
-        if(error){
-
-            throw new Error(
-                "Photo upload failed: " +
-                error.message
-            );
-
-        }
-
-
-        rows.push({
-
-            property_id:
-                propertyId,
-
-            owner_id:
-                currentUser.id,
-
-            storage_path:
-                data.path,
-
-            display_order:
-                start + i
-
-        });
+        throw new Error(
+            "Not all selected photos were uploaded."
+        );
 
     }
 
-
     /*
-     * Insert image records.
+     * Insert ALL image records together.
      */
+    const {
+        error
+    } =
+    await supabaseClient
+        .from("property_images")
+        .insert(
+            results
+        );
 
-    if(rows.length){
+    if(error){
 
-        const {
-            error
-        } =
+        /*
+         * Roll back ALL uploaded storage
+         * files if database insert fails.
+         */
         await supabaseClient
-            .from("property_images")
-            .insert(
-                rows
+            .storage
+            .from("property-images")
+            .remove(
+                results.map(
+                    x =>
+                        x.storage_path
+                )
             );
 
-
-        if(error){
-
-            /*
-             * Roll back uploaded storage files
-             * if database insert fails.
-             */
-
-            await supabaseClient
-                .storage
-                .from("property-images")
-                .remove(
-                    rows.map(
-                        x =>
-                            x.storage_path
-                    )
-                );
-
-
-            throw error;
-
-        }
+        throw error;
 
     }
 

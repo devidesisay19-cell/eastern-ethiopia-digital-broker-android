@@ -18,6 +18,7 @@
 <title>Eastern Ethiopia Digital Broker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="supabase.js"></script>
 
 <style>
 
@@ -1368,7 +1369,78 @@ footer {
     }
 }
 
+.quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:28px 0;}
+.quick-action-card{display:block;text-decoration:none;}
+@media(max-width:900px){.quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.quick-actions{grid-template-columns:1fr;}}
+.home-jobs-section{margin:40px 0;padding:24px 0;}
+
+/* ---- Home section header (Jobs / Marketplace / Cars) ---- */
+.home-section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding:16px 20px;background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 5px 20px rgba(15,23,42,0.05);}
+.home-section-header-left{display:flex;align-items:center;gap:12px;}
+.home-section-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.home-section-icon-jobs{background:#eff6ff;}
+.home-section-icon-marketplace{background:#fdf4ff;}
+.home-section-icon-cars{background:#fff7ed;}
+.home-section-header h2{font-size:20px;margin-bottom:2px;}
+.home-section-header p{color:var(--muted);font-size:13px;}
+.home-section-count{font-size:12px;font-weight:800;color:var(--primary);background:#ecfdf5;padding:6px 12px;border-radius:999px;white-space:nowrap;}
+@media(max-width:600px){.home-section-header{padding:14px;}.home-section-header h2{font-size:17px;}}
+
+/* ---- Shared responsive grid for Marketplace / Cars listings ---- */
+.home-listing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;}
+@media(max-width:600px){.home-listing-grid{grid-template-columns:1fr;}}
+
+/* ---- No-photo placeholder used by marketplace/car cards ---- */
+.home-card-no-image{width:100%;height:100%;min-height:170px;display:flex;align-items:center;justify-content:center;font-size:42px;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);color:#94a3b8;}
+
+/* ---- Listing type ribbon shown over the photo ---- */
+.listing-type-badge{position:absolute;top:10px;left:10px;z-index:2;}
+.home-marketplace-card,.home-car-card{position:relative;}
+.home-marketplace-card .property-image,.home-car-card .property-image{position:relative;}
+.home-marketplace-card .property-content h3,.home-car-card .property-content h3{font-size:17px;font-weight:750;margin-bottom:8px;line-height:1.25;}
+.home-marketplace-card .property-price,.home-car-card .property-price{margin-bottom:12px;}
+.home-job-date-section{margin:28px 0 36px;}
+.home-job-date-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;padding:14px 16px;border-radius:14px;background:#ecfdf5;border:1px solid #99f6e4;}
+.home-job-date-heading h3{margin:0;font-size:20px;}
+.home-job-date-heading span{font-size:13px;font-weight:700;padding:6px 10px;border-radius:999px;background:#fff;}
+.home-jobs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+.home-job-card{padding:20px;border-radius:16px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+.home-job-card h3{margin:0 0 8px;font-size:19px;}
+.home-job-card strong{display:block;margin-bottom:10px;}
+.home-job-card p{margin:10px 0;line-height:1.6;}
+@media(max-width:600px){.home-job-date-heading h3{font-size:18px;}.home-jobs-grid{grid-template-columns:1fr;}}
 </style>
+
+<!-- =========================================================
+     PWA / iPHONE SUPPORT
+========================================================= -->
+<link rel="manifest" href="./manifest.json">
+
+<link
+    rel="apple-touch-icon"
+    href="./icons/apple-touch-icon.png"
+>
+
+<meta
+    name="theme-color"
+    content="#0f766e"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="EEDB"
+>
 
 </head>
 
@@ -1418,6 +1490,20 @@ footer {
                 data-i18n="jobs"
             >
                 Jobs
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="handleListProperty()"
+            >
+                Property Listing
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="document.getElementById('jobsSection').scrollIntoView({behavior:'smooth'})"
+            >
+                Latest Jobs
             </button>
 
             <button
@@ -1704,6 +1790,21 @@ footer {
                         Sale
                     </option>
 
+                    <option
+                        value="job"
+                        data-i18n="job"
+                    >
+                        Job
+                    </option>
+                    
+                    <option value="marketplace">
+                        Marketplace
+                    </option>
+
+                    <option value="car">
+                        Car
+                    </option>
+
                 </select>
 
             </div>
@@ -1792,56 +1893,94 @@ footer {
 
     </div>
 
+
+    <div class="quick-actions">
+        <a class="quick-action-card" href="#propertiesSection">
+            <div class="quick-action-icon">🏠</div>
+            <div class="quick-action-title">Property Listing</div>
+            <div class="quick-action-text">Browse available properties</div>
+        </a>
+        <a class="quick-action-card" href="#jobsSection">
+            <div class="quick-action-icon">💼</div>
+            <div class="quick-action-title">Latest Jobs</div>
+            <div class="quick-action-text">View the latest job opportunities</div>
+        </a>
+        <a class="quick-action-card" href="#marketplaceSection">
+            <div class="quick-action-icon">🛍️</div>
+            <div class="quick-action-title">Marketplace</div>
+            <div class="quick-action-text">Buy and sell local items</div>
+        </a>
+        <a class="quick-action-card" href="#carsSection">
+            <div class="quick-action-icon">🚗</div>
+            <div class="quick-action-title">Cars</div>
+            <div class="quick-action-text">Find cars for sale or rent</div>
+        </a>
+    </div>
+
+
+    <section id="jobsSection" class="home-jobs-section">
+        <div class="home-section-header">
+            <div class="home-section-header-left">
+                <div class="home-section-icon home-section-icon-jobs">💼</div>
+                <div>
+                    <h2>Latest Jobs</h2>
+                    <p>Latest published job opportunities.</p>
+                </div>
+            </div>
+            <span class="home-section-count" id="jobsCount"></span>
+        </div>
+
+        <div id="homeJobsArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading jobs...</p>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="marketplaceSection" class="home-jobs-section">
+        <div class="home-section-header">
+            <div class="home-section-header-left">
+                <div class="home-section-icon home-section-icon-marketplace">🛍️</div>
+                <div>
+                    <h2>Latest Marketplace</h2>
+                    <p>Latest published marketplace items.</p>
+                </div>
+            </div>
+            <span class="home-section-count" id="marketplaceCount"></span>
+        </div>
+        <div id="homeMarketplaceArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading marketplace...</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="carsSection" class="home-jobs-section">
+        <div class="home-section-header">
+            <div class="home-section-header-left">
+                <div class="home-section-icon home-section-icon-cars">🚗</div>
+                <div>
+                    <h2>Latest Cars</h2>
+                    <p>Latest published cars.</p>
+                </div>
+            </div>
+            <span class="home-section-count" id="carsCount"></span>
+        </div>
+        <div id="homeCarsArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading cars...</p>
+            </div>
+        </div>
+    </section>
+
 </main>
 
 
-
-<!-- =========================================================
-     MARKETPLACE HOME
-========================================================= -->
-<section id="marketplaceSection" class="home-section">
-
-    <div class="section-title">
-        <div>
-            <h2>Latest Marketplace</h2>
-            <p>Latest published marketplace items.</p>
-        </div>
-    </div>
-
-    <div id="homeMarketplaceArea">
-        <div class="loading">
-            <div class="spinner"></div>
-            <p>Loading marketplace...</p>
-        </div>
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     CARS HOME
-========================================================= -->
-<section id="carsSection" class="home-section">
-
-    <div class="section-title">
-        <div>
-            <h2>Latest Cars</h2>
-            <p>Latest published cars.</p>
-        </div>
-    </div>
-
-    <div id="homeCarsArea">
-        <div class="loading">
-            <div class="spinner"></div>
-            <p>Loading cars...</p>
-        </div>
-    </div>
-
-</section>
-
-<!-- =========================================================
-     LOGIN MODAL
-========================================================= -->
 
 <div
     class="modal"
@@ -2259,616 +2398,6 @@ footer {
    SUPABASE CONFIGURATION
 ========================================================= */
 
-const SUPABASE_URL =
-    "https://ubkfrpkapqnlaiscrxim.supabase.co";
-
-const SUPABASE_PUBLIC_KEY =
-    "sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE";
-
-let db = null;
-
-let allProperties = [];
-
-let locationMap = {};
-
-let currentUser = null;
-
-let currentProfile = null;
-
-
-/* =========================================================
-   TRANSLATIONS
-========================================================= */
-
-const translations = {
-
-    en: {
-
-        brand:
-            "Eastern Ethiopia Digital Broker",
-
-        properties:
-            "Properties",
-
-        jobs:
-            "Jobs",
-
-        dashboard:
-            "Dashboard",
-
-        login:
-            "Login",
-
-        logout:
-            "Logout",
-
-        heroTitle:
-            "Find Your Next Home or Opportunity",
-
-        heroDescription:
-            "Discover houses for rent and sale, local jobs, and opportunities across Eastern Ethiopia.",
-
-        findProperty:
-            "🏠 Find Property",
-
-        findJobs:
-            "💼 Find Jobs",
-
-        listProperty:
-            "➕ List Property",
-
-        houses:
-            "Houses",
-
-        housesDescription:
-            "Find houses for rent and sale.",
-
-        jobsDescription:
-            "Discover local employment opportunities.",
-
-        localSearch:
-            "Local Search",
-
-        localSearchDescription:
-            "Search opportunities by location.",
-
-        latestProperties:
-            "Latest Properties",
-
-        browseProperties:
-            "Browse available properties.",
-
-        search:
-            "Search",
-
-        searchPlaceholder:
-            "Search property, location...",
-
-        type:
-            "Type",
-
-        all:
-            "All",
-
-        rent:
-            "Rent",
-
-        sale:
-            "Sale",
-
-        cityTown:
-            "City / Town",
-
-        minPrice:
-            "Min Price",
-
-        maxPrice:
-            "Max Price",
-
-        reset:
-            "Reset",
-
-        loadingProperties:
-            "Loading properties...",
-
-        welcomeBack:
-            "Welcome Back",
-
-        loginSubtitle:
-            "Login to continue to your dashboard.",
-
-        email:
-            "Email",
-
-        password:
-            "Password",
-
-        noAccount:
-            "Don't have an account?",
-
-        createAccount:
-            "Create Account",
-
-        signupSubtitle:
-            "Choose your account type and get started.",
-
-        fullName:
-            "Full Name",
-
-        phoneNumber:
-            "Phone Number",
-
-        accountType:
-            "Account Type",
-
-        owner:
-            "Owner",
-
-        renter:
-            "Renter",
-
-        jobSeeker:
-            "Job Seeker",
-
-        alreadyAccount:
-            "Already have an account?",
-
-        property:
-            "Property",
-
-        footerDescription:
-            "A local digital marketplace for properties, jobs and opportunities across Eastern Ethiopia.",
-
-        allRights:
-            "All rights reserved."
-    },
-
-
-    om: {
-
-        brand:
-            "Eastern Ethiopia Digital Broker",
-
-        properties:
-            "Manneen",
-
-        jobs:
-            "Hojiiwwan",
-
-        dashboard:
-            "Daashboordii",
-
-        login:
-            "Seeni",
-
-        logout:
-            "Ba'i",
-
-        heroTitle:
-            "Mana ykn Carraa Jireenyaa Itti Aanu Keessan Argadhaa",
-
-        heroDescription:
-            "Manneen kireeffatamuu fi gurguraman, hojiiwwan naannoo fi carraawwan Bahaa Itoophiyaa keessatti argadhaa.",
-
-        findProperty:
-            "🏠 Mana Barbaadi",
-
-        findJobs:
-            "💼 Hojii Barbaadi",
-
-        listProperty:
-            "➕ Mana Galchi",
-
-        houses:
-            "Manneen",
-
-        housesDescription:
-            "Manneen kireeffatamuu fi gurguraman barbaadi.",
-
-        jobsDescription:
-            "Carraawwan hojii naannoo argadhu.",
-
-        localSearch:
-            "Barbaacha Naannoo",
-
-        localSearchDescription:
-            "Carraawwan bakka irratti hundaa'uun barbaadi.",
-
-        latestProperties:
-            "Manneen Haaraa",
-
-        browseProperties:
-            "Manneen jiran ilaali.",
-
-        search:
-            "Barbaadi",
-
-        searchPlaceholder:
-            "Mana ykn bakka barbaadi...",
-
-        type:
-            "Gosa",
-
-        all:
-            "Hunda",
-
-        rent:
-            "Kiraa",
-
-        sale:
-            "Gurgurtaa",
-
-        cityTown:
-            "Magaalaa / Town",
-
-        minPrice:
-            "Gatii Xiqqaa",
-
-        maxPrice:
-            "Gatii Guddaa",
-
-        reset:
-            "Irra Deebi'i",
-
-        loadingProperties:
-            "Manneen fe'amaa jiru...",
-
-        welcomeBack:
-            "Baga Nagaan Deebite",
-
-        loginSubtitle:
-            "Daashboordii kee itti fufuuf seeni.",
-
-        email:
-            "Imeelii",
-
-        password:
-            "Jecha Iccitii",
-
-        noAccount:
-            "Akkaawuntii hin qabduu?",
-
-        createAccount:
-            "Akkaawuntii Uumi",
-
-        signupSubtitle:
-            "Gosa akkaawuntii kee filadhu.",
-
-        fullName:
-            "Maqaa Guutuu",
-
-        phoneNumber:
-            "Lakkoofsa Bilbilaa",
-
-        accountType:
-            "Gosa Akkaawuntii",
-
-        owner:
-            "Abbaa Manaa",
-
-        renter:
-            "Kireeffataa",
-
-        jobSeeker:
-            "Hojii Barbaadaa",
-
-        alreadyAccount:
-            "Duraan akkaawuntii qabdaa?",
-
-        property:
-            "Mana",
-
-        footerDescription:
-            "Gabaa dijitaalaa naannoo kan manneen, hojiiwwanii fi carraawwan Bahaa Itoophiyaa walitti fidu.",
-
-        allRights:
-            "Mirgi hundi eegamaadha."
-    },
-
-
-    am: {
-
-        brand:
-            "Eastern Ethiopia Digital Broker",
-
-        properties:
-            "ቤቶች",
-
-        jobs:
-            "ስራዎች",
-
-        dashboard:
-            "ዳሽቦርድ",
-
-        login:
-            "ግባ",
-
-        logout:
-            "ውጣ",
-
-        heroTitle:
-            "ቀጣዩን ቤትዎን ወይም የስራ እድልዎን ያግኙ",
-
-        heroDescription:
-            "በምስራቅ ኢትዮጵያ የሚገኙ የኪራይና የሽያጭ ቤቶች፣ ስራዎች እና እድሎችን ያግኙ።",
-
-        findProperty:
-            "🏠 ቤት ፈልግ",
-
-        findJobs:
-            "💼 ስራ ፈልግ",
-
-        listProperty:
-            "➕ ቤት አስገባ",
-
-        houses:
-            "ቤቶች",
-
-        housesDescription:
-            "የሚከራዩና የሚሸጡ ቤቶችን ያግኙ።",
-
-        jobsDescription:
-            "የአካባቢ የስራ እድሎችን ያግኙ።",
-
-        localSearch:
-            "የአካባቢ ፍለጋ",
-
-        localSearchDescription:
-            "እድሎችን በአካባቢ ይፈልጉ።",
-
-        latestProperties:
-            "የቅርብ ጊዜ ቤቶች",
-
-        browseProperties:
-            "ያሉትን ቤቶች ይመልከቱ።",
-
-        search:
-            "ፈልግ",
-
-        searchPlaceholder:
-            "ቤት ወይም አካባቢ ይፈልጉ...",
-
-        type:
-            "አይነት",
-
-        all:
-            "ሁሉም",
-
-        rent:
-            "ኪራይ",
-
-        sale:
-            "ሽያጭ",
-
-        cityTown:
-            "ከተማ / ከተማ አካባቢ",
-
-        minPrice:
-            "ዝቅተኛ ዋጋ",
-
-        maxPrice:
-            "ከፍተኛ ዋጋ",
-
-        reset:
-            "አጽዳ",
-
-        loadingProperties:
-            "ቤቶች በመጫን ላይ...",
-
-        welcomeBack:
-            "እንኳን ደህና መጡ",
-
-        loginSubtitle:
-            "ወደ ዳሽቦርድዎ ለመቀጠል ይግቡ።",
-
-        email:
-            "ኢሜይል",
-
-        password:
-            "የይለፍ ቃል",
-
-        noAccount:
-            "መለያ የለዎትም?",
-
-        createAccount:
-            "መለያ ፍጠር",
-
-        signupSubtitle:
-            "የመለያዎን አይነት ይምረጡ።",
-
-        fullName:
-            "ሙሉ ስም",
-
-        phoneNumber:
-            "ስልክ ቁጥር",
-
-        accountType:
-            "የመለያ አይነት",
-
-        owner:
-            "የቤት ባለቤት",
-
-        renter:
-            "ተከራይ",
-
-        jobSeeker:
-            "ስራ ፈላጊ",
-
-        alreadyAccount:
-            "አስቀድመው መለያ አለዎት?",
-
-        property:
-            "ቤት",
-
-        footerDescription:
-            "በምስራቅ ኢትዮጵያ ቤቶችን፣ ስራዎችን እና እድሎችን የሚያገናኝ ዲጂታል የአካባቢ ገበያ።",
-
-        allRights:
-            "መብቱ የተጠበቀ ነው።"
-    }
-
-};
-
-
-/* =========================================================
-   LANGUAGE FUNCTIONS
-========================================================= */
-
-function getCurrentLanguage() {
-
-    return (
-        localStorage.getItem("appLanguage")
-        || "en"
-    );
-}
-
-
-function changeLanguage(language) {
-
-    if (!translations[language]) {
-
-        language = "en";
-    }
-
-    localStorage.setItem(
-        "appLanguage",
-        language
-    );
-
-    applyLanguage(
-        language
-    );
-}
-
-
-function applyLanguage(language) {
-
-    const dictionary =
-        translations[language] ||
-        translations.en;
-
-
-    document.documentElement.lang =
-        language === "om"
-            ? "om"
-            : language === "am"
-                ? "am"
-                : "en";
-
-
-    document
-        .querySelectorAll("[data-i18n]")
-        .forEach(
-            function(element) {
-
-                const key =
-                    element.getAttribute(
-                        "data-i18n"
-                    );
-
-                if (
-                    dictionary[key] !== undefined
-                ) {
-
-                    element.textContent =
-                        dictionary[key];
-                }
-            }
-        );
-
-
-    document
-        .querySelectorAll(
-            "[data-i18n-placeholder]"
-        )
-        .forEach(
-            function(element) {
-
-                const key =
-                    element.getAttribute(
-                        "data-i18n-placeholder"
-                    );
-
-                if (
-                    dictionary[key] !== undefined
-                ) {
-
-                    element.placeholder =
-                        dictionary[key];
-                }
-            }
-        );
-
-
-    const selector =
-        document.getElementById(
-            "languageSelector"
-        );
-
-    if (selector) {
-
-        selector.value =
-            language;
-    }
-
-
-    updateCityFilterLanguage();
-}
-
-
-/* =========================================================
-   SUPABASE INITIALIZATION
-========================================================= */
-
-function initializeSupabase() {
-
-    if (!window.supabase) {
-
-        console.error(
-            "Supabase library was not loaded."
-        );
-
-        showPropertyError(
-            "Supabase library could not be loaded. Check your internet connection."
-        );
-
-        return false;
-    }
-
-    try {
-
-        db =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_PUBLIC_KEY
-            );
-
-        console.log(
-            "SUPABASE CLIENT CREATED SUCCESSFULLY"
-        );
-
-        return true;
-
-    } catch (error) {
-
-        console.error(
-            "SUPABASE INITIALIZATION ERROR:",
-            error
-        );
-
-        showPropertyError(
-            "Supabase could not be initialized."
-        );
-
-        return false;
-    }
-}
-
-
-/* =========================================================
-   ROLE NORMALIZATION
-========================================================= */
-
 function normalizeRole(role) {
 
     if (!role) {
@@ -3168,7 +2697,7 @@ function setupAuthListener() {
 
 
     db.auth.onAuthStateChange(
-        async function(event, session) {
+        function(event, session) {
 
             console.log(
                 "AUTH EVENT:",
@@ -3186,14 +2715,7 @@ function setupAuthListener() {
                     session.user;
 
 
-                setTimeout(
-                    async function() {
 
-                        await checkCurrentUser();
-
-                    },
-                    0
-                );
             }
 
 
@@ -3745,6 +3267,52 @@ function openLogin() {
 /* =========================================================
    OPEN SIGNUP
 ========================================================= */
+
+function openJobSeekerSignup(){
+
+    openSignup();
+
+    const role =
+        document.getElementById(
+            "roleJobSeeker"
+        );
+
+    if(role){
+        role.checked = true;
+    }
+}
+
+
+/* =========================================================
+   JOB SEEKER SIGNUP URL
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        if(
+            params.get("signup") ===
+            "job_seeker"
+        ){
+
+            setTimeout(
+                function(){
+
+                    openJobSeekerSignup();
+
+                },
+                150
+            );
+        }
+    }
+);
+
 
 function openSignup() {
 
@@ -4572,1095 +4140,336 @@ async function loadProperties() {
 /* =========================================================
    PROPERTY IMAGE URL
 ========================================================= */
+/* =========================================================
+   HOME JOB ACTIONS
+========================================================= */
 
-function getPropertyImage(
-    property
-) {
+let homeSavedJobs = [];
+let homeApplications = [];
 
-    const images =
-        Array.isArray(
-            property.property_images
-        )
-            ? [...property.property_images]
-            : [];
+function homeIsJobSaved(jobId) {
+    return homeSavedJobs.some(function(row) {
+        return String(row.job_id) === String(jobId);
+    });
+}
 
+function homeHasApplied(jobId) {
+    return homeApplications.some(function(row) {
+        return String(row.job_id) === String(jobId);
+    });
+}
 
-    if (
-        images.length > 0
-    ) {
+async function loadHomeJobActions() {
 
-        images.sort(
-            function(a, b) {
+    homeSavedJobs = [];
+    homeApplications = [];
 
-                return (
-                    (a.display_order || 0) -
-                    (b.display_order || 0)
-                );
-            }
-        );
+    if (!db || !currentUser) {
+        return;
+    }
 
+    try {
 
-        const path =
-            images[0].storage_path;
+        const savedResult = await db
+            .from("job_saved")
+            .select("id,job_id,user_id,created_at")
+            .eq("user_id", currentUser.id);
 
-
-        if (path) {
-
-            const {
-                data
-            } =
-                db.storage
-                    .from(
-                        "property-images"
-                    )
-                    .getPublicUrl(
-                        path
-                    );
-
-
-            if (
-                data &&
-                data.publicUrl
-            ) {
-
-                return data.publicUrl;
-            }
+        if (!savedResult.error) {
+            homeSavedJobs = savedResult.data || [];
         }
-    }
 
+        const applicationResult = await db
+            .from("job_applications")
+            .select("id,job_id,user_id")
+            .eq("user_id", currentUser.id);
 
-    return "";
-}
-
-
-/* =========================================================
-   ESCAPE HTML
-========================================================= */
-
-function escapeHTML(value) {
-
-    if (
-        value === null ||
-        value === undefined
-    ) {
-
-        return "";
-    }
-
-
-    return String(value)
-
-        .replace(
-            /&/g,
-            "&amp;"
-        )
-
-        .replace(
-            /</g,
-            "&lt;"
-        )
-
-        .replace(
-            />/g,
-            "&gt;"
-        )
-
-        .replace(
-            /"/g,
-            "&quot;"
-        )
-
-        .replace(
-            /'/g,
-            "&#039;"
-        );
-}
-
-
-/* =========================================================
-   LOCATION TEXT
-========================================================= */
-
-function getPropertyLocationText(
-    property
-) {
-
-    const parts = [];
-
-
-    const area =
-        locationMap[
-            property.area_id
-        ];
-
-
-    const woreda =
-        locationMap[
-            property.woreda_id
-        ];
-
-
-    const city =
-        locationMap[
-            property.city_id
-        ];
-
-
-    const zone =
-        locationMap[
-            property.zone_id
-        ];
-
-
-    const region =
-        locationMap[
-            property.region_id
-        ];
-
-
-    if (area) {
-
-        parts.push(
-            area.name
-        );
-    }
-
-
-    if (woreda) {
-
-        parts.push(
-            woreda.name
-        );
-    }
-
-
-    if (city) {
-
-        parts.push(
-            city.name
-        );
-    }
-
-
-    if (zone) {
-
-        parts.push(
-            zone.name
-        );
-    }
-
-
-    if (region) {
-
-        parts.push(
-            region.name
-        );
-    }
-
-
-    /*
-     * Fallback for old text location
-     * values.
-     */
-
-    if (
-        parts.length === 0
-    ) {
-
-        const fallback = [
-
-            property.area,
-
-            property.woreda,
-
-            property.city,
-
-            property.zone,
-
-            property.region,
-
-            property.location
-
-        ].filter(
-            function(item) {
-
-                return (
-                    item !== null &&
-                    item !== undefined &&
-                    String(item).trim() !== ""
-                );
-            }
-        );
-
-
-        if (
-            fallback.length > 0
-        ) {
-
-            return fallback.join(
-                ", "
-            );
+        if (!applicationResult.error) {
+            homeApplications = applicationResult.data || [];
         }
-    }
 
+    } catch (error) {
 
-    return parts.join(
-        ", "
-    ) ||
-    "Location not specified";
-}
-
-
-/* =========================================================
-   FORMAT PRICE
-========================================================= */
-
-function formatPrice(
-    price
-) {
-
-    if (
-        price === null ||
-        price === undefined ||
-        price === ""
-    ) {
-
-        return "Price not specified";
-    }
-
-
-    const number =
-        Number(price);
-
-
-    if (
-        Number.isNaN(number)
-    ) {
-
-        return escapeHTML(
-            price
+        console.warn(
+            "HOME JOB ACTIONS LOAD ERROR:",
+            error
         );
     }
-
-
-    return (
-        new Intl.NumberFormat(
-            "en-US"
-        ).format(number)
-        +
-        " ETB"
-    );
 }
 
+async function toggleHomeSaved(encodedJobId) {
 
-/* =========================================================
-   PROPERTY TYPE
-========================================================= */
+    if (!currentUser) {
 
-function normalizePropertyType(
-    property
-) {
-
-    const value = String(property.listing_type || property.type || property.property_type || '').toLowerCase().trim();
-    return value === 'sale' ? 'sell' : value;
-}
-
-
-/* =========================================================
-   RENDER PROPERTIES
-========================================================= */
-
-function renderProperties(
-    properties
-) {
-
-    const area =
-        document.getElementById(
-            "propertyArea"
-        );
-
-
-    if (!area) {
+        if (typeof updateUserMenu === "function") {
+            updateUserMenu();
+        }
 
         return;
     }
 
-
-    if (
-        !properties ||
-        properties.length === 0
-    ) {
-
-        area.innerHTML = `
-
-            <div class="empty-state">
-
-                <div class="empty-state-icon">
-                    🏠
-                </div>
-
-                <h3>
-                    No Properties Found
-                </h3>
-
-                <p>
-                    Try changing your search or filters.
-                </p>
-
-            </div>
-
-        `;
-
-        return;
-    }
-
-
-    const grid =
-        document.createElement(
-            "div"
-        );
-
-
-    grid.className =
-        "property-grid";
-
-
-    properties.forEach(
-        function(property) {
-
-            const card =
-                createPropertyCard(
-                    property
-                );
-
-
-            grid.appendChild(
-                card
-            );
-        }
-    );
-
-
-    area.innerHTML =
-        "";
-
-
-    area.appendChild(
-        grid
-    );
-}
-
-
-/* =========================================================
-   CREATE PROPERTY CARD
-========================================================= */
-
-function createPropertyCard(
-    property
-) {
-
-    const card =
-        document.createElement(
-            "article"
-        );
-
-
-    card.className =
-        "property-card";
-
-
-    const type =
-        normalizePropertyType(
-            property
-        );
-
-
-    const isRent =
-        type === "rent";
-
-
-    const badgeClass =
-        isRent
-            ? "badge-rent"
-            : "badge-sale";
-
-
-    const badgeText =
-        isRent
-            ? "FOR RENT"
-            : "FOR SALE";
-
-
-    const imageUrl =
-        getPropertyImage(
-            property
-        );
-
-
-    const imageHTML =
-        imageUrl
-
-            ? `
-                <img
-                    class="property-image"
-                    src="${escapeHTML(imageUrl)}"
-                    alt="${escapeHTML(
-                        property.title ||
-                        "Property"
-                    )}"
-                    loading="lazy"
-                    onerror="this.style.display='none';"
-                >
-            `
-
-            : `
-
-                <div
-                    class="property-image"
-                    style="
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        font-size:45px;
-                    "
-                >
-                    🏠
-                </div>
-            `;
-
-
-    const title =
-        property.title ||
-        property.name ||
-        "Property";
-
-
-    const location =
-        getPropertyLocationText(
-            property
-        );
-
-
-    const bedrooms =
-        property.bedrooms;
-
-
-    const bathrooms =
-        property.bathrooms;
-
-
-    const details = [];
-
-
-    if (
-        bedrooms !== null &&
-        bedrooms !== undefined &&
-        bedrooms !== ""
-    ) {
-
-        details.push(
-            "🛏 " +
-            escapeHTML(
-                bedrooms
-            ) +
-            " Bedrooms"
-        );
-    }
-
-
-    if (
-        bathrooms !== null &&
-        bathrooms !== undefined &&
-        bathrooms !== ""
-    ) {
-
-        details.push(
-            "🚿 " +
-            escapeHTML(
-                bathrooms
-            ) +
-            " Bathrooms"
-        );
-    }
-
-
-    if (
-        property.area_size ||
-        property.size
-    ) {
-
-        details.push(
-            "📐 " +
-            escapeHTML(
-                property.area_size ||
-                property.size
-            )
-        );
-    }
-
-
-    card.innerHTML = `
-
-        ${imageHTML}
-
-        <div class="property-content">
-
-            <div class="property-top">
-
-                <h3 class="property-title">
-
-                    ${escapeHTML(
-                        title
-                    )}
-
-                </h3>
-
-                <span
-                    class="badge ${badgeClass}"
-                >
-
-                    ${badgeText}
-
-                </span>
-
-            </div>
-
-
-            <div class="property-location">
-
-                📍
-                ${escapeHTML(
-                    location
-                )}
-
-            </div>
-
-
-            <div class="property-details">
-
-                ${
-                    details.length > 0
-
-                        ? details.map(
-                            function(item) {
-
-                                return `
-                                    <span
-                                        class="detail-pill"
-                                    >
-                                        ${item}
-                                    </span>
-                                `;
-                            }
-                        ).join("")
-
-                        : `
-                            <span
-                                class="detail-pill"
-                            >
-                                Property
-                            </span>
-                        `
+    const jobId =
+        decodeURIComponent(encodedJobId);
+
+    try {
+
+        const alreadySaved =
+            homeIsJobSaved(jobId);
+
+        if (alreadySaved) {
+
+            const { error } =
+                await db
+                    .from("job_saved")
+                    .delete()
+                    .eq("job_id", jobId)
+                    .eq("user_id", currentUser.id);
+
+            if (error) {
+                throw error;
+            }
+
+        } else {
+
+            const { error } =
+                await db
+                    .from("job_saved")
+                    .insert({
+                        job_id: jobId,
+                        user_id: currentUser.id
+                    });
+
+            if (error) {
+
+                const message =
+                    String(
+                        error.message || ""
+                    ).toLowerCase();
+
+                if (
+                    message.includes("duplicate") ||
+                    message.includes("unique")
+                ) {
+                    await loadHomeJobActions();
+                    renderHomeJobs(window.homeJobs || []);
+                    return;
                 }
 
-            </div>
+                throw error;
+            }
+        }
 
+        await loadHomeJobActions();
 
-            <div class="property-price">
+        renderHomeJobs(
+            window.homeJobs || []
+        );
 
-                ${formatPrice(
-                    property.price
-                )}
+    } catch (error) {
 
-            </div>
-
-
-            <div class="property-actions">
-
-                <button
-                    class="view-btn"
-                    onclick="viewProperty('${escapeHTML(
-                        property.id
-                    )}')"
-                >
-                    View Property
-                </button>
-
-                <button class="view-btn" type="button" onclick="shareProperty('${escapeHTML(property.id)}','${escapeHTML(property.title||'Property')}')">↗ Share</button>
-
-            </div>
-
-        </div>
-
-    `;
-
-
-    return card;
-}
-
-
-/* =========================================================
-   VIEW PROPERTY
-========================================================= */
-
-function shareProperty(propertyId, title){
-    const url = new URL('property-details.html?id='+encodeURIComponent(propertyId), window.location.href).href;
-    if(navigator.share){ navigator.share({title:title||'Property', text:title||'Property listing', url}).catch(()=>{}); return; }
-    if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>alert('Property link copied.')).catch(()=>window.prompt('Copy property link:',url)); return; }
-    window.prompt('Copy property link:',url);
-}
-
-function viewProperty(
-    propertyId
-) {
-
-    if (!propertyId) {
+        console.error(
+            "HOME SAVE JOB ERROR:",
+            error
+        );
 
         alert(
-            "Property ID is missing."
+            String(
+                error.message ||
+                "Unable to save this job."
+            )
         );
+    }
+}
 
+function viewHomeJob(encodedJobId) {
+
+    if (!encodedJobId) {
         return;
     }
 
-
-    localStorage.setItem(
-        "selectedPropertyId",
-        propertyId
-    );
-
+    const jobId =
+        decodeURIComponent(
+            encodedJobId
+        );
 
     window.location.href =
-        "property-details.html?id=" +
-        encodeURIComponent(
-            propertyId
-        );
+        "job-details.html?job_id=" +
+        encodeURIComponent(jobId);
 }
 
 
 /* =========================================================
-   APPLY FILTERS
-========================================================= */
-
-function applyFilters() {
-
-    const search =
-        document
-            .getElementById(
-                "searchInput"
-            )
-            .value
-            .toLowerCase()
-            .trim();
-
-
-    const type =
-        document
-            .getElementById(
-                "typeFilter"
-            )
-            .value
-            .toLowerCase();
-
-
-    const cityId =
-        document
-            .getElementById(
-                "cityFilter"
-            )
-            .value;
-
-
-    const minPriceValue =
-        document
-            .getElementById(
-                "minPrice"
-            )
-            .value;
-
-
-    const maxPriceValue =
-        document
-            .getElementById(
-                "maxPrice"
-            )
-            .value;
-
-
-    const minPrice =
-        minPriceValue === ""
-            ? null
-            : Number(
-                minPriceValue
-            );
-
-
-    const maxPrice =
-        maxPriceValue === ""
-            ? null
-            : Number(
-                maxPriceValue
-            );
-
-
-    if (
-        minPrice !== null &&
-        maxPrice !== null &&
-        minPrice > maxPrice
-    ) {
-
-        showPropertyError(
-            "Minimum price cannot be greater than maximum price."
-        );
-
-        return;
-    }
-
-
-    const filtered =
-        allProperties.filter(
-            function(property) {
-
-                const propertyType =
-                    normalizePropertyType(
-                        property
-                    ) === 'sale' ? 'sell' : normalizePropertyType(property);
-
-
-                if (
-                    type !== "all" &&
-                    propertyType !== type
-                ) {
-
-                    return false;
-                }
-
-
-                if (
-                    cityId !== "all" &&
-                    property.city_id !== cityId
-                ) {
-
-                    return false;
-                }
-
-
-                const price =
-                    Number(
-                        property.price
-                    );
-
-
-                if (
-                    minPrice !== null &&
-                    !Number.isNaN(price) &&
-                    price < minPrice
-                ) {
-
-                    return false;
-                }
-
-
-                if (
-                    maxPrice !== null &&
-                    !Number.isNaN(price) &&
-                    price > maxPrice
-                ) {
-
-                    return false;
-                }
-
-
-                if (search) {
-
-                    const location =
-                        getPropertyLocationText(
-                            property
-                        );
-
-
-                    const searchableText =
-                        [
-
-                            property.title,
-
-                            property.description,
-
-                            property.city,
-
-                            property.location,
-
-                            propertyType,
-
-                            location
-
-                        ]
-
-                        .filter(
-                            function(item) {
-
-                                return (
-                                    item !== null &&
-                                    item !== undefined &&
-                                    String(item).trim() !== ""
-                                );
-                            }
-                        )
-
-                        .join(" ")
-
-                        .toLowerCase();
-
-
-                    if (
-                        !searchableText.includes(
-                            search
-                        )
-                    ) {
-
-                        return false;
-                    }
-                }
-
-
-                return true;
-            }
-        );
-
-
-    renderProperties(
-        filtered
-    );
-}
-
-
-/* =========================================================
-   RESET FILTERS
-========================================================= */
-
-function resetFilters() {
-
-    document
-        .getElementById(
-            "searchInput"
-        )
-        .value =
-        "";
-
-
-    document
-        .getElementById(
-            "typeFilter"
-        )
-        .value =
-        "all";
-
-
-    document
-        .getElementById(
-            "cityFilter"
-        )
-        .value =
-        "all";
-
-
-    document
-        .getElementById(
-            "minPrice"
-        )
-        .value =
-        "";
-
-
-    document
-        .getElementById(
-            "maxPrice"
-        )
-        .value =
-        "";
-
-
-    renderProperties(
-        allProperties
-    );
-}
-
-
-/* =========================================================
-   SCROLL TO PROPERTIES
-========================================================= */
-
-function scrollToProperties() {
-
-    const section =
-        document.getElementById(
-            "propertiesSection"
-        );
-
-
-    if (section) {
-
-        section.scrollIntoView({
-            behavior:
-                "smooth"
-        });
-    }
-}
-
-
-/* =========================================================
-   PROPERTY LOADING
-========================================================= */
-
-function showPropertyLoading() {
-
-    const area =
-        document.getElementById(
-            "propertyArea"
-        );
-
-
-    if (!area) {
-
-        return;
-    }
-
-
-    area.innerHTML = `
-
-        <div class="loading">
-
-            <div class="spinner"></div>
-
-            <p>
-                ${escapeHTML(
-                    getTranslation(
-                        "loadingProperties"
-                    )
-                )}
-            </p>
-
-        </div>
-
-    `;
-}
-
-
-/* =========================================================
-   PROPERTY ERROR
-========================================================= */
-
-function showPropertyError(
-    message
-) {
-
-    const area =
-        document.getElementById(
-            "propertyArea"
-        );
-
-
-    if (!area) {
-
-        return;
-    }
-
-
-    area.innerHTML = `
-
-        <div class="error-box">
-
-            <strong>
-                Something went wrong
-            </strong>
-
-            <br><br>
-
-            ${escapeHTML(
-                message
-            )}
-
-        </div>
-
-    `;
-}
-
-
-/* =========================================================
-   INITIAL PAGE START
+   LOAD HOME JOBS
 ========================================================= */
 
 let homeMarketplaceItems = [];
 let homeCars = [];
 
+function homeListingTypeBadge(listingType) {
+    const normalized = String(listingType || "").toLowerCase();
+
+    if (normalized === "rent") {
+        return '<span class="badge badge-rent listing-type-badge">Rent</span>';
+    }
+
+    if (normalized === "sell" || normalized === "sale") {
+        return '<span class="badge badge-sale listing-type-badge">Sell</span>';
+    }
+
+    return "";
+}
+
+function homeContactButton(phone) {
+    if (!phone) {
+        return "";
+    }
+
+    return '<a class="view-btn" href="tel:' + escapeHTML(phone) +
+        '" style="text-decoration:none;display:flex;align-items:center;justify-content:center;">📞 Call</a>';
+}
+
+function updateHomeSectionCount(elementId, count, singular, plural) {
+    const el = document.getElementById(elementId);
+
+    if (!el) {
+        return;
+    }
+
+    el.textContent = count + " " + (count === 1 ? singular : plural);
+}
+
 function renderHomeMarketplace(list) {
     const area = document.getElementById("homeMarketplaceArea");
     if (!area) return;
 
+    updateHomeSectionCount("marketplaceCount", list ? list.length : 0, "Item", "Items");
+
     if (!list || !list.length) {
-        area.innerHTML = "<div class=\"empty-state\">No published marketplace items found.</div>";
+        area.innerHTML =
+            '<div class="empty-state">' +
+            '<div class="empty-state-icon">🛍️</div>' +
+            "<h3>No marketplace items yet</h3>" +
+            "<p>Published marketplace items will appear here.</p>" +
+            "</div>";
         return;
     }
 
-    area.innerHTML = list.map(function(item) {
+    const cards = list.map(function(item) {
         const photo = item.photo_urls && item.photo_urls.length
             ? item.photo_urls[0]
             : "";
 
         const image = photo
-            ? "<img src=\"" + escAttr(photo) + "\" alt=\"Marketplace item\">"
-            : "<div class="home-card-no-image">🛍️</div>";
+            ? '<img src="' + escapeHTML(photo) + '" alt="' + escapeHTML(item.title || "Marketplace item") + '" class="property-image">'
+            : '<div class="home-card-no-image">🛍️</div>';
 
-        return "<article class="property-card home-marketplace-card">" +
-            "<div class="property-image">" + image + "</div>" +
-            "<div class="property-content">" +
-            "<h3>" + esc(item.title || "Marketplace Item") + "</h3>" +
-            "<p>🛍️ " + esc(item.category || "Marketplace") + "</p>" +
-            "<p>" + esc(item.condition || "") + "</p>" +
-            "<strong>" + Number(item.price || 0).toLocaleString() +
-            " " + esc(item.price_unit || "") + "</strong>" +
+        const pills = [
+            item.category ? '<span class="detail-pill">🏷️ ' + escapeHTML(item.category) + "</span>" : "",
+            item.condition ? '<span class="detail-pill">' + escapeHTML(item.condition) + "</span>" : ""
+        ].filter(Boolean).join("");
+
+        return '<article class="property-card home-marketplace-card">' +
+            '<div class="property-image">' + image + homeListingTypeBadge(item.listing_type) + "</div>" +
+            '<div class="property-content">' +
+            "<h3>" + escapeHTML(item.title || "Marketplace Item") + "</h3>" +
+            (pills ? '<div class="property-details">' + pills + "</div>" : "") +
+            '<div class="property-price">' + Number(item.price || 0).toLocaleString() +
+            (item.price_unit ? " " + escapeHTML(item.price_unit) : "") + "</div>" +
+            (homeContactButton(item.contact_phone)
+                ? '<div class="property-actions">' + homeContactButton(item.contact_phone) + "</div>"
+                : "") +
             "</div></article>";
     }).join("");
+
+    area.innerHTML = '<div class="home-listing-grid">' + cards + "</div>";
 }
 
 function renderHomeCars(list) {
     const area = document.getElementById("homeCarsArea");
     if (!area) return;
 
+    updateHomeSectionCount("carsCount", list ? list.length : 0, "Car", "Cars");
+
     if (!list || !list.length) {
-        area.innerHTML = "<div class=\"empty-state\">No published cars found.</div>";
+        area.innerHTML =
+            '<div class="empty-state">' +
+            '<div class="empty-state-icon">🚗</div>' +
+            "<h3>No cars yet</h3>" +
+            "<p>Published cars will appear here.</p>" +
+            "</div>";
         return;
     }
 
-    area.innerHTML = list.map(function(car) {
+    const cards = list.map(function(car) {
         const photo = car.photo_urls && car.photo_urls.length
             ? car.photo_urls[0]
             : "";
-
-        const image = photo
-            ? "<img src=\"" + escAttr(photo) + "\" alt=\"Car\">"
-            : "<div class="home-card-no-image">🚗</div>";
 
         const carName =
             car.title ||
             [car.brand, car.model].filter(Boolean).join(" ") ||
             "Car";
 
-        return "<article class="property-card home-car-card">" +
-            "<div class="property-image">" + image + "</div>" +
-            "<div class="property-content">" +
-            "<h3>" + esc(carName) + "</h3>" +
-            "<p>🚗 " + esc(car.brand || "") + " " +
-            esc(car.model || "") + "</p>" +
-            "<p>" + (car.year ? esc(String(car.year)) : "") +
-            (car.condition ? " • " + esc(car.condition) : "") + "</p>" +
-            "<strong>" + Number(car.price || 0).toLocaleString() +
-            " " + esc(car.price_unit || "") + "</strong>" +
+        const image = photo
+            ? '<img src="' + escapeHTML(photo) + '" alt="' + escapeHTML(carName) + '" class="property-image">'
+            : '<div class="home-card-no-image">🚗</div>';
+
+        const pills = [
+            (car.brand || car.model) ? '<span class="detail-pill">🚗 ' + escapeHTML([car.brand, car.model].filter(Boolean).join(" ")) + "</span>" : "",
+            car.year ? '<span class="detail-pill">' + escapeHTML(String(car.year)) + "</span>" : "",
+            car.condition ? '<span class="detail-pill">' + escapeHTML(car.condition) + "</span>" : "",
+            car.transmission ? '<span class="detail-pill">' + escapeHTML(car.transmission) + "</span>" : "",
+            car.fuel_type ? '<span class="detail-pill">' + escapeHTML(car.fuel_type) + "</span>" : "",
+            car.mileage ? '<span class="detail-pill">' + Number(car.mileage).toLocaleString() + " km</span>" : ""
+        ].filter(Boolean).join("");
+
+        return '<article class="property-card home-car-card">' +
+            '<div class="property-image">' + image + homeListingTypeBadge(car.listing_type) + "</div>" +
+            '<div class="property-content">' +
+            "<h3>" + escapeHTML(carName) + "</h3>" +
+            (pills ? '<div class="property-details">' + pills + "</div>" : "") +
+            '<div class="property-price">' + Number(car.price || 0).toLocaleString() +
+            (car.price_unit ? " " + escapeHTML(car.price_unit) : "") + "</div>" +
+            (homeContactButton(car.contact_phone)
+                ? '<div class="property-actions">' + homeContactButton(car.contact_phone) + "</div>"
+                : "") +
             "</div></article>";
     }).join("");
+
+    area.innerHTML = '<div class="home-listing-grid">' + cards + "</div>";
+}
+
+function showMarketplaceLoading() {
+    const area = document.getElementById("homeMarketplaceArea");
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading marketplace...</p>
+        </div>
+    `;
 }
 
 async function loadHomeMarketplace(cityId = "all", listingType = "all") {
+    showMarketplaceLoading();
+
+    const area =
+        document.getElementById(
+            "homeMarketplaceArea"
+        );
+
+    if (!db) {
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        }
+        return;
+    }
+
     try {
         let query = db
             .from("marketplace_items")
@@ -5688,10 +4497,47 @@ async function loadHomeMarketplace(cityId = "all", listingType = "all") {
 
     } catch (error) {
         console.error("HOME MARKETPLACE ERROR:", error);
+
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">HOME MARKETPLACE ERROR: ' +
+                String(error.message || error) +
+                '</div>';
+        }
     }
 }
 
+function showCarLoading() {
+    const area = document.getElementById("homeCarsArea");
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading cars...</p>
+        </div>
+    `;
+}
+
 async function loadHomeCars(cityId = "all", listingType = "all") {
+    showCarLoading();
+
+    const area =
+        document.getElementById(
+            "homeCarsArea"
+        );
+
+    if (!db) {
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        }
+        return;
+    }
+
     try {
         let query = db
             .from("cars")
@@ -5719,6 +4565,13 @@ async function loadHomeCars(cityId = "all", listingType = "all") {
 
     } catch (error) {
         console.error("HOME CARS ERROR:", error);
+
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">HOME CARS ERROR: ' +
+                String(error.message || error) +
+                '</div>';
+        }
     }
 }
 
@@ -5729,7 +4582,13 @@ async function loadHomeJobs(cityId = "all") {
             "homeJobsArea"
         );
 
-    if (!area || !db) return;
+    if (!area) return;
+
+    if (!db) {
+        area.innerHTML =
+            '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        return;
+    }
 
     try {
 
@@ -5800,6 +4659,8 @@ function renderHomeJobs(list) {
         );
 
     if (!area) return;
+
+    updateHomeSectionCount("jobsCount", list.length, "Job", "Jobs");
 
     if (!list.length) {
 
@@ -7247,58 +6108,203 @@ function showPropertyError(
 
 
 /* =========================================================
+   LANGUAGE SYSTEM (English / Afaan Oromoo / Amharic)
+   These functions were referenced by the page but missing,
+   which made initializeApp() crash on its first line and left
+   every section stuck on "Loading...".
+========================================================= */
+
+const translations = {
+    en: {
+        brand: "Eastern Ethiopia Digital Broker",
+        properties: "Properties", jobs: "Jobs", dashboard: "Dashboard",
+        login: "Login", logout: "Logout",
+        heroTitle: "Find Your Next Home or Opportunity",
+        heroDescription: "Discover houses for rent and sale, local jobs, and opportunities across Eastern Ethiopia.",
+        findProperty: "🏠 Find Property", findJobs: "💼 Find Jobs", listProperty: "➕ List Property",
+        houses: "Houses", housesDescription: "Find houses for rent and sale.",
+        jobsDescription: "Discover local employment opportunities.",
+        localSearch: "Local Search", localSearchDescription: "Search opportunities by location.",
+        latestProperties: "Latest Properties", browseProperties: "Browse available properties.",
+        search: "Search", type: "Type", all: "All", rent: "Rent", sale: "Sale", job: "Job",
+        cityTown: "City / Town", minPrice: "Min Price", maxPrice: "Max Price", reset: "Reset",
+        loadingProperties: "Loading properties...",
+        welcomeBack: "Welcome Back", loginSubtitle: "Login to continue to your dashboard.",
+        email: "Email", password: "Password", noAccount: "Don't have an account?",
+        createAccount: "Create Account", signupSubtitle: "Choose your account type and get started.",
+        fullName: "Full Name", phoneNumber: "Phone Number", accountType: "Account Type",
+        owner: "Owner", renter: "Renter", jobSeeker: "Job Seeker",
+        alreadyAccount: "Already have an account?",
+        footerDescription: "A local digital marketplace for properties, jobs and opportunities across Eastern Ethiopia.",
+        property: "Property", allRights: "All rights reserved.",
+        searchPlaceholder: "Search property, location..."
+    },
+    om: {
+        brand: "Daldalaa Dijitaalaa Bahaa Itoophiyaa",
+        properties: "Qabeenya", jobs: "Hojiiwwan", dashboard: "Daashboordii",
+        login: "Seeni", logout: "Ba'i",
+        heroTitle: "Mana ykn Carraa Kee Itti Aanu Argadhu",
+        heroDescription: "Manneen kiraa fi gurgurtaa, hojiiwwan naannoo fi carraawwan Bahaa Itoophiyaa guutuu keessatti argadhu.",
+        findProperty: "🏠 Qabeenya Barbaadi", findJobs: "💼 Hojii Barbaadi", listProperty: "➕ Qabeenya Galmeessi",
+        houses: "Manneen", housesDescription: "Manneen kiraa fi gurgurtaa argadhu.",
+        jobsDescription: "Carraawwan hojii naannoo argadhu.",
+        localSearch: "Barbaacha Naannoo", localSearchDescription: "Carraawwan bakka jirtaniin barbaadi.",
+        latestProperties: "Qabeenya Haaraa", browseProperties: "Qabeenya jiru ilaali.",
+        search: "Barbaadi", type: "Gosa", all: "Hunda", rent: "Kiraa", sale: "Gurgurtaa", job: "Hojii",
+        cityTown: "Magaalaa / Ganda", minPrice: "Gatii Gadi Aanaa", maxPrice: "Gatii Ol Aanaa", reset: "Haaromsi",
+        loadingProperties: "Qabeenya fe'aa jira...",
+        welcomeBack: "Baga Nagaan Deebitan", loginSubtitle: "Gara daashboordii keetii itti fufuuf seeni.",
+        email: "Imeelii", password: "Jecha Icciitii", noAccount: "Akkaawuntii hin qabduu?",
+        createAccount: "Akkaawuntii Uumi", signupSubtitle: "Gosa akkaawuntii kee filadhuu jalqabi.",
+        fullName: "Maqaa Guutuu", phoneNumber: "Lakkoofsa Bilbilaa", accountType: "Gosa Akkaawuntii",
+        owner: "Abbaa Qabeenyaa", renter: "Kiraa Fudhataa", jobSeeker: "Barbaadaa Hojii",
+        alreadyAccount: "Duraan akkaawuntii qabduu?",
+        footerDescription: "Gabaa dijitaalaa naannoo kan qabeenya, hojii fi carraawwan Bahaa Itoophiyaa guutuu keessatti argamu.",
+        property: "Qabeenya", allRights: "Mirgi hundi eegameera.",
+        searchPlaceholder: "Qabeenya, bakka barbaadi..."
+    },
+    am: {
+        brand: "የምሥራቅ ኢትዮጵያ ዲጂታል ደላላ",
+        properties: "ንብረቶች", jobs: "ሥራዎች", dashboard: "ዳሽቦርድ",
+        login: "ግባ", logout: "ውጣ",
+        heroTitle: "ቀጣዩን ቤትዎን ወይም ዕድልዎን ያግኙ",
+        heroDescription: "በምሥራቅ ኢትዮጵያ ያሉ የኪራይና የሽያጭ ቤቶችን፣ የአካባቢ ሥራዎችን እና ዕድሎችን ያግኙ።",
+        findProperty: "🏠 ንብረት ፈልግ", findJobs: "💼 ሥራ ፈልግ", listProperty: "➕ ንብረት አስመዝግብ",
+        houses: "ቤቶች", housesDescription: "የኪራይና የሽያጭ ቤቶችን ያግኙ።",
+        jobsDescription: "የአካባቢ የሥራ ዕድሎችን ያግኙ።",
+        localSearch: "የአካባቢ ፍለጋ", localSearchDescription: "ዕድሎችን በአካባቢ ይፈልጉ።",
+        latestProperties: "አዳዲስ ንብረቶች", browseProperties: "ያሉ ንብረቶችን ይመልከቱ።",
+        search: "ፈልግ", type: "ዓይነት", all: "ሁሉም", rent: "ኪራይ", sale: "ሽያጭ", job: "ሥራ",
+        cityTown: "ከተማ / ወረዳ", minPrice: "ዝቅተኛ ዋጋ", maxPrice: "ከፍተኛ ዋጋ", reset: "ዳግም አስጀምር",
+        loadingProperties: "ንብረቶች በመጫን ላይ...",
+        welcomeBack: "እንኳን ደህና መጡ", loginSubtitle: "ወደ ዳሽቦርድዎ ለመቀጠል ይግቡ።",
+        email: "ኢሜይል", password: "የይለፍ ቃል", noAccount: "መለያ የለዎትም?",
+        createAccount: "መለያ ፍጠር", signupSubtitle: "የመለያ ዓይነትዎን ይምረጡ እና ይጀምሩ።",
+        fullName: "ሙሉ ስም", phoneNumber: "ስልክ ቁጥር", accountType: "የመለያ ዓይነት",
+        owner: "ባለቤት", renter: "ተከራይ", jobSeeker: "ሥራ ፈላጊ",
+        alreadyAccount: "መለያ አለዎት?",
+        footerDescription: "በምሥራቅ ኢትዮጵያ ላሉ ንብረቶች፣ ሥራዎች እና ዕድሎች የአካባቢ ዲጂታል ገበያ።",
+        property: "ንብረት", allRights: "መብቱ በሕግ የተጠበቀ ነው።",
+        searchPlaceholder: "ንብረት፣ አካባቢ ይፈልጉ..."
+    }
+};
+
+function getCurrentLanguage() {
+    let lang = "en";
+    try {
+        lang = localStorage.getItem("eedb_language") || "en";
+    } catch (e) {}
+    return translations[lang] ? lang : "en";
+}
+
+function applyLanguage(lang) {
+    if (!translations[lang]) {
+        lang = "en";
+    }
+
+    const dictionary = translations[lang];
+
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll("[data-i18n]").forEach(function(el) {
+        const key = el.getAttribute("data-i18n");
+        if (dictionary[key]) {
+            el.textContent = dictionary[key];
+        }
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el) {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (dictionary[key]) {
+            el.setAttribute("placeholder", dictionary[key]);
+        }
+    });
+
+    const selector = document.getElementById("languageSelector");
+    if (selector && selector.value !== lang) {
+        selector.value = lang;
+    }
+}
+
+function changeLanguage(lang) {
+    try {
+        localStorage.setItem("eedb_language", lang);
+    } catch (e) {}
+
+    applyLanguage(lang);
+}
+
+
+/* =========================================================
    INITIAL PAGE START
 ========================================================= */
 
+function ensureSupabaseReady() {
+    if (typeof db !== "undefined" && db) {
+        console.log("SHARED SUPABASE CLIENT READY");
+        return true;
+    }
 
+    console.error("SHARED SUPABASE CLIENT IS NOT READY");
+    return false;
+}
+
+function withTimeout(promise, ms, label) {
+    return Promise.race([
+        promise,
+        new Promise(function(resolve) {
+            setTimeout(function() {
+                console.warn(label + " timed out after " + ms + "ms, continuing.");
+                resolve();
+            }, ms);
+        })
+    ]);
+}
+
+async function safeStep(label, fn) {
+    try {
+        await fn();
+    } catch (error) {
+        console.error(label + " failed:", error);
+    }
+}
 
 async function initializeApp() {
 
     /*
-     * Apply saved language first.
+     * Each step is isolated: a failure or a hang in one step
+     * (auth, locations, ...) must never leave the whole page
+     * stuck on "Loading...".
      */
+    await safeStep("applyLanguage", function() {
+        applyLanguage(getCurrentLanguage());
+    });
 
-    applyLanguage(
-        getCurrentLanguage()
-    );
-
-
-    const initialized =
-        initializeSupabase();
-
-
-    if (!initialized) {
-
+    if (!ensureSupabaseReady()) {
         return;
     }
 
+    await safeStep("setupAuthListener", function() {
+        setupAuthListener();
+    });
 
-    setupAuthListener();
+    await safeStep("checkCurrentUser", function() {
+        return withTimeout(checkCurrentUser(), 8000, "checkCurrentUser");
+    });
 
+    await safeStep("loadLocations", function() {
+        return withTimeout(loadLocations(), 8000, "loadLocations");
+    });
 
-    await checkCurrentUser();
-
-
-    /*
-     * Locations first.
-     */
-
-    await loadLocations();
-
-
-    /*
-     * Then properties.
-     */
-
-    await loadProperties();
-
-    await loadHomeMarketplace();
-
-    await loadHomeCars();
-
+    await Promise.all([
+        safeStep("loadProperties", loadProperties),
+        safeStep("loadHomeJobs", loadHomeJobs),
+        safeStep("loadHomeMarketplace", loadHomeMarketplace),
+        safeStep("loadHomeCars", loadHomeCars)
+    ]);
 
     console.log(
-        "EASTERN ETHIOPIA DIGITAL BROKER INDEX READY"
+        "EASTERN ETHIOPIA GENERAL DIGITAL BROKER INDEX READY"
     );
 }
 
@@ -7338,6 +6344,77 @@ document.addEventListener(
 
 </script>
 
+<!-- =========================================================
+     SERVICE WORKER
+========================================================= -->
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+        navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(function() {
+                console.log("EEDB Service Worker registered.");
+            })
+            .catch(function(error) {
+                console.warn(
+                    "EEDB Service Worker registration failed:",
+                    error
+                );
+            });
+    });
+}
+</script>
+
 </body>
 
 </html>
+<style>
+.property-date-section {
+    margin: 34px 0;
+}
+
+.property-date-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    background: #ffffff;
+    border-left: 5px solid #0f766e;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+}
+
+.property-date-heading h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.property-date-heading span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f766e;
+    background: #ecfdf5;
+    padding: 7px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .property-date-heading {
+        padding: 12px 14px;
+    }
+
+    .property-date-heading h2 {
+        font-size: 18px;
+    }
+
+    .property-date-heading span {
+        font-size: 11px;
+        padding: 6px 9px;
+    }
+}
+</style>

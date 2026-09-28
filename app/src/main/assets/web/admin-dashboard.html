@@ -1113,6 +1113,85 @@ textarea.input{
     grid-column:auto;
   }
 }
+
+/* =========================================================
+   V2 POLISH LAYER
+   Additive-only refinements: motion, focus states, hover
+   depth. Nothing above is overridden structurally.
+========================================================= */
+
+.card{
+  transition:box-shadow .2s ease, transform .2s ease;
+}
+
+.section.active{
+  animation:eedbFadeIn .22s ease;
+}
+
+@keyframes eedbFadeIn{
+  from{opacity:0; transform:translateY(6px);}
+  to{opacity:1; transform:translateY(0);}
+}
+
+.btn{
+  box-shadow:0 1px 2px rgba(16,24,40,.05);
+}
+
+.btn:active{
+  transform:translateY(0);
+  filter:brightness(.96);
+}
+
+.nav button{
+  position:relative;
+}
+
+.nav button.active::before{
+  content:"";
+  position:absolute;
+  left:0; top:8px; bottom:8px;
+  width:3px;
+  border-radius:0 3px 3px 0;
+  background:var(--primary);
+}
+
+.table tr{
+  transition:background .12s ease;
+}
+
+.table tr:hover td{
+  background:var(--primary-soft);
+}
+
+.property-thumb{
+  transition:transform .2s ease;
+}
+
+.property-preview:hover .property-thumb{
+  transform:scale(1.04);
+}
+
+.input:focus-visible,
+.btn:focus-visible,
+.nav button:focus-visible{
+  outline:2px solid var(--primary);
+  outline-offset:2px;
+}
+
+.badge{
+  letter-spacing:.02em;
+}
+
+.empty{
+  border-radius:var(--radius);
+}
+
+@media (prefers-reduced-motion: reduce){
+  .card, .section.active, .btn, .property-thumb, .table tr{
+    animation:none !important;
+    transition:none !important;
+  }
+}
 </style>
 </head>
 
@@ -1154,7 +1233,6 @@ textarea.input{
     <button data-go="users">👥 Users</button>
     <button data-go="locations">📍 Locations</button>
     <button id="cityAdminNav" data-go="cityadmins">🛡 City Admins</button>
-    <button id="dailyReportNav" data-go="dailyreport">📊 Daily Report</button>
 
     <div class="label">ACCOUNT</div>
 
@@ -1539,6 +1617,10 @@ textarea.input{
       <h2>Marketplace Management</h2>
       <p>Review, publish and manage marketplace items.</p>
     </div>
+    <button class="btn primary" type="button"
+      onclick="openAdminListingModal('marketplace')">
+      ＋ Add Marketplace
+    </button>
   </div>
 
   <div class="card filter-card">
@@ -1623,6 +1705,10 @@ textarea.input{
       <h2>Car Management</h2>
       <p>Review, publish and manage cars for sale or rent.</p>
     </div>
+    <button class="btn primary" type="button"
+      onclick="openAdminListingModal('cars')">
+      ＋ Add Car
+    </button>
   </div>
 
   <div class="card filter-card">
@@ -1881,93 +1967,6 @@ textarea.input{
 
 
 <!-- =========================
-     DAILY REPORT MANAGEMENT
-========================= -->
-<section id="dailyreport" class="section">
-
-  <div class="head">
-    <div>
-      <h2>Daily Report Management</h2>
-      <p>Daily activity summary by city.</p>
-    </div>
-  </div>
-
-  <div id="dailyReportLocked" class="danger-note hidden">
-    This section is available only to Super Admin.
-  </div>
-
-  <div id="dailyReportPanel">
-
-    <div class="card">
-      <div class="grid">
-
-        <div class="field">
-          <label>Report Date</label>
-          <input id="dailyReportDate" class="input" type="date">
-        </div>
-
-        <div class="field">
-          <label>City</label>
-          <select id="dailyReportCity" class="input">
-            <option value="all">All Cities</option>
-          </select>
-        </div>
-
-      </div>
-
-      <div class="form-actions">
-        <button type="button" class="btn primary" onclick="loadDailyReport()">
-          🔎 Load Report
-        </button>
-        <button type="button" class="btn light" onclick="resetDailyReportFilters()">
-          Reset
-        </button>
-      </div>
-    </div>
-
-    <div class="card">
-      <div class="tablewrap">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>City</th>
-              <th>Property Rent</th>
-              <th>Property Sale</th>
-              <th>Jobs</th>
-              <th>Market Sell</th>
-              <th>Market Rent</th>
-              <th>Cars Sell</th>
-              <th>Cars Rent</th>
-              <th>Total</th>
-              <th>Property Sold</th>
-              <th>Property Rented</th>
-              <th>Market Sold</th>
-              <th>Market Rented</th>
-              <th>Cars Sold</th>
-              <th>Cars Rented</th>
-              <th>Jobs Filled</th>
-              <th>Jobs Closed</th>
-              <th>Jobs Expired</th>
-            </tr>
-          </thead>
-
-          <tbody id="dailyReportRows">
-            <tr>
-              <td colspan="19" class="empty">
-                Select a date and load the report.
-              </td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-  </div>
-
-</section>
-
-<!-- =========================
      CITY ADMINS
 ========================= -->
 
@@ -2111,11 +2110,6 @@ textarea.input{
   <button data-go="users">
     👤
     <span>Users</span>
-  </button>
-
-  <button id="dailyReportMobileNav" data-go="dailyreport">
-    📊
-    <span>Report</span>
   </button>
 
 </nav>
@@ -2953,8 +2947,7 @@ const go = section => {
     applications:'Applications',
     users:'User Management',
     locations:'Locations',
-    cityadmins:'City Admins',
-    dailyreport:'Daily Report Management'
+    cityadmins:'City Admins'
   };
 
   $('pageTitle').textContent =
@@ -2968,7 +2961,6 @@ const go = section => {
   if(section === 'users') renderUsers();
   if(section === 'locations') renderLocations();
   if(section === 'cityadmins') renderCityAdmins();
-  if(section === 'dailyreport') loadDailyReport();
 
   $('side').classList.remove('open');
 };
@@ -3180,16 +3172,7 @@ async function loadAll(){
     if(profile.role==='super_admin') { const allLoc=await EEDB.client.from('locations').select('id,parent_id,name,type,is_active,created_at').order('name'); if(!allLoc.error) locations=allLoc.data||[]; }
 
 
-        /* DAILY REPORT INITIALIZATION */
-    if(profile.role === "super_admin"){
-      populateDailyReportCities();
-      const reportDate = $("dailyReportDate");
-      if(reportDate && !reportDate.value){
-        reportDate.value = todayISO();
-      }
-    }
-
-/* DATA */
+    /* DATA */
 
     const results = await Promise.all([
 
@@ -3261,47 +3244,7 @@ async function loadAll(){
 
     renderLocations();
 
-    const dailyReportNav = $("dailyReportNav");
-  const dailyReportMobileNav = $("dailyReportMobileNav");
-  const dailyReportPanel = $("dailyReportPanel");
-  const dailyReportLocked = $("dailyReportLocked");
-
-  const isSuperAdmin =
-    EEDB.normalizeRole(profile?.role) === "super_admin";
-
-  if(dailyReportNav){
-    dailyReportNav.style.display =
-      isSuperAdmin ? "" : "none";
-  }
-
-  if(dailyReportMobileNav){
-    dailyReportMobileNav.style.display =
-      isSuperAdmin ? "" : "none";
-  }
-
-  if(dailyReportPanel){
-    dailyReportPanel.style.display =
-      isSuperAdmin ? "" : "none";
-  }
-
-  if(dailyReportLocked){
-    dailyReportLocked.classList.toggle(
-      "hidden",
-      isSuperAdmin
-    );
-  }
-
-  if(isSuperAdmin){
-    populateDailyReportCities();
-
-    const reportDate = $("dailyReportDate");
-
-    if(reportDate && !reportDate.value){
-      reportDate.value = todayISO();
-    }
-  }
-
-  renderCityAdmins();
+    renderCityAdmins();
 
     setupCascades();
 
@@ -3322,157 +3265,6 @@ async function loadAll(){
 
 }
 
-
-/* =========================================================
-   DAILY REPORT MANAGEMENT
-========================================================= */
-
-let dailyReportRows = [];
-
-function todayISO(){
-  const d = new Date();
-  return d.getFullYear() + "-" +
-    String(d.getMonth()+1).padStart(2,"0") + "-" +
-    String(d.getDate()).padStart(2,"0");
-}
-
-function populateDailyReportCities(){
-
-  const select = $("dailyReportCity");
-  if(!select) return;
-
-  const cities = locations
-    .filter(x =>
-      x.type === "city" &&
-      x.is_active !== false
-    )
-    .sort((a,b) =>
-      String(a.name || "").localeCompare(
-        String(b.name || "")
-      )
-    );
-
-  select.innerHTML =
-    "<option value="all">All Cities</option>" +
-    cities.map(city =>
-      "<option value="" +
-      esc(city.id) +
-      "">" +
-      esc(city.name) +
-      "</option>"
-    ).join("");
-}
-
-function renderDailyReport(){
-
-  const rows = $("dailyReportRows");
-  if(!rows) return;
-
-  if(!dailyReportRows.length){
-    rows.innerHTML =
-      "<tr><td colspan=\"19\" class=\"empty\">" +
-      "No daily report data found." +
-      "</td></tr>";
-    return;
-  }
-
-  rows.innerHTML = dailyReportRows.map(row => `
-    <tr>
-      <td>${esc(row.report_date || "—")}</td>
-      <td>${esc(row.city_name || "—")}</td>
-      <td>${Number(row.property_rent_posts || 0)}</td>
-      <td>${Number(row.property_sale_posts || 0)}</td>
-      <td>${Number(row.job_posts || 0)}</td>
-      <td>${Number(row.marketplace_sell_posts || 0)}</td>
-      <td>${Number(row.marketplace_rent_posts || 0)}</td>
-      <td>${Number(row.cars_sell_posts || 0)}</td>
-      <td>${Number(row.cars_rent_posts || 0)}</td>
-      <td><b>${Number(row.total_posts || 0)}</b></td>
-      <td>${Number(row.property_sold || 0)}</td>
-      <td>${Number(row.property_rented || 0)}</td>
-      <td>${Number(row.marketplace_sold || 0)}</td>
-      <td>${Number(row.marketplace_rented || 0)}</td>
-      <td>${Number(row.cars_sold || 0)}</td>
-      <td>${Number(row.cars_rented || 0)}</td>
-      <td>${Number(row.jobs_filled || 0)}</td>
-      <td>${Number(row.jobs_closed || 0)}</td>
-      <td>${Number(row.jobs_expired || 0)}</td>
-    </tr>
-  `).join("");
-}
-
-async function loadDailyReport(){
-
-  if(profile?.role !== "super_admin"){
-    return;
-  }
-
-  const rows = $("dailyReportRows");
-
-  if(rows){
-    rows.innerHTML =
-      "<tr><td colspan=\"19\" class=\"empty\">" +
-      "Loading daily report..." +
-      "</td></tr>";
-  }
-
-  const date =
-    $("dailyReportDate")?.value || todayISO();
-
-  const cityId =
-    $("dailyReportCity")?.value || "all";
-
-  let query = EEDB.client
-    .from("daily_city_activity_report")
-    .select("*")
-    .eq("report_date", date)
-    .order("city_name", {ascending:true});
-
-  if(cityId !== "all"){
-    query = query.eq("city_id", cityId);
-  }
-
-  const result = await query;
-
-  if(result.error){
-
-    console.error(
-      "DAILY REPORT ERROR:",
-      result.error
-    );
-
-    toast(
-      result.error.message ||
-      "Failed to load daily report.",
-      "error"
-    );
-
-    dailyReportRows = [];
-    renderDailyReport();
-    return;
-  }
-
-  dailyReportRows =
-    result.data || [];
-
-  renderDailyReport();
-}
-
-function resetDailyReportFilters(){
-
-  const date = $("dailyReportDate");
-  const city = $("dailyReportCity");
-
-  if(date){
-    date.value = todayISO();
-  }
-
-  if(city){
-    city.value = "all";
-  }
-
-  loadDailyReport();
-}
 
 /* =========================================================
    STATS
@@ -6128,6 +5920,10 @@ function renderMarketplaceAdmin(){
             onclick="viewMarketplaceAdmin('${item.id}')">
             View
           </button>
+          <button class="btn small"
+            onclick="openAdminListingModal('marketplace','${item.id}')">
+            Edit
+          </button>
 
           ${
             item.status === 'pending_review' ||
@@ -6445,6 +6241,10 @@ function renderCarsAdmin(){
           <button class="btn small"
             onclick="viewCarAdmin('${car.id}')">
             View
+          </button>
+          <button class="btn small"
+            onclick="openAdminListingModal('cars','${car.id}')">
+            Edit
           </button>
 
           ${
@@ -7571,6 +7371,7 @@ document
 loadAll();
 
 </script>
+<script src="admin-listing-tools.js"></script>
 
 </body>
 </html>
