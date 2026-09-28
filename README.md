@@ -18,8 +18,8 @@ later in your Android/Termux environment with the Android SDK installed.
 
 ## Supabase setup
 
-Run `SUPABASE_CANONICAL_FINAL.sql` in the live Supabase SQL editor after
-reviewing the existing schema. The script creates or extends the
+Run **`SUPABASE_FINAL_V4.sql`** (the only SQL file to run; it supersedes the
+older canonical/v3 scripts) in the live Supabase SQL editor. The script creates or extends the
 `marketplace_items` and `cars` tables, enables owner/admin RLS, creates the
 `marketplace-images` and `car-images` public buckets, adds storage policies,
 and includes audit queries.
@@ -58,5 +58,15 @@ were intentionally excluded.
 | `car-images` | public | `user-id/car-id/file` |
 | `job-cvs` | private | `user-id/file` (signed URLs for employers) |
 
-`SUPABASE_CANONICAL_FINAL.sql` creates all four buckets and their policies.
+`SUPABASE_FINAL_V4.sql` creates all four buckets and their policies.
 Run its audit query (last statement) after applying it.
+
+## v4: Super Admin features
+- **Change role**: Users -> Change Role (RPC `eedb_set_user_role`).
+- **Assign City Admin**: City Admins tab (RPC `eedb_assign_city_admin`).
+- **Daily reports**: Reports tab (Super Admin only) -> pick date -> pick city
+  (RPC `eedb_daily_report`, Africa/Addis_Ababa day, no row limit).
+- Sold/Rented history is written by DB triggers on properties,
+  marketplace_items and cars. Only new status changes after running the SQL are counted.
+- First Super Admin (SQL editor, once):
+  `update public.profiles set role='super_admin' where id='<AUTH-UUID>';`

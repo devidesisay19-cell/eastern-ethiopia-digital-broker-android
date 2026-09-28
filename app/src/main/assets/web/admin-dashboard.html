@@ -1233,6 +1233,7 @@ textarea.input{
     <button data-go="users">👥 Users</button>
     <button data-go="locations">📍 Locations</button>
     <button id="cityAdminNav" data-go="cityadmins">🛡 City Admins</button>
+    <button id="reportsNav" data-go="reports">📊 Reports</button>
 
     <div class="label">ACCOUNT</div>
 
@@ -1969,6 +1970,51 @@ textarea.input{
 <!-- =========================
      CITY ADMINS
 ========================= -->
+
+<section id="reports" class="section">
+
+  <div class="head">
+    <div>
+      <h2>Daily Reports</h2>
+      <p>Reports → Date → City. New posts and Sold / Rented per city (Ethiopia time).</p>
+    </div>
+  </div>
+
+  <div id="reportsLocked" class="danger-note hidden">
+    This section is available only to Super Admin.
+  </div>
+
+  <div id="reportsPanel">
+    <div class="card">
+      <div class="grid">
+        <div class="field">
+          <label>Date</label>
+          <input id="repDate" type="date" class="input">
+        </div>
+        <div class="field">
+          <label>City</label>
+          <select id="repCity" class="input"><option value="">All cities (summary)</option></select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center">
+        <button class="btn primary" id="repLoadBtn" type="button">Load report</button>
+        <label style="display:flex;gap:6px;align-items:center;font-size:13px">
+          <input type="checkbox" id="repShowEmpty"> Show cities with no activity
+        </label>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+        <b id="repTitle">Report</b>
+        <button class="btn light" id="repCopyBtn" type="button">Copy</button>
+      </div>
+      <pre id="repOut" style="white-space:pre-wrap;font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;line-height:1.55;margin:12px 0 0;overflow-x:auto">Choose a date and press Load report.</pre>
+    </div>
+  </div>
+
+</section>
+
 
 <section id="cityadmins" class="section">
 
@@ -2947,7 +2993,8 @@ const go = section => {
     applications:'Applications',
     users:'User Management',
     locations:'Locations',
-    cityadmins:'City Admins'
+    cityadmins:'City Admins',
+    reports:'Daily Reports'
   };
 
   $('pageTitle').textContent =
@@ -2961,6 +3008,7 @@ const go = section => {
   if(section === 'users') renderUsers();
   if(section === 'locations') renderLocations();
   if(section === 'cityadmins') renderCityAdmins();
+  if(section === 'reports') initReports();
 
   $('side').classList.remove('open');
 };
@@ -3158,6 +3206,12 @@ async function loadAll(){
     if(profile.role !== 'super_admin'){
 
       $('cityAdminNav').classList.add('hidden');
+
+      $('reportsNav').classList.add('hidden');
+
+      $('reportsPanel').classList.add('hidden');
+
+      $('reportsLocked').classList.remove('hidden');
 
       $('cityAdminPanel').classList.add('hidden');
 
@@ -6041,24 +6095,9 @@ function viewMarketplaceAdmin(id){
   );
 }
 
-async function recordPostStatusHistory(entityType, entityId, cityId, oldStatus, newStatus){
-  if(!cityId) return;
-
-  const result = await EEDB.client
-    .from("post_status_history")
-    .insert({
-      entity_type: entityType,
-      entity_id: entityId,
-      city_id: cityId,
-      old_status: oldStatus || null,
-      new_status: newStatus,
-      changed_by: me.id
-    });
-
-  if(result.error){
-    console.error("STATUS HISTORY ERROR:", result.error);
-  }
-}
+/* Status history is now written automatically by the database trigger
+   (eedb_log_status_change), so the dashboard no longer inserts it. */
+async function recordPostStatusHistory(){ return; }
 
 async function approveMarketplaceAdmin(id){
 
@@ -7040,21 +7079,12 @@ async function saveUserRole(){
 
   try{
 
-    const result = await EEDB.client
-      .from('profiles')
-      .update({ role: nextRole })
-      .eq('id', id);
+    const result = await EEDB.client.rpc('eedb_set_user_role', {
+      target: id,
+      new_role: nextRole
+    });
 
     if(result.error) throw result.error;
-
-    if(nextRole !== 'city_admin'){
-      const cleanup = await EEDB.client
-        .from('admin_city_assignments')
-        .delete()
-        .eq('admin_id', id);
-
-      if(cleanup.error) throw cleanup.error;
-    }
 
     closeModal('roleModal');
 
@@ -7150,63 +7180,17 @@ async function assignCityAdmin(){
   }
 
 
-  const roleUpdate =
-    await EEDB.client
-      .from('profiles')
-      .update({
-        role:'city_admin'
-      })
-      .eq('id',userId);
-
-
-  if(roleUpdate.error){
-
-    toast(
-      roleUpdate.error.message,
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  const exists =
-    assignments.some(
-      a =>
-        a.admin_id === userId &&
-        a.city_id === cityId
+  const assign =
+    await EEDB.client.rpc(
+      'eedb_assign_city_admin',
+      { target:userId, city:cityId }
     );
 
 
-  if(exists){
+  if(assign.error){
 
     toast(
-      'This City Admin is already assigned to this city.',
-      'error'
-    );
-
-    return;
-
-  }
-
-
-  const insert =
-    await EEDB.client
-      .from('admin_city_assignments')
-      .insert({
-
-        admin_id:userId,
-
-        city_id:cityId
-
-      });
-
-
-  if(insert.error){
-
-    toast(
-      insert.error.message,
+      assign.error.message,
       'error'
     );
 
@@ -7222,6 +7206,7 @@ async function assignCityAdmin(){
 
 
   await reloadAssignments();
+  await reloadUsers();
 
 }
 
@@ -7262,6 +7247,119 @@ async function reloadAssignments(){
 /* =========================================================
    REMOVE ASSIGNMENT
 ========================================================= */
+
+
+/* =========================================================
+   DAILY REPORTS (Super Admin) - uses RPC eedb_daily_report
+========================================================= */
+
+let reportRows = [];
+let reportDate = '';
+
+function todayAddis(){
+  return new Intl.DateTimeFormat('en-CA', {timeZone:'Africa/Addis_Ababa'}).format(new Date());
+}
+
+function initReports(){
+  if(profile?.role !== 'super_admin') return;
+  if(!$('repDate').value){
+    $('repDate').value = todayAddis();
+    $('repLoadBtn').onclick = loadReport;
+    $('repCity').onchange = renderReport;
+    $('repShowEmpty').onchange = renderReport;
+    $('repCopyBtn').onclick = copyReport;
+    loadReport();
+  }
+}
+
+const repNew = r => r.prop_rent+r.prop_sale+r.jobs+r.mkt_sell+r.mkt_rent+r.car_sell+r.car_rent;
+const repDone = r => r.prop_sold+r.prop_rented+r.mkt_sold+r.mkt_rented+r.car_sold+r.car_rented;
+
+async function loadReport(){
+  if(profile?.role !== 'super_admin') return;
+  const date = $('repDate').value || todayAddis();
+  const btn = $('repLoadBtn');
+  btn.disabled = true; btn.textContent = 'Loading...';
+  try{
+    const res = await EEDB.client.rpc('eedb_daily_report', {report_date: date});
+    if(res.error) throw res.error;
+    reportDate = date;
+    reportRows = (res.data || []).map(r => ({...r, city_id: r.city_id || ''}));
+    reportRows.sort((a,b) => (repNew(b)+repDone(b)) - (repNew(a)+repDone(a)) || String(a.city_name).localeCompare(String(b.city_name)));
+    renderReport();
+  }catch(error){
+    console.error(error);
+    toast(error.message || 'Unable to load report', 'error');
+  }finally{
+    btn.disabled = false; btn.textContent = 'Load report';
+  }
+}
+
+function reportDateLabel(){
+  return new Date(reportDate + 'T00:00:00Z').toLocaleDateString('en-US', {year:'numeric', month:'long', day:'numeric', timeZone:'UTC'});
+}
+
+function renderReport(){
+  const showEmpty = $('repShowEmpty').checked;
+  const active = reportRows.filter(r => repNew(r) + repDone(r) > 0);
+  const visible = showEmpty ? reportRows : active;
+
+  const sel = $('repCity');
+  const keep = sel.value;
+  sel.innerHTML = '<option value="">All cities (summary)</option>' +
+    visible.map(r => `<option value="${esc(r.city_id)}">${esc(r.city_name)} — ${repNew(r)} new</option>`).join('');
+  sel.value = visible.some(r => r.city_id === keep) ? keep : '';
+
+  const pad = (label, n) => (label + ':').padEnd(14) + String(n).padStart(4);
+  let text;
+  if(!sel.value){
+    $('repTitle').textContent = 'DAILY REPORT — ' + reportDateLabel();
+    const blocks = visible.map(r => [
+      r.city_name,
+      pad('Properties', r.prop_rent + r.prop_sale),
+      pad('Jobs', r.jobs),
+      pad('Marketplace', r.mkt_sell + r.mkt_rent),
+      pad('Cars', r.car_sell + r.car_rent),
+      pad('Total Posts', repNew(r))
+    ].join('\n'));
+    const grand = reportRows.reduce((t,r) => t + repNew(r), 0);
+    const done = reportRows.reduce((t,r) => t + repDone(r), 0);
+    text = '📊 DAILY REPORT\nDate: ' + reportDateLabel() + '\n\n' +
+      (blocks.length ? blocks.join('\n\n') : 'No posts on this date.') +
+      '\n\nALL CITIES\n' + pad('New posts', grand) + '\n' + pad('Completed', done);
+  }else{
+    const r = reportRows.find(x => x.city_id === sel.value);
+    $('repTitle').textContent = r.city_name + ' — ' + reportDateLabel();
+    const line = (icon, label, n) => icon + ' ' + (label + ':').padEnd(19) + String(n).padStart(3);
+    text = r.city_name.toUpperCase() + ' — ' + reportDateLabel() + '\n\n' +
+      'NEW POSTS\n' +
+      line('🏠','Property Rent', r.prop_rent) + '\n' +
+      line('🏠','Property Sale', r.prop_sale) + '\n' +
+      line('💼','Jobs', r.jobs) + '\n' +
+      line('🛍','Marketplace Sell', r.mkt_sell) + '\n' +
+      line('🛍','Marketplace Rent', r.mkt_rent) + '\n' +
+      line('🚗','Cars Sell', r.car_sell) + '\n' +
+      line('🚗','Cars Rent', r.car_rent) + '\n' +
+      line('  ','Total', repNew(r)) + '\n\n' +
+      'COMPLETED\n' +
+      line('🏠','Property Sold', r.prop_sold) + '\n' +
+      line('🏠','Property Rented', r.prop_rented) + '\n' +
+      line('🛍','Marketplace Sold', r.mkt_sold) + '\n' +
+      line('🛍','Marketplace Rented', r.mkt_rented) + '\n' +
+      line('🚗','Cars Sold', r.car_sold) + '\n' +
+      line('🚗','Cars Rented', r.car_rented);
+  }
+  $('repOut').textContent = text;
+}
+
+async function copyReport(){
+  try{
+    await navigator.clipboard.writeText($('repOut').textContent);
+    toast('Report copied.', 'success');
+  }catch(e){
+    toast('Copy is not available on this device.', 'error');
+  }
+}
 
 async function removeAssignment(id){
 

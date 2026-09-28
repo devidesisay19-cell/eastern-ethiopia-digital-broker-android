@@ -3541,6 +3541,8 @@ function removeMarketplacePhoto(index){
 
 function openCarModal(){
 
+    ensureListingRegions();
+
     const modal =
         document.getElementById("carModal");
 
@@ -4184,6 +4186,8 @@ async function saveCar(){
 
 
 function openMarketplaceModal(){
+
+    ensureListingRegions();
 
     const modal =
         document.getElementById("marketplaceModal");
@@ -6717,6 +6721,7 @@ async function startDashboard(){
         "Select Region"
     );
 
+    await ensureListingRegions();
 
     await loadProperties();
 
@@ -6773,6 +6778,31 @@ function setProfile(){
 
 }
 
+
+/* =========================================================
+   LISTING REGIONS (Marketplace + Car)
+   Regions must be loaded for these dropdowns too, otherwise
+   the whole cascade stays empty.
+========================================================= */
+
+async function ensureListingRegions(force){
+
+    const targets = [
+        ["marketplaceRegionSelect", "Select Region"],
+        ["carRegionSelect", "Select Region"]
+    ];
+
+    for(const [id, label] of targets){
+
+        const el = document.getElementById(id);
+
+        if(!el){ continue; }
+
+        if(!force && el.options.length > 1){ continue; }
+
+        await loadLocations("region", null, id, label);
+    }
+}
 
 /* =========================================================
    LOCATION LOADER

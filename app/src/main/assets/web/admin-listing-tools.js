@@ -318,10 +318,11 @@
         const result = await EEDB.client.from(tableFor(state.kind)).update(payload).eq("id", id);
         if (result.error) throw result.error;
       } else {
-        Object.assign(payload, { seller_id: me.id, posted_by: me.id, status: "pending_review" });
-        const result = await EEDB.client.from(tableFor(state.kind)).insert(payload).select("id").single();
+        id = (window.crypto && crypto.randomUUID) ? crypto.randomUUID()
+          : "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => { const r = Math.random() * 16 | 0; return (c === "x" ? r : (r & 3 | 8)).toString(16); });
+        Object.assign(payload, { id, seller_id: me.id, posted_by: me.id, status: "pending_review" });
+        const result = await EEDB.client.from(tableFor(state.kind)).insert(payload);
         if (result.error) throw result.error;
-        id = result.data.id;
       }
       const photoUrls = await uploadPhotos(state.kind, id);
       const photoResult = await EEDB.client.from(tableFor(state.kind)).update({
