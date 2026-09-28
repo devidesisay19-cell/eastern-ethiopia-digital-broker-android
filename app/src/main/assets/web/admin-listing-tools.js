@@ -80,14 +80,14 @@
             <label id="adminListingYearLabel">Year<input id="adminListingYear" class="input" type="number" min="1950" max="2100"></label>
             <label id="adminListingMileageLabel">Mileage<input id="adminListingMileage" class="input" type="number" min="0"></label>
             <label id="adminListingTransmissionLabel">Transmission<select id="adminListingTransmission" class="input">
-              <option value="">Select transmission</option><option value="Manual">Manual</option><option value="Automatic">Automatic</option><option value="Semi-Automatic">Semi-Automatic</option><option value="Other">Other</option>
+              <option value="">Select transmission</option><option value="manual">Manual</option><option value="automatic">Automatic</option>
             </select></label>
             <label id="adminListingFuelLabel">Fuel type<select id="adminListingFuel" class="input">
-              <option value="">Select fuel type</option><option value="Petrol">Petrol</option><option value="Diesel">Diesel</option><option value="Hybrid">Hybrid</option><option value="Electric">Electric</option><option value="Other">Other</option>
+              <option value="">Select fuel type</option><option value="petrol">Petrol</option><option value="diesel">Diesel</option><option value="hybrid">Hybrid</option><option value="electric">Electric</option>
             </select></label>
             <label id="adminListingColorLabel">Color<input id="adminListingColor" class="input" maxlength="40"></label>
             <label>Condition<select id="adminListingCondition" class="input" required>
-              <option value="">Select condition</option><option value="Used">Used</option><option value="Like New">Like New</option><option value="Good">Good</option><option value="Fair">Fair</option>
+              <option value="">Select condition</option><option value="new">New</option><option value="used">Used</option><option value="excellent">Excellent</option><option value="good">Good</option><option value="fair">Fair</option>
             </select></label>
             <label>Listing type<select id="adminListingType" class="input" required><option value="sell">Sell</option><option value="rent">Rent</option></select></label>
             <label>Price<input id="adminListingPrice" class="input" type="number" min="0" step="0.01" required></label>

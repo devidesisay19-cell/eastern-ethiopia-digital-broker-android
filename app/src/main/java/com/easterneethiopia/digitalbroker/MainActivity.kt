@@ -27,13 +27,7 @@ class MainActivity : AppCompatActivity() {
         val callback = filePathCallback ?: return@registerForActivityResult
         filePathCallback = null
 
-        val uris = if (result.resultCode == RESULT_OK) {
-            result.data?.clipData?.let { clip ->
-                Array(clip.itemCount) { index -> clip.getItemAt(index).uri }
-            } ?: result.data?.data?.let { arrayOf(it) }
-        } else {
-            null
-        }
+        val uris = WebChromeClient.FileChooserParams.parseResult(result.resultCode, result.data)
 
         callback.onReceiveValue(uris)
     }
@@ -78,10 +72,12 @@ class MainActivity : AppCompatActivity() {
                     this@MainActivity.filePathCallback?.onReceiveValue(null)
                     this@MainActivity.filePathCallback = filePathCallback
 
-                    val intent = fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
+                    val intent = (fileChooserParams?.createIntent() ?: Intent(Intent.ACTION_GET_CONTENT).apply {
                         addCategory(Intent.CATEGORY_OPENABLE)
-                        type = "*/*"
-                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+                        type = "image/*"
+                    }).apply {
+                        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, fileChooserParams?.mode == FileChooserParams.MODE_OPEN_MULTIPLE)
+                        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     }
 
                     return runCatching {

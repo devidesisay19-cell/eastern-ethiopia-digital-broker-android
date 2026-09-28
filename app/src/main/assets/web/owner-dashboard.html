@@ -2224,10 +2224,11 @@ Photo upload does not depend on Area.
     Select Condition
 </option>
 
-<option value="Used">Used</option>
-<option value="Like New">Like New</option>
-<option value="Good">Good</option>
-<option value="Fair">Fair</option>
+<option value="new">New</option>
+<option value="used">Used</option>
+<option value="excellent">Like New</option>
+<option value="good">Good</option>
+<option value="fair">Fair</option>
 
 </select>
 
@@ -2673,10 +2674,11 @@ Area / Kebele is optional.
                         </label>
 
                         <select id="carCondition" required>
-                            <option value="Used">Used</option>
-                            <option value="Like New">Like New</option>
-                            <option value="Good">Good</option>
-                            <option value="Fair">Fair</option>
+                            <option value="new">New</option>
+                            <option value="used">Used</option>
+                            <option value="excellent">Like New</option>
+                            <option value="good">Good</option>
+                            <option value="fair">Fair</option>
                         </select>
                     </div>
 
@@ -3322,13 +3324,63 @@ function switchOwnerSection(section){
    MARKETPLACE PHOTO FUNCTIONS
 ========================================================= */
 
-function handleCarPhotos(e){
+
+/* =========================================================
+   IMAGE PREPARATION (Android WebView safe)
+   Reads the picked file fully into memory, decodes it and
+   re-encodes it as a smaller JPEG. Unreadable files (broken
+   content:// URI, cloud placeholder, unsupported HEIC) are
+   rejected here instead of failing later with "Failed to fetch".
+========================================================= */
+async function prepareImageFile(file){
+    try{
+        const buffer = await file.arrayBuffer();
+        if(!buffer || !buffer.byteLength){
+            throw new Error("empty file");
+        }
+        const srcBlob = new Blob([buffer], {type: file.type || "image/jpeg"});
+        let bitmap = null;
+        if(window.createImageBitmap){
+            try{ bitmap = await createImageBitmap(srcBlob); }catch(_){ bitmap = null; }
+        }
+        if(!bitmap){
+            bitmap = await new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(srcBlob);
+                const img = new Image();
+                img.onload = () => { URL.revokeObjectURL(url); resolve(img); };
+                img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("cannot decode")); };
+                img.src = url;
+            });
+        }
+        const w0 = bitmap.width || bitmap.naturalWidth;
+        const h0 = bitmap.height || bitmap.naturalHeight;
+        const MAX_SIDE = 1600;
+        const scale = Math.min(1, MAX_SIDE / Math.max(w0, h0));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.round(w0 * scale);
+        canvas.height = Math.round(h0 * scale);
+        canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+        if(bitmap.close) bitmap.close();
+        const blob = await new Promise(res => canvas.toBlob(res, "image/jpeg", 0.82));
+        if(!blob) throw new Error("encode failed");
+        const baseName = (file.name || "photo").replace(/\.[^.]+$/, "");
+        return new File([blob], baseName + ".jpg", {type: "image/jpeg"});
+    }catch(err){
+        console.warn("Photo could not be read:", file && file.name, err);
+        const msg = (file && file.name ? file.name + ": " : "") +
+            "this photo could not be read. Please choose another photo (JPG/PNG).";
+        if(typeof toast === "function"){ toast(msg, "warning"); } else { alert(msg); }
+        return null;
+    }
+}
+
+async function handleCarPhotos(e){
 
     const files =
         Array.from(e.target.files || []);
 
     const MAX_PHOTOS = 5;
-    const MAX_SIZE = 5 * 1024 * 1024;
+    const MAX_SIZE = 25 * 1024 * 1024;
 
     for(const file of files){
 
@@ -3349,7 +3401,9 @@ function handleCarPhotos(e){
             continue;
         }
 
-        carSelectedFiles.push(file);
+        const prepared = await prepareImageFile(file);
+        if(!prepared) continue;
+        carSelectedFiles.push(prepared);
     }
 
     e.target.value = "";
@@ -3426,13 +3480,13 @@ function removeCarPhoto(index){
 }
 
 
-function handleMarketplacePhotos(e){
+async function handleMarketplacePhotos(e){
 
     const files =
         Array.from(e.target.files || []);
 
     const MAX_PHOTOS = 5;
-    const MAX_SIZE = 5 * 1024 * 1024;
+    const MAX_SIZE = 25 * 1024 * 1024;
 
     for(const file of files){
 
@@ -3453,7 +3507,9 @@ function handleMarketplacePhotos(e){
             continue;
         }
 
-        marketplaceSelectedFiles.push(file);
+        const prepared = await prepareImageFile(file);
+        if(!prepared) continue;
+        marketplaceSelectedFiles.push(prepared);
     }
 
     e.target.value = "";
@@ -5214,7 +5270,7 @@ async function editCar(id){
     document.getElementById(
         "carCondition"
     ).value =
-        car.condition || "Used";
+        String(car.condition || "used").toLowerCase().replace("like new","excellent");
 
     document.getElementById(
         "carTransmission"
@@ -5570,7 +5626,7 @@ async function editMarketplaceItem(id){
     document.getElementById(
         "marketplaceCondition"
     ).value =
-        item.condition || "Used";
+        String(item.condition || "used").toLowerCase().replace("like new","excellent");
 
     document.getElementById(
         "marketplaceListingType"
@@ -6030,7 +6086,7 @@ function viewCar(id){
 
             <p>
                 <strong>Condition:</strong>
-                ${esc(car.condition || "Used")}
+                ${esc(String(car.condition || "used").toLowerCase().replace("like new","excellent"))}
             </p>
 
             <p>
@@ -6316,7 +6372,7 @@ function viewMarketplaceItem(id){
 
             <p>
                 <strong>Condition:</strong>
-                ${esc(item.condition || "Used")}
+                ${esc(String(item.condition || "used").toLowerCase().replace("like new","excellent"))}
             </p>
 
             <p>
@@ -8694,7 +8750,7 @@ function resetForm(){
    PHOTO HANDLER
 ========================================================= */
 
-function handlePhotos(e){
+async function handlePhotos(e){
 
     const files =
         Array.from(
@@ -8707,11 +8763,7 @@ function handlePhotos(e){
     ){
 
         if(
-            ![
-                "image/jpeg",
-                "image/png",
-                "image/webp"
-            ].includes(file.type)
+            !(file.type || "").startsWith("image/")
         ){
 
             toast(
@@ -8726,7 +8778,7 @@ function handlePhotos(e){
 
         if(
             file.size >
-            5 * 1024 * 1024
+            25 * 1024 * 1024
         ){
 
             toast(
@@ -8753,8 +8805,14 @@ function handlePhotos(e){
         }
 
 
+        const prepared = await prepareImageFile(file);
+
+        if(!prepared){
+            continue;
+        }
+
         selectedFiles.push(
-            file
+            prepared
         );
 
     }
@@ -9825,95 +9883,77 @@ async function uploadPhotos(
         );
 
     /*
-     * Upload photos sequentially.
-     *
-     * Android WebView can fail when several
-     * Supabase Storage uploads run at once.
-     * Each photo gets up to 3 attempts.
+     * Upload photos ONE BY ONE (with 2 retries each).
+     * Five parallel uploads overload the Android WebView
+     * network stack and cause "Failed to fetch".
      */
     const results = [];
 
-    for(const job of uploadJobs){
+    try{
+        for(const job of uploadJobs){
 
-        let uploaded = false;
-        let lastError = null;
+            let lastError = null;
+            let uploaded = null;
 
-        for(let attempt = 1; attempt <= 3; attempt++){
+            for(let attempt = 1; attempt <= 3; attempt++){
+                try{
+                    const {
+                        data,
+                        error
+                    } =
+                    await supabaseClient
+                        .storage
+                        .from("property-images")
+                        .upload(
+                            job.path,
+                            job.file,
+                            {
+                                cacheControl: "3600",
+                                upsert: false,
+                                contentType: job.file.type || "image/jpeg"
+                            }
+                        );
 
-            try{
-
-                const {
-                    data,
-                    error
-                } =
-                await supabaseClient
-                    .storage
-                    .from("property-images")
-                    .upload(
-                        job.path,
-                        job.file,
-                        {
-                            cacheControl:
-                                "3600",
-
-                            upsert:
-                                false,
-
-                            contentType:
-                                job.file.type
+                    if(error){
+                        /* a previous attempt may have stored the file already */
+                        if(attempt > 1 && /already exists|duplicate/i.test(error.message || "")){
+                            uploaded = { path: job.path };
+                            break;
                         }
-                    );
+                        throw error;
+                    }
 
-                if(error){
-                    throw error;
+                    uploaded = data;
+                    break;
+
+                }catch(err){
+                    lastError = err;
+                    await new Promise(r => setTimeout(r, 600 * attempt));
                 }
-
-                results.push({
-                    property_id:
-                        propertyId,
-
-                    owner_id:
-                        currentUser.id,
-
-                    storage_path:
-                        data.path,
-
-                    display_order:
-                        job.display_order
-                });
-
-                uploaded = true;
-                break;
-
-            }catch(error){
-
-                lastError = error;
-
-                if(attempt < 3){
-
-                    await new Promise(
-                        resolve =>
-                            setTimeout(
-                                resolve,
-                                1000 * attempt
-                            )
-                    );
-
-                }
-
             }
 
+            if(!uploaded){
+                throw new Error(
+                    `${job.file.name}: Photo upload failed: ` +
+                    ((lastError && lastError.message) || "unknown error")
+                );
+            }
+
+            results.push({
+                property_id: propertyId,
+                owner_id: currentUser.id,
+                storage_path: uploaded.path,
+                display_order: job.display_order
+            });
         }
-
-        if(!uploaded){
-
-            throw new Error(
-                `${job.file.name}: Photo upload failed: ` +
-                (lastError?.message || "Failed to fetch")
-            );
-
+    }catch(err){
+        if(results.length){
+            await supabaseClient
+                .storage
+                .from("property-images")
+                .remove(results.map(x => x.storage_path));
         }
-
+        throw err;
     }
 
     /*
