@@ -9825,64 +9825,96 @@ async function uploadPhotos(
         );
 
     /*
-     * Upload ALL selected photos.
-     * Promise.all makes every selected
-     * photo upload instead of waiting
-     * sequentially for each one.
+     * Upload photos sequentially.
+     *
+     * Android WebView can fail when several
+     * Supabase Storage uploads run at once.
+     * Each photo gets up to 3 attempts.
      */
-    const results =
-        await Promise.all(
-            uploadJobs.map(
-                async job => {
+    const results = [];
 
-                    const {
-                        data,
-                        error
-                    } =
-                    await supabaseClient
-                        .storage
-                        .from("property-images")
-                        .upload(
-                            job.path,
-                            job.file,
-                            {
-                                cacheControl:
-                                    "3600",
+    for(const job of uploadJobs){
 
-                                upsert:
-                                    false,
+        let uploaded = false;
+        let lastError = null;
 
-                                contentType:
-                                    job.file.type
-                            }
-                        );
+        for(let attempt = 1; attempt <= 3; attempt++){
 
-                    if(error){
+            try{
 
-                        throw new Error(
-                            `${job.file.name}: Photo upload failed: ` +
-                            error.message
-                        );
+                const {
+                    data,
+                    error
+                } =
+                await supabaseClient
+                    .storage
+                    .from("property-images")
+                    .upload(
+                        job.path,
+                        job.file,
+                        {
+                            cacheControl:
+                                "3600",
 
-                    }
+                            upsert:
+                                false,
 
-                    return {
-                        property_id:
-                            propertyId,
+                            contentType:
+                                job.file.type
+                        }
+                    );
 
-                        owner_id:
-                            currentUser.id,
+                if(error){
+                    throw error;
+                }
 
-                        storage_path:
-                            data.path,
+                results.push({
+                    property_id:
+                        propertyId,
 
-                        display_order:
-                            job.display_order
-                    };
+                    owner_id:
+                        currentUser.id,
+
+                    storage_path:
+                        data.path,
+
+                    display_order:
+                        job.display_order
+                });
+
+                uploaded = true;
+                break;
+
+            }catch(error){
+
+                lastError = error;
+
+                if(attempt < 3){
+
+                    await new Promise(
+                        resolve =>
+                            setTimeout(
+                                resolve,
+                                1000 * attempt
+                            )
+                    );
 
                 }
-            )
-        );
+
+            }
+
+        }
+
+        if(!uploaded){
+
+            throw new Error(
+                `${job.file.name}: Photo upload failed: ` +
+                (lastError?.message || "Failed to fetch")
+            );
+
+        }
+
+    }
 
     /*
      * At this point ALL selected photos
