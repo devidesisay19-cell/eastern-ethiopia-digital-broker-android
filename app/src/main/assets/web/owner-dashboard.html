@@ -3332,6 +3332,15 @@ function switchOwnerSection(section){
    content:// URI, cloud placeholder, unsupported HEIC) are
    rejected here instead of failing later with "Failed to fetch".
 ========================================================= */
+function isImageLike(file){
+    if(!file) return false;
+    const type = String(file.type || "").toLowerCase();
+    if(type.startsWith("image/")) return true;
+    if(/\.(jpe?g|png|webp|gif|bmp|heic|heif)$/i.test(file.name || "")) return true;
+    // Some Android providers give an empty or generic type: let the decoder decide.
+    return !type || type === "application/octet-stream";
+}
+
 async function prepareImageFile(file){
     try{
         const buffer = await file.arrayBuffer();
@@ -3376,39 +3385,42 @@ async function prepareImageFile(file){
 
 async function handleCarPhotos(e){
 
-    const files =
-        Array.from(e.target.files || []);
+    const input = e.target;
+    const files = Array.from(input.files || []);
+    input.value = "";
+
+    if(!files.length) return;
 
     const MAX_PHOTOS = 5;
-    const MAX_SIZE = 25 * 1024 * 1024;
+    let skipped = 0;
+    let unreadable = 0;
+    let tooMany = false;
 
     for(const file of files){
 
         if(carSelectedFiles.length >= MAX_PHOTOS){
-            alert("You can select up to 5 photos.");
+            tooMany = true;
             break;
         }
 
-        if(file.type && !file.type.startsWith("image/")){
-            alert("Only image files are allowed.");
-            continue;
-        }
-
-        if(file.size > MAX_SIZE){
-            alert(
-                "Each car photo must be 5 MB or smaller."
-            );
+        if(!isImageLike(file)){
+            skipped++;
             continue;
         }
 
         const prepared = await prepareImageFile(file);
-        if(!prepared) continue;
+        if(!prepared){ unreadable++; continue; }
         carSelectedFiles.push(prepared);
     }
 
-    e.target.value = "";
-
     renderCarPhotos();
+
+    // One quiet summary instead of an alert per photo
+    if(tooMany && typeof toast === "function"){
+        toast("Maximum 5 photos. Extra photos were ignored.", "warning");
+    }else if(skipped && typeof toast === "function"){
+        toast("Only image files are allowed.", "warning");
+    }
 }
 
 
@@ -3482,39 +3494,42 @@ function removeCarPhoto(index){
 
 async function handleMarketplacePhotos(e){
 
-    const files =
-        Array.from(e.target.files || []);
+    const input = e.target;
+    const files = Array.from(input.files || []);
+    input.value = "";
+
+    if(!files.length) return;
 
     const MAX_PHOTOS = 5;
-    const MAX_SIZE = 25 * 1024 * 1024;
+    let skipped = 0;
+    let unreadable = 0;
+    let tooMany = false;
 
     for(const file of files){
 
         if(marketplaceSelectedFiles.length >= MAX_PHOTOS){
-            alert("You can select up to 5 photos.");
+            tooMany = true;
             break;
         }
 
-        if(file.type && !file.type.startsWith("image/")){
-            alert("Only image files are allowed.");
-            continue;
-        }
-
-        if(file.size > MAX_SIZE){
-            alert(
-                "Each marketplace photo must be 5 MB or smaller."
-            );
+        if(!isImageLike(file)){
+            skipped++;
             continue;
         }
 
         const prepared = await prepareImageFile(file);
-        if(!prepared) continue;
+        if(!prepared){ unreadable++; continue; }
         marketplaceSelectedFiles.push(prepared);
     }
 
-    e.target.value = "";
-
     renderMarketplacePhotos();
+
+    // One quiet summary instead of an alert per photo
+    if(tooMany && typeof toast === "function"){
+        toast("Maximum 5 photos. Extra photos were ignored.", "warning");
+    }else if(skipped && typeof toast === "function"){
+        toast("Only image files are allowed.", "warning");
+    }
 }
 
 
@@ -8752,82 +8767,32 @@ function resetForm(){
 
 async function handlePhotos(e){
 
-    const files =
-        Array.from(
-            e.target.files || []
-        );
+    const input = e.target;
+    const files = Array.from(input.files || []);
+    input.value = "";
 
+    if(!files.length) return;
 
-    for(
-        const file of files
-    ){
+    let notified = false;
 
-        if(
-            !(file.type || "").startsWith("image/")
-        ){
+    for(const file of files){
 
-            toast(
-                `${file.name}: only JPG, PNG or WEBP allowed.`,
-                "warning"
-            );
-
-            continue;
-
-        }
-
-
-        if(
-            file.size >
-            25 * 1024 * 1024
-        ){
-
-            toast(
-                `${file.name}: maximum 5MB.`,
-                "warning"
-            );
-
-            continue;
-
-        }
-
-
-        if(
-            selectedFiles.length >= 15
-        ){
-
-            toast(
-                "Maximum 15 photos allowed.",
-                "warning"
-            );
-
+        if(selectedFiles.length >= 15){
+            if(!notified){ toast("Maximum 15 photos allowed.", "warning"); notified = true; }
             break;
-
         }
 
+        if(!isImageLike(file)){
+            toast(`${file.name || "File"}: only image files are allowed.`, "warning");
+            continue;
+        }
 
         const prepared = await prepareImageFile(file);
-
-        if(!prepared){
-            continue;
-        }
-
-        selectedFiles.push(
-            prepared
-        );
-
+        if(!prepared) continue;
+        selectedFiles.push(prepared);
     }
 
-
-    /*
-     * Reset input so the same file
-     * can be selected again later.
-     */
-
-    e.target.value = "";
-
-
     renderPhotos();
-
 }
 
 

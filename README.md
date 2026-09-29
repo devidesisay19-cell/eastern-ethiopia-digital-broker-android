@@ -80,3 +80,9 @@ Run its audit query (last statement) after applying it.
 - Admin Marketplace category is now a dropdown (same list as owner). Admin-created listings are published immediately.
 - Home page (`index.html`): Marketplace and Cars cards have **View Details** -> `listing-details.html`,
   which shows the gallery, info and the City Admin (assigned to the item's city) + Super Admin phone / WhatsApp.
+
+## v4.4
+- Owner dashboard: photo picker no longer rejects photos with an odd/empty MIME type (Google Photos etc.),
+  no false "5 MB" error, and only one quiet message when more than the maximum photos are chosen.
+- Home page: Marketplace and Cars are grouped by posted date like Property
+  (Today, Yesterday, Before 2 Days ... Before Week, Older).

@@ -4348,6 +4348,58 @@ function updateHomeSectionCount(elementId, count, singular, plural) {
     el.textContent = count + " " + (count === 1 ? singular : plural);
 }
 
+function homeGroupByDay(list, cards, noun, singular, plural) {
+    const labels = [
+        "Today " + noun,
+        "Yesterday " + noun,
+        "Before 2 Days " + noun,
+        "Before 3 Days " + noun,
+        "Before 4 Days " + noun,
+        "Before 5 Days " + noun,
+        "Before 6 Days " + noun,
+        "Before Week " + noun
+    ];
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const buckets = labels.map(function() { return []; });
+    const older = [];
+
+    list.forEach(function(entry, index) {
+        const created = entry && entry.created_at ? new Date(entry.created_at) : null;
+        let diff = 9999;
+
+        if (created && !isNaN(created.getTime())) {
+            const day = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+            diff = Math.round((today - day) / 86400000);
+            if (diff < 0) diff = 0;
+        }
+
+        if (diff >= 0 && diff < buckets.length) {
+            buckets[diff].push(cards[index]);
+        } else {
+            older.push(cards[index]);
+        }
+    });
+
+    function section(label, items) {
+        return '<section class="property-date-section">' +
+            '<div class="property-date-heading"><h2>' + label + "</h2><span>" +
+            items.length + " " + (items.length === 1 ? singular : plural) + "</span></div>" +
+            '<div class="home-listing-grid">' + items.join("") + "</div></section>";
+    }
+
+    let html = "";
+
+    buckets.forEach(function(items, i) {
+        if (items.length) html += section(labels[i], items);
+    });
+
+    if (older.length) html += section("Older " + noun, older);
+
+    return html;
+}
+
 function renderHomeMarketplace(list) {
     const area = document.getElementById("homeMarketplaceArea");
     if (!area) return;
@@ -4387,9 +4439,9 @@ function renderHomeMarketplace(list) {
             (item.price_unit ? " " + escapeHTML(item.price_unit) : "") + "</div>" +
             '<div class="property-actions">' + homeDetailsButton("marketplace", item.id) + "</div>" +
             "</div></article>";
-    }).join("");
+    });
 
-    area.innerHTML = '<div class="home-listing-grid">' + cards + "</div>";
+    area.innerHTML = homeGroupByDay(list, cards, "Marketplace", "Item", "Items");
 }
 
 function renderHomeCars(list) {
@@ -4440,9 +4492,9 @@ function renderHomeCars(list) {
             (car.price_unit ? " " + escapeHTML(car.price_unit) : "") + "</div>" +
             '<div class="property-actions">' + homeDetailsButton("car", car.id) + "</div>" +
             "</div></article>";
-    }).join("");
+    });
 
-    area.innerHTML = '<div class="home-listing-grid">' + cards + "</div>";
+    area.innerHTML = homeGroupByDay(list, cards, "Cars", "Car", "Cars");
 }
 
 function showMarketplaceLoading() {
