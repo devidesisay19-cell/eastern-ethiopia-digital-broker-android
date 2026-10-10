@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Details | Eastern Ethiopia Digital Broker</title>
@@ -50,6 +52,8 @@ h2{font-size:17px;margin:16px 0 8px}
 .lightbox img{max-width:96vw;max-height:90vh}
 .lightbox .x{position:absolute;top:14px;right:20px;color:#fff;font-size:34px;cursor:pointer}
 </style>
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
 </head>
 <body>
 <header>
@@ -98,6 +102,7 @@ h2{font-size:17px;margin:16px 0 8px}
   <button class="nav next" onclick="step(1)">›</button>
 </div>
 
+<script src="lead-widget.js"></script>
 <script>
 const client = window.supabase.createClient(
   "https://ubkfrpkapqnlaiscrxim.supabase.co",
@@ -220,9 +225,11 @@ async function loadContacts(){
     if (!res.error && Array.isArray(res.data)) rows = res.data;
   }
   const cityAdmins = rows.filter((r) => r.role === "city_admin" || r.role === "admin");
+  const agents = rows.filter((r) => r.role === "agent");
   const superAdmins = rows.filter((r) => r.role === "super_admin");
 
   let html = "";
+  agents.forEach((c) => { html += contactCard(c, "🤝 Agent"); });
   cityAdmins.forEach((c) => { html += contactCard(c, "🏙️ City Admin"); });
   if (!cityAdmins.length) {
     html += '<div class="no-contact">No City Admin is currently assigned to this city. You can contact the Super Admin below.</div>';
@@ -232,6 +239,9 @@ async function loadContacts(){
     html = '<div class="no-contact">No broker contact is currently available for this listing.</div>';
   }
   $("contactList").innerHTML = html;
+  let lw = document.getElementById("leadMount");
+  if (!lw) { lw = document.createElement("div"); lw.id = "leadMount"; lw.style.marginTop = "14px"; $("contactList").parentNode.insertBefore(lw, $("contactList").nextSibling); }
+  EEDBLead.mount(lw, { client, kind, id, city_id: item.city_id, title: $("title").textContent });
 }
 
 function share(){
@@ -266,5 +276,6 @@ function share(){
   }
 })();
 </script>
+<script src="notify.js"></script>
 </body>
 </html>

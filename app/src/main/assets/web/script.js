@@ -94,6 +94,16 @@ function redirectByRole(role) {
         return true;
     }
 
+    if (normalizedRole === "investor") {
+        window.location.href = "investor-dashboard.html";
+        return true;
+    }
+
+    if (normalizedRole === "agent") {
+        window.location.href = "agent-dashboard.html";
+        return true;
+    }
+
     // -------------------------------------------------
     // EMPLOYER
     // -------------------------------------------------
@@ -347,13 +357,15 @@ if (signupForm) {
                     error: authError
                 } =
                 await supabaseClient.auth.signUp({
-
-                    email:
-                        email,
-
-                    password:
-                        password
-
+                    email: email,
+                    password: password,
+                    options: {
+                        data: {
+                            full_name: fullName,
+                            phone: phone,
+                            role: role
+                        }
+                    }
                 });
 
 
@@ -379,6 +391,19 @@ if (signupForm) {
                 const userId =
                     authData.user.id;
 
+            if (!authData.session) {
+                // Email confirmation is ON in Supabase: the profile is created by the database
+                // trigger from the sign-up data; the user confirms the email and then logs in.
+                message.textContent =
+                    "Account created. Please confirm your email address, then log in.";
+                message.style.color = "green";
+                signupButton.textContent = "Account Created";
+                setTimeout(function() {
+                    window.location.href = "index.html";
+                }, 2500);
+                return;
+            }
+
 
                 console.log(
                     "AUTH USER CREATED:",
@@ -401,7 +426,7 @@ if (signupForm) {
                 } =
                 await supabaseClient
                     .from("profiles")
-                    .insert({
+                    .upsert({
 
                         id:
                             userId,
@@ -415,9 +440,7 @@ if (signupForm) {
                         role:
                             role
 
-                    })
-                    .select()
-                    .single();
+                    }, { onConflict: "id", ignoreDuplicates: true });
 
 
                 if (profileError) {

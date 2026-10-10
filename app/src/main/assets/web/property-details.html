@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
 <meta charset="UTF-8">
 
@@ -13,6 +15,7 @@
 <title>Property Details | Eastern Ethiopia Digital Broker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="storage-patch.js"></script>
 
 <style>
 
@@ -600,6 +603,8 @@ header {
 
 </style>
 
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
 </head>
 
 
@@ -846,6 +851,7 @@ header {
 </div>
 
 
+<script src="lead-widget.js"></script>
 <script>
 
 /* =====================================================
@@ -1273,6 +1279,11 @@ function displayProperty() {
     ========================= */
 
     displayContacts();
+    try {
+        let lw = document.getElementById("leadMount");
+        if (!lw) { lw = document.createElement("div"); lw.id = "leadMount"; lw.style.marginTop = "14px"; const cl = document.getElementById("contactList"); cl.parentNode.insertBefore(lw, cl.nextSibling); }
+        EEDBLead.mount(lw, { client: supabaseClient, kind: "property", id: property.id, city_id: property.city_id, title: property.title });
+    } catch (e) { console.warn("lead widget", e); }
 
 
     /* =========================
@@ -2144,6 +2155,7 @@ function goBack() {
 
 </script>
 
+<script src="notify.js"></script>
 </body>
 
 </html>

@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
 <meta charset="UTF-8">
 
@@ -14,6 +16,7 @@
 
 <!-- SUPABASE LIBRARY -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="storage-patch.js"></script>
 
 <!-- YOUR SUPABASE CONFIG -->
 <script src="supabase.js"></script>
@@ -645,6 +648,8 @@ body {
 
 </style>
 
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
 </head>
 
 <body>
@@ -2456,5 +2461,6 @@ async function logoutUser() {
 
 </script>
 
+<script src="notify.js"></script>
 </body>
 </html>

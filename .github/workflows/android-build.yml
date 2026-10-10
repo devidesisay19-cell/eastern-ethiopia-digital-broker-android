@@ -1,46 +1,124 @@
-name: Android APK Build
+name: Android Build
+
+# Fast path:  push to main  -> debug APK (installable, ~3-5 min with cache)
+# Release:    Actions -> "Android Build" -> Run workflow -> release = true
+#             -> signed release APK + AAB (Google Play)
+# For a permanent Play Store key add these repository secrets:
+#   KEYSTORE_BASE64, KEYSTORE_PASSWORD, KEY_ALIAS, KEY_PASSWORD
+# Without them a temporary key is generated (OK for investor demos, NOT for Play uploads).
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   workflow_dispatch:
+    inputs:
+      release:
+        description: 'Also build signed release APK + AAB'
+        type: boolean
+        default: false
 
 permissions:
-  contents: read
+  contents: write
+
+concurrency:
+  group: android-build-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
+    timeout-minutes: 30
     steps:
-      - name: Checkout project
-        uses: actions/checkout@v6
+      - uses: actions/checkout@v6
 
-      - name: Set up Java 17
-        uses: actions/setup-java@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: '17'
 
-      - name: Set up Android SDK
-        uses: android-actions/setup-android@v4
+      - uses: android-actions/setup-android@v4
         with:
           packages: 'platform-tools platforms;android-36 build-tools;36.0.0'
 
-      - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@v6
 
-      - name: Make Gradle wrapper executable
-        run: chmod +x ./gradlew
+      - run: chmod +x ./gradlew
 
-      - name: Build Debug APK
-        run: ./gradlew --no-daemon :app:assembleDebug
+      - name: Bundle supabase-js inside the app (instant start, works offline)
+        run: |
+          mkdir -p app/src/main/assets/web/vendor
+          curl -fsSL --retry 3 -o app/src/main/assets/web/vendor/supabase-js.js "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0" || true
+          if [ "$(stat -c%s app/src/main/assets/web/vendor/supabase-js.js 2>/dev/null || echo 0)" -lt 50000 ]; then
+            rm -f app/src/main/assets/web/vendor/supabase-js.js
+            echo "::warning::supabase-js was not bundled; the app will download it on first start instead."
+          else
+            ls -l app/src/main/assets/web/vendor/supabase-js.js
+          fi
 
-      - name: Upload APK
+      - name: Build debug APK
+        run: ./gradlew --no-daemon --build-cache --parallel :app:assembleDebug
+
+      - uses: actions/upload-artifact@v7
+        with:
+          name: EEDB-debug-APK
+          path: app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
+
+      # Direct download link (Releases page) - easiest way to put the APK on a phone
+      - name: Publish debug APK to Releases (latest-debug)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/debug/app-debug.apk EEDB-V6-debug.apk
+          gh release delete latest-debug --yes --cleanup-tag || true
+          gh release create latest-debug EEDB-V6-debug.apk --prerelease \
+            --title "Latest debug build" --notes "Install this APK on Android. Built from commit ${GITHUB_SHA::7}."
+
+      - name: Prepare signing key
+        if: ${{ inputs.release }}
+        env:
+          KS_B64: ${{ secrets.KEYSTORE_BASE64 }}
+          KS_PASS: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASS: ${{ secrets.KEY_PASSWORD }}
+        run: |
+          if [ -n "$KS_B64" ]; then
+            echo "$KS_B64" | base64 -d > release.jks
+            STORE_PASS="$KS_PASS"; ALIAS="$KEY_ALIAS"; KPASS="$KEY_PASS"
+          else
+            echo "::warning::No keystore secrets found - generating a TEMPORARY key (not for Play Store)."
+            STORE_PASS="eedbtemp123"; ALIAS="eedb"; KPASS="eedbtemp123"
+            keytool -genkeypair -v -keystore release.jks -alias "$ALIAS" -keyalg RSA -keysize 2048 -validity 10000 \
+              -storepass "$STORE_PASS" -keypass "$KPASS" -dname "CN=Eastern Ethiopia Digital Broker, O=EEDB, C=ET"
+          fi
+          {
+            echo "storeFile=$GITHUB_WORKSPACE/release.jks"
+            echo "storePassword=$STORE_PASS"
+            echo "keyAlias=$ALIAS"
+            echo "keyPassword=$KPASS"
+          } > keystore.properties
+
+      - name: Build release APK + AAB
+        if: ${{ inputs.release }}
+        run: ./gradlew --no-daemon --build-cache --parallel :app:assembleRelease :app:bundleRelease
+
+      - name: Publish release APK + AAB to Releases (latest-release)
+        if: ${{ inputs.release }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cp app/build/outputs/apk/release/*.apk EEDB-V6-release.apk
+          cp app/build/outputs/bundle/release/*.aab EEDB-V6-release.aab
+          gh release delete latest-release --yes --cleanup-tag || true
+          gh release create latest-release EEDB-V6-release.apk EEDB-V6-release.aab --prerelease \
+            --title "Latest release build" --notes "Signed release APK and AAB. Commit ${GITHUB_SHA::7}."
+
+      - name: Upload release files
+        if: ${{ inputs.release }}
         uses: actions/upload-artifact@v7
         with:
-
-          name: Eastern-Ethiopia-Digital-Broker-APK
-          path: app/build/outputs/apk/debug/app-debug.apk
+          name: EEDB-release-APK-AAB
+          path: |
+            app/build/outputs/apk/release/*.apk
+            app/build/outputs/bundle/release/*.aab
           if-no-files-found: error

@@ -19,8 +19,8 @@ android {
         applicationId = "com.easterneethiopia.digitalbroker"
         minSdk = 24
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0.0"
+        versionCode = 60
+        versionName = "6.0.0"
     }
 
     signingConfigs {
@@ -44,8 +44,10 @@ android {
             isMinifyEnabled = false
             isShrinkResources = false
 
-            signingConfig =
-                signingConfigs.getByName("release")
+            if (keystorePropertiesFile.exists()) {
+                signingConfig =
+                    signingConfigs.getByName("release")
+            }
 
             proguardFiles(
                 getDefaultProguardFile(
@@ -67,4 +69,8 @@ dependencies {
     implementation("androidx.appcompat:appcompat:1.7.1")
     implementation("androidx.activity:activity-ktx:1.13.0")
     implementation("androidx.webkit:webkit:1.17.0")
+
+    // Push notifications (FCM). Active only after the Firebase values are added - see FIREBASE_SETUP.md
+    implementation(platform("com.google.firebase:firebase-bom:34.17.0"))
+    implementation("com.google.firebase:firebase-messaging")
 }

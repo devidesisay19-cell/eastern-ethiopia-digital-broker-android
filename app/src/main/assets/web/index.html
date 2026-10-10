@@ -2,6 +2,8 @@
 <html lang="en">
 
 <head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 
 <meta charset="UTF-8">
 
@@ -18,6 +20,7 @@
 <title>Eastern Ethiopia Digital Broker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="storage-patch.js"></script>
 <script src="supabase.js"></script>
 
 <style>
@@ -1442,6 +1445,9 @@ footer {
     content="EEDB"
 >
 
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
+<script src="city-gate.js"></script>
 </head>
 
 <body>
@@ -2449,6 +2455,23 @@ function redirectByRole(role) {
 
         window.location.href =
             "admin-dashboard.html";
+
+        return;
+    }
+
+
+    if (role === "investor") {
+
+        window.location.href =
+            "investor-dashboard.html";
+
+        return;
+    }
+
+    if (role === "agent") {
+
+        window.location.href =
+            "agent-dashboard.html";
 
         return;
     }
@@ -4077,7 +4100,19 @@ async function loadProperties() {
     }
 
 
-    showPropertyLoading();
+    const __cp = window.EEDBCache ? EEDBCache.get("props") : null;
+    if (__cp && __cp.length) {
+        allProperties = __cp;
+        const __ce = document.getElementById("cityFilter");
+        const __cn = __ce ? __ce.value : "all";
+        renderProperties(
+            __cn !== "all"
+                ? allProperties.filter(function(p) { return p.city_id === __cn; })
+                : allProperties
+        );
+    } else {
+        showPropertyLoading();
+    }
 
 
     try {
@@ -4105,7 +4140,8 @@ async function loadProperties() {
                     {
                         ascending: false
                     }
-                );
+                )
+                .range(0, 149);
 
 
         if (error) {
@@ -4116,10 +4152,16 @@ async function loadProperties() {
 
         allProperties =
             data || [];
+        if (window.EEDBCache) { EEDBCache.set("props", allProperties); }
 
+
+        const cityEl = document.getElementById("cityFilter");
+        const cityNow = cityEl ? cityEl.value : "all";
 
         renderProperties(
-            allProperties
+            cityNow !== "all"
+                ? allProperties.filter(function(p) { return p.city_id === cityNow; })
+                : allProperties
         );
 
     } catch (error) {
@@ -4513,7 +4555,14 @@ function showMarketplaceLoading() {
 }
 
 async function loadHomeMarketplace(cityId = "all", listingType = "all") {
-    showMarketplaceLoading();
+    const __ck = "mkt_" + cityId + "_" + listingType;
+    const __cached = window.EEDBCache ? EEDBCache.get(__ck) : null;
+    if (__cached && __cached.length) {
+        homeMarketplaceItems = __cached;
+        renderHomeMarketplace(homeMarketplaceItems);
+    } else {
+        showMarketplaceLoading();
+    }
 
     const area =
         document.getElementById(
@@ -4550,6 +4599,7 @@ async function loadHomeMarketplace(cityId = "all", listingType = "all") {
         }
 
         homeMarketplaceItems = result.data || [];
+        if (window.EEDBCache) { EEDBCache.set(__ck, homeMarketplaceItems); }
 
         renderHomeMarketplace(homeMarketplaceItems);
 
@@ -4581,7 +4631,14 @@ function showCarLoading() {
 }
 
 async function loadHomeCars(cityId = "all", listingType = "all") {
-    showCarLoading();
+    const __ck = "cars_" + cityId + "_" + listingType;
+    const __cached = window.EEDBCache ? EEDBCache.get(__ck) : null;
+    if (__cached && __cached.length) {
+        homeCars = __cached;
+        renderHomeCars(homeCars);
+    } else {
+        showCarLoading();
+    }
 
     const area =
         document.getElementById(
@@ -4618,6 +4675,7 @@ async function loadHomeCars(cityId = "all", listingType = "all") {
         }
 
         homeCars = result.data || [];
+        if (window.EEDBCache) { EEDBCache.set(__ck, homeCars); }
 
         renderHomeCars(homeCars);
 
@@ -4641,6 +4699,13 @@ async function loadHomeJobs(cityId = "all") {
         );
 
     if (!area) return;
+
+    const __ck = "jobs_" + cityId;
+    const __cached = window.EEDBCache ? EEDBCache.get(__ck) : null;
+    if (__cached && __cached.length) {
+        window.homeJobs = __cached;
+        renderHomeJobs(window.homeJobs);
+    }
 
     if (!db) {
         area.innerHTML =
@@ -4688,6 +4753,8 @@ async function loadHomeJobs(cityId = "all") {
 
         window.homeJobs =
             data || [];
+
+        if (window.EEDBCache) { EEDBCache.set(__ck, window.homeJobs); }
 
         renderHomeJobs(
             window.homeJobs
@@ -6061,6 +6128,8 @@ function resetFilters() {
         "";
 
 
+    if (window.eedbRestoreCity) { window.eedbRestoreCity(); }
+
     applyFilters();
 }
 
@@ -6346,19 +6415,28 @@ async function initializeApp() {
         setupAuthListener();
     });
 
-    await safeStep("checkCurrentUser", function() {
-        return withTimeout(checkCurrentUser(), 8000, "checkCurrentUser");
+    /* Auth check and locations load run at the same time (was one after the other). */
+    await Promise.all([
+        safeStep("checkCurrentUser", function() {
+            return withTimeout(checkCurrentUser(), 8000, "checkCurrentUser");
+        }),
+        safeStep("loadLocations", function() {
+            return withTimeout(loadLocations(), 8000, "loadLocations");
+        })
+    ]);
+
+    await safeStep("cityGate", function() {
+        return window.cityGate ? window.cityGate() : null;
     });
 
-    await safeStep("loadLocations", function() {
-        return withTimeout(loadLocations(), 8000, "loadLocations");
-    });
+    /* Everything below loads only the selected city (properties are filtered right after download). */
+    const startCity = (document.getElementById("cityFilter") || {}).value || "all";
 
     await Promise.all([
         safeStep("loadProperties", loadProperties),
-        safeStep("loadHomeJobs", loadHomeJobs),
-        safeStep("loadHomeMarketplace", loadHomeMarketplace),
-        safeStep("loadHomeCars", loadHomeCars)
+        safeStep("loadHomeJobs", function() { return loadHomeJobs(startCity); }),
+        safeStep("loadHomeMarketplace", function() { return loadHomeMarketplace(startCity); }),
+        safeStep("loadHomeCars", function() { return loadHomeCars(startCity); })
     ]);
 
     console.log(

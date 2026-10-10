@@ -1,6 +1,8 @@
 <!doctype html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#155EEF">
@@ -8,6 +10,7 @@
 <title>Admin Dashboard | Eastern Ethiopia Digital Broker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="storage-patch.js"></script>
 <script src="app-core.js"></script>
 
 <style>
@@ -1193,6 +1196,8 @@ textarea.input{
   }
 }
 </style>
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
 </head>
 
 <body>
@@ -1234,6 +1239,12 @@ textarea.input{
     <button data-go="locations">📍 Locations</button>
     <button id="cityAdminNav" data-go="cityadmins">🛡 City Admins</button>
     <button id="reportsNav" data-go="reports">📊 Reports</button>
+
+    <button onclick="location.href='agents-leads.html'">🤝 Agents &amp; Leads</button>
+
+    <button onclick="location.href='payments.html'">💳 Payments</button>
+
+    <button onclick="location.href='investor-dashboard.html'">📈 Investor Overview</button>
 
     <div class="label">ACCOUNT</div>
 
@@ -1864,6 +1875,8 @@ textarea.input{
           <option value="super_admin">Super Admin</option>
           <option value="admin">Admin</option>
           <option value="city_admin">City Admin</option>
+          <option value="agent">Agent</option>
+          <option value="investor">Investor</option>
           <option value="owner">Owner</option>
           <option value="renter">Renter</option>
           <option value="job_seeker">Job Seeker</option>
@@ -2850,6 +2863,8 @@ textarea.input{
       <select id="roleSelect" class="input">
         <option value="admin">Admin</option>
         <option value="city_admin">City Admin</option>
+          <option value="agent">Agent</option>
+          <option value="investor">Investor</option>
         <option value="owner">Owner</option>
         <option value="renter">Renter</option>
         <option value="job_seeker">Job Seeker</option>
@@ -3101,6 +3116,8 @@ function badge(status){
     super_admin:'b-purple',
     admin:'b-blue',
     city_admin:'b-blue',
+    agent:'b-green',
+    investor:'b-purple',
     owner:'b-green',
     renter:'b-orange',
     job_seeker:'b-purple',
@@ -7019,6 +7036,8 @@ async function saveUserRole(){
     'super_admin',
     'admin',
     'city_admin',
+    'agent',
+    'investor',
     'owner',
     'renter',
     'job_seeker',
@@ -7429,5 +7448,6 @@ loadAll();
 </script>
 <script src="admin-listing-tools.js"></script>
 
+<script src="notify.js"></script>
 </body>
 </html>

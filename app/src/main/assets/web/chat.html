@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Messages | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#172033;display:flex;flex-direction:column}
+header{background:#0d47a1;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;gap:8px;flex:none}
+header b{font-size:17px}header button{border:0;background:#ffffff33;color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+main{flex:1;overflow:auto;padding:14px;width:min(760px,100%);margin:0 auto;width:100%}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 4px 14px #1018280d}
+h2{font-size:16px;margin-bottom:10px}
+select,input,textarea{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:10px;font-size:15px;margin-bottom:8px;background:#fff;font-family:inherit}
+.btn{border:0;background:#0d47a1;color:#fff;font-weight:700;padding:11px 14px;border-radius:10px;cursor:pointer;font-size:15px}
+.btn.full{width:100%}.btn.gray{background:#667085}.btn.green{background:#16a34a;text-decoration:none;display:inline-block}
+.th{padding:12px 4px;border-bottom:1px solid #eef2f6;cursor:pointer}.th:last-child{border-bottom:0}
+.th b{display:block}.muted{color:#667085;font-size:13px}.tag{font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:#e6efed;color:#0f766e;margin-left:6px}
+.msgs{display:flex;flex-direction:column;gap:8px;padding-bottom:8px}
+.m{max-width:82%;padding:10px 12px;border-radius:14px;font-size:15px;white-space:pre-wrap;word-wrap:break-word}
+.m small{display:block;font-size:11px;opacity:.75;margin-top:4px}
+.me{align-self:flex-end;background:#0d47a1;color:#fff;border-bottom-right-radius:4px}
+.them{align-self:flex-start;background:#fff;box-shadow:0 2px 8px #1018281a;border-bottom-left-radius:4px}
+.who{font-size:11px;font-weight:700;margin-bottom:3px;opacity:.8}
+.compose{flex:none;background:#fff;border-top:1px solid #e4e7ec;padding:10px;display:flex;gap:8px;width:100%}
+.compose textarea{margin:0;flex:1;resize:none}
+.calls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.empty{text-align:center;color:#667085;padding:30px 10px}.hide{display:none}
+</style>
+</head>
+<body>
+<header><b id="ttl">💬 Messages</b><button id="back">← Back</button></header>
+<main id="app"><div class="empty">Loading…</div></main>
+<div class="compose hide" id="compose"><textarea id="txt" rows="1" maxlength="2000" placeholder="Write a message…"></textarea><button class="btn" id="send">Send</button></div>
+<script>
+const client = window.supabase.createClient("https://ubkfrpkapqnlaiscrxim.supabase.co","sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE");
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let me=null, role='', threads=[], cities=[], thread=null, msgs=[], channel=null, poll=null;
+const HOME={super_admin:'admin-dashboard.html',admin:'admin-dashboard.html',city_admin:'admin-dashboard.html',agent:'agent-dashboard.html',owner:'owner-dashboard.html',renter:'renter-dashboard.html',job_seeker:'job-seeker-dashboard.html',employer:'employer-job-dashboard.html',investor:'investor-dashboard.html'};
+const isStaff=()=>['super_admin','admin','city_admin','agent'].includes(role);
+function gate(m){$('app').innerHTML='<div class="card empty">'+esc(m)+'<br><br><a href="index.html">Go to login</a></div>';}
+async function init(){
+  const {data:{user}}=await client.auth.getUser(); if(!user) return gate('Please log in to send and read messages.');
+  me=user;
+  const {data:p}=await client.from('profiles').select('role,full_name').eq('id',user.id).maybeSingle(); role=String(p&&p.role||'');
+  const {data:c}=await client.from('locations').select('id,name').eq('type','city').eq('is_active',true).order('name'); cities=c||[];
+  $('back').onclick=()=>{ if(thread){ openList(); } else location.href=HOME[role]||'index.html'; };
+  const t=new URLSearchParams(location.search).get('t');
+  if(t) await openThread(t); else await openList();
+}
+async function openList(){
+  thread=null; stop(); $('compose').classList.add('hide'); $('ttl').textContent='💬 Messages';
+  history.replaceState(null,'','chat.html');
+  const {data,error}=await client.from('chat_threads').select('*').order('last_message_at',{ascending:false}).limit(100);
+  if(error) return gate(error.message);
+  threads=data||[]; renderList();
+}
+function renderList(){
+  $('app').innerHTML=
+   '<div class="card"><button class="btn full" onclick="renderNew()">✏️ New message</button></div>'+
+   '<div class="card"><h2>Conversations</h2>'+(threads.length?threads.map(t=>'<div class="th" onclick="openThread(\''+t.id+'\')"><b>'+esc(t.subject)+(t.kind==='report'?'<span class="tag">report</span>':'')+(t.status==='closed'?'<span class="tag" style="background:#fee4e2;color:#b42318">closed</span>':'')+'</b><div class="muted">'+(t.audience==='super'?'Super Admin':'City team')+' · '+new Date(t.last_message_at).toLocaleString()+'</div></div>').join(''):'<div class="empty">No conversations yet.</div>')+'</div>';
+}
+function renderNew(){
+  $('app').innerHTML='<div class="card"><h2>New message</h2>'+
+   '<select id="aud" onchange="audChg()"><option value="city">Message my city team (city admin / agents)</option><option value="super">Message the Super Admin</option>'+(isStaff()?'<option value="report">Send a report to the Super Admin</option>':'')+'</select>'+
+   '<select id="cty">'+cities.map(c=>'<option value="'+c.id+'">'+esc(c.name)+'</option>').join('')+'</select>'+
+   '<input id="subj" maxlength="120" placeholder="Subject (e.g. Question about a house)">'+
+   '<textarea id="first" rows="5" maxlength="2000" placeholder="Write your message or report…"></textarea>'+
+   '<button class="btn full" onclick="createThread()">Send</button><div id="err" class="muted" style="color:#b42318;margin-top:8px"></div></div>'+
+   '<div id="callBox"></div>';
+  loadCalls(cities[0]&&cities[0].id,'city');
+  $('cty').onchange=()=>loadCalls($('cty').value,$('aud').value);
+}
+function audChg(){ const a=$('aud').value; $('cty').classList.toggle('hide',a!=='city'); loadCalls($('cty').value,a==='city'?'city':'super'); }
+async function loadCalls(cityId,aud){
+  const box=$('callBox'); if(!box||!cityId) return;
+  const {data}=await client.rpc('get_listing_contacts',{p_city_id:cityId});
+  const rows=(data||[]).filter(r=>aud==='city'?true:r.role==='super_admin');
+  box.innerHTML=rows.length?'<div class="card"><h2>📞 Call directly</h2>'+rows.map(r=>'<div style="display:flex;justify-content:space-between;align-items:center;padding:8px 0"><div><b>'+esc(r.full_name)+'</b><div class="muted">'+({city_admin:'City Admin',agent:'Agent',super_admin:'Super Admin'}[r.role]||esc(r.role))+'</div></div><a class="btn green" href="tel:'+esc(r.phone)+'">Call</a></div>').join('')+'</div>':'';
+}
+async function createThread(){
+  const a=$('aud').value, subject=$('subj').value.trim(), body=$('first').value.trim(), err=$('err'); err.textContent='';
+  if(subject.length<2||!body){err.textContent='Please write a subject and a message.';return;}
+  const rec={audience:a==='city'?'city':'super',kind:a==='report'?'report':'chat',subject};
+  if(a==='city') rec.city_id=$('cty').value;
+  const {data:t,error}=await client.from('chat_threads').insert(rec).select('id').single();
+  if(error){err.textContent=error.message;return;}
+  const m=await client.from('chat_messages').insert({thread_id:t.id,body});
+  if(m.error){err.textContent=m.error.message;return;}
+  await openThread(t.id);
+}
+async function openThread(id){
+  stop();
+  const {data:t,error}=await client.from('chat_threads').select('*').eq('id',id).maybeSingle();
+  if(error||!t){ gate('Conversation not found.'); return; }
+  thread=t; history.replaceState(null,'','chat.html?t='+id);
+  $('ttl').textContent=t.subject.length>26?t.subject.slice(0,26)+'…':t.subject;
+  $('compose').classList.toggle('hide',t.status!=='open');
+  await loadMsgs(true);
+  try{ channel=client.channel('eedb-chat-'+id).on('postgres_changes',{event:'INSERT',schema:'public',table:'chat_messages',filter:'thread_id=eq.'+id},()=>loadMsgs(false)).subscribe(); }catch(e){}
+  poll=setInterval(()=>loadMsgs(false),15000);
+  if(t.audience==='city'&&t.city_id) loadCalls(t.city_id,'city'); else if(t.audience==='super') loadCalls((cities[0]||{}).id,'super');
+}
+function stop(){ if(channel){client.removeChannel(channel);channel=null;} if(poll){clearInterval(poll);poll=null;} }
+async function loadMsgs(scroll){
+  if(!thread) return;
+  const {data}=await client.from('chat_messages').select('*').eq('thread_id',thread.id).order('created_at',{ascending:true}).limit(500);
+  const changed=!msgs.length||(data||[]).length!==msgs.length; msgs=data||[];
+  if(changed||scroll) renderThread(scroll);
+}
+function who(m){ if(m.sender_id===me.id) return 'You'; if(me.id===thread.created_by) return 'Support team'; return m.sender_id===thread.created_by?'Customer':'Staff'; }
+function renderThread(scroll){
+  const closed=thread.status==='closed';
+  $('app').innerHTML='<div id="callBox"></div>'+
+   '<div class="msgs">'+msgs.map(m=>'<div class="m '+(m.sender_id===me.id?'me':'them')+'"><div class="who">'+who(m)+'</div>'+esc(m.body)+'<small>'+new Date(m.created_at).toLocaleString()+'</small></div>').join('')+'</div>'+
+   '<div style="text-align:center;margin:10px 0"><button class="btn gray" onclick="toggleStatus()">'+(closed?'Re-open conversation':'Close conversation')+'</button></div>';
+  if(thread.audience==='city'&&thread.city_id) loadCalls(thread.city_id,'city'); else if(thread.audience==='super') loadCalls((cities[0]||{}).id,'super');
+  if(scroll!==false){ const a=$('app'); a.scrollTop=a.scrollHeight; }
+}
+async function toggleStatus(){
+  const s=thread.status==='open'?'closed':'open';
+  const {error}=await client.from('chat_threads').update({status:s}).eq('id',thread.id); if(error){alert(error.message);return;}
+  thread.status=s; $('compose').classList.toggle('hide',s!=='open'); renderThread(false);
+}
+$('send').onclick=async()=>{
+  const body=$('txt').value.trim(); if(!body||!thread) return;
+  $('send').disabled=true;
+  const {error}=await client.from('chat_messages').insert({thread_id:thread.id,body});
+  $('send').disabled=false; if(error){alert(error.message);return;}
+  $('txt').value=''; await loadMsgs(true);
+};
+init();
+</script>
+<script src="notify.js"></script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Payments | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#0f766e;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+header button{border:0;background:#fff3;color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+main{width:min(900px,94%);margin:16px auto 60px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 4px 14px #1018280d}
+h2{font-size:16px;margin-bottom:10px}
+select,input,textarea{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:10px;font-size:15px;margin-bottom:8px;background:#fff}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+button.b{border:0;background:#0f766e;color:#fff;font-weight:700;padding:11px 14px;border-radius:10px;cursor:pointer;width:100%;font-size:15px}
+button.s{border:0;color:#fff;font-weight:700;padding:8px 12px;border-radius:9px;cursor:pointer;font-size:13px}
+.ok{background:#16a34a}.no{background:#b42318}
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:10px}
+@media(min-width:640px){.kpis{grid-template-columns:repeat(5,1fr)}}
+.kpi{background:#f1f5f9;border-radius:12px;padding:10px;text-align:center}.kpi b{display:block;font-size:18px;color:#0f766e}.kpi span{font-size:11px;color:#667085}
+.row{padding:11px 0;border-bottom:1px solid #eef2f6}.row:last-child{border-bottom:0}
+.top{display:flex;justify-content:space-between;gap:8px;align-items:center}.muted{color:#667085;font-size:13px;margin-top:3px}
+.tag{font-size:11px;font-weight:700;padding:3px 8px;border-radius:99px}
+.pending{background:#fef0c7;color:#b54708}.confirmed{background:#d1fadf;color:#027a48}.rejected{background:#fee4e2;color:#b42318}
+.empty{text-align:center;color:#667085;padding:24px}.hide{display:none}
+</style>
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
+</head>
+<body>
+<header><b>💳 Payments</b><button id="back">← Back</button></header>
+<main id="app"><div class="empty">Loading…</div></main>
+<script>
+const client = window.supabase.createClient("https://ubkfrpkapqnlaiscrxim.supabase.co","sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE");
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money=n=>'ETB '+Number(n||0).toLocaleString(undefined,{maximumFractionDigits:0});
+const KIND={featured_listing:'Featured listing',listing_fee:'Listing fee',commission:'Deal commission',subscription:'Subscription',other:'Other'};
+const METHOD={cash:'Cash',bank_transfer:'Bank transfer',telebirr:'Telebirr',cbe_birr:'CBE Birr',other:'Other'};
+let me=null,isAdmin=false,cities=[],city=null,agents=[],pays=[],names={},sum=null;
+function gate(m){$('app').innerHTML='<div class="card empty">'+esc(m)+'<br><br><a href="index.html">Go to login</a></div>';}
+async function init(){
+  const {data:{user}}=await client.auth.getUser(); if(!user) return gate('Please log in.');
+  const {data:p}=await client.from('profiles').select('id,full_name,role').eq('id',user.id).maybeSingle();
+  const role=String(p&&p.role||'').toLowerCase();
+  if(!['super_admin','admin','city_admin','agent'].includes(role)) return gate('Admin or agent access required.');
+  me=p; isAdmin=role!=='agent';
+  $('back').onclick=()=>location.href=role==='agent'?'agent-dashboard.html':'admin-dashboard.html';
+  if(role==='super_admin'||role==='admin'){
+    const {data}=await client.from('locations').select('id,name').eq('type','city').eq('is_active',true).order('name'); cities=data||[];
+  } else {
+    const {data:a}=await client.from('admin_city_assignments').select('city_id').eq('admin_id',user.id);
+    const ids=(a||[]).map(x=>x.city_id);
+    const {data}=ids.length?await client.from('locations').select('id,name').in('id',ids).eq('type','city'):{data:[]}; cities=data||[];
+  }
+  if(!cities.length) return gate('No city is assigned to your account yet.');
+  city=cities[0].id; await load();
+}
+async function load(){
+  const {data:a}=await client.from('admin_city_assignments').select('admin_id').eq('city_id',city);
+  const ids=(a||[]).map(x=>x.admin_id);
+  agents=[]; names={}; names[me.id]=me.full_name;
+  if(isAdmin&&ids.length){const {data}=await client.from('profiles').select('id,full_name,role').in('id',ids); (data||[]).forEach(x=>{names[x.id]=x.full_name; if(x.role==='agent')agents.push(x);});}
+  const {data:ps,error}=await client.from('payments').select('*').eq('city_id',city).order('created_at',{ascending:false}).limit(100);
+  if(error) return gate(error.message);
+  pays=ps||[]; sum=null;
+  if(isAdmin){const {data}=await client.rpc('eedb_payment_summary',{p_city:city}); sum=(data||[])[0]||null;}
+  render();
+}
+function render(){
+  const conf=pays.filter(x=>x.status==='confirmed'), pend=pays.filter(x=>x.status==='pending');
+  const mine=conf.filter(x=>x.agent_id===me.id).reduce((s,x)=>s+Number(x.amount)*Number(x.agent_pct)/100,0);
+  const kp=isAdmin&&sum?[['Today',sum.today_total],['This month',sum.month_total],['Confirmed',sum.confirmed_total],['Pending',sum.pending_total],['Agent share',sum.agent_share_total]]
+    :[['Confirmed',conf.reduce((s,x)=>s+Number(x.amount),0)],['Pending',pend.reduce((s,x)=>s+Number(x.amount),0)],['My earnings',mine]];
+  $('app').innerHTML=
+  '<div class="card"><select onchange="city=this.value;load()">'+cities.map(c=>'<option value="'+c.id+'"'+(c.id===city?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select>'+
+  '<div class="kpis">'+kp.map(k=>'<div class="kpi"><b>'+money(k[1])+'</b><span>'+k[0]+'</span></div>').join('')+'</div></div>'+
+  '<div class="card"><h2>Record a payment</h2>'+
+  '<div class="two"><select id="kind" onchange="kindChg()">'+Object.keys(KIND).map(k=>'<option value="'+k+'">'+KIND[k]+'</option>').join('')+'</select><input id="amt" type="number" min="1" inputmode="decimal" placeholder="Amount (ETB)"></div>'+
+  '<div class="two"><select id="meth">'+Object.keys(METHOD).map(k=>'<option value="'+k+'">'+METHOD[k]+'</option>').join('')+'</select><input id="ref" placeholder="Receipt / transaction ref" maxlength="80"></div>'+
+  '<div class="two"><input id="pname" placeholder="Payer name" maxlength="120"><input id="pphone" placeholder="Payer phone" inputmode="tel" maxlength="30"></div>'+
+  '<div id="featBox" class="two hide"><input id="lid" placeholder="Property ID (from listing link ?id=)"><input id="fdays" type="number" min="1" max="365" value="30" placeholder="Featured days"></div>'+
+  (isAdmin?'<div class="two"><select id="agent"><option value="">No agent</option>'+agents.map(a=>'<option value="'+a.id+'">'+esc(a.full_name)+'</option>').join('')+'</select><input id="pct" type="number" min="0" max="100" value="0" placeholder="Agent share %"></div>':'')+
+  '<textarea id="note" rows="2" maxlength="500" placeholder="Note (optional)"></textarea>'+
+  '<button class="b" onclick="save()">'+(isAdmin?'Save payment (confirmed)':'Submit for confirmation')+'</button><div id="msg" class="muted"></div></div>'+
+  '<div class="card"><h2>Payments</h2>'+(pays.length?pays.map(row).join(''):'<div class="empty">No payments yet.</div>')+'</div>';
+}
+function kindChg(){ $('featBox').classList.toggle('hide',$('kind').value!=='featured_listing'); }
+function row(x){
+  return '<div class="row"><div class="top"><b>'+money(x.amount)+' · '+esc(KIND[x.kind]||x.kind)+'</b><span class="tag '+x.status+'">'+x.status+'</span></div>'+
+  '<div class="muted">'+esc(METHOD[x.method]||x.method)+(x.reference?' · '+esc(x.reference):'')+' · '+new Date(x.created_at).toLocaleDateString()+(x.payer_name?' · '+esc(x.payer_name):'')+(x.agent_id&&names[x.agent_id]?' · agent '+esc(names[x.agent_id])+(Number(x.agent_pct)?' ('+Number(x.agent_pct)+'%)':''):'')+'</div>'+
+  (isAdmin&&x.status==='pending'?'<div style="display:flex;gap:8px;margin-top:8px"><button class="s ok" onclick="decide(\''+x.id+'\',\'confirmed\')">Confirm</button><button class="s no" onclick="decide(\''+x.id+'\',\'rejected\')">Reject</button></div>':'')+'</div>';
+}
+async function save(){
+  const amount=Number($('amt').value); const out=$('msg');
+  if(!(amount>0)){out.style.color='#b42318';out.textContent='Enter a valid amount.';return;}
+  const kind=$('kind').value, rec={city_id:city,kind,amount,method:$('meth').value,reference:$('ref').value.trim()||null,payer_name:$('pname').value.trim()||null,payer_phone:$('pphone').value.trim()||null,note:$('note').value.trim()||null};
+  if(kind==='featured_listing'){const id=$('lid').value.trim(); if(id){rec.listing_kind='property';rec.listing_id=id;} rec.featured_days=Number($('fdays').value)||30;}
+  if(isAdmin){rec.status='confirmed'; rec.agent_id=$('agent').value||null; rec.agent_pct=Number($('pct').value)||0;}
+  const {error}=await client.from('payments').insert(rec);
+  if(error){out.style.color='#b42318';out.textContent=error.message;return;}
+  await load(); $('msg').style.color='#027a48'; $('msg').textContent='Saved.';
+}
+async function decide(id,status){ const {error}=await client.from('payments').update({status}).eq('id',id); if(error)alert(error.message); await load(); }
+init();
+</script>
+<script src="notify.js"></script>
+</body>
+</html>

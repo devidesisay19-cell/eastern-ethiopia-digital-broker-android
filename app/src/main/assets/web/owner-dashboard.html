@@ -1,6 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <meta name="theme-color" content="#0f766e">
@@ -8,6 +10,7 @@
 <title>Owner Dashboard | Eastern Ethiopia General Digital Broker</title>
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="storage-patch.js"></script>
 
 
 <style>
@@ -1047,6 +1050,8 @@ button{
 }
 </style>
 
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
 </head>
 
 <body>
@@ -6744,8 +6749,7 @@ async function startDashboard(){
 
     if(
         !data ||
-        String(data.role || "")
-            .toLowerCase() !== "owner"
+        !["owner","agent"].includes(String(data.role || "").toLowerCase())
     ){
 
         await supabaseClient.auth.signOut();
@@ -10951,5 +10955,6 @@ function toast(
 
 </script>
 
+<script src="notify.js"></script>
 </body>
 </html>
