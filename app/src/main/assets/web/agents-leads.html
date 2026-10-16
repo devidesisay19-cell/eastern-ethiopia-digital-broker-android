@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agents &amp; Leads | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#0f766e;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+header button{border:0;background:#fff3;color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+main{width:min(960px,94%);margin:16px auto 60px}
+.card{background:#fff;border-radius:14px;padding:14px;margin-bottom:14px;box-shadow:0 4px 14px #1018280d}
+h2{font-size:17px;margin-bottom:10px}
+select,input{width:100%;padding:11px;border:1px solid #d0d5dd;border-radius:10px;font-size:15px;margin-bottom:8px}
+button.b{border:0;background:#0f766e;color:#fff;font-weight:700;padding:10px 14px;border-radius:10px;cursor:pointer}
+button.r{background:#b42318}
+.row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #eef2f6}
+.row:last-child{border-bottom:0}.muted{color:#667085;font-size:13px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px}
+.kpi{background:#f1f5f9;border-radius:12px;padding:10px;text-align:center}.kpi b{display:block;font-size:22px;color:#0f766e}.kpi span{font-size:11px;color:#667085}
+.lead{border-bottom:1px solid #eef2f6;padding:10px 0}.lead:last-child{border-bottom:0}
+.lead select{margin:6px 6px 0 0;width:auto;min-width:130px;padding:8px;font-size:14px}
+.empty{text-align:center;color:#667085;padding:24px 8px}
+</style>
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
+</head>
+<body>
+<header><b>🤝 Agents &amp; Leads</b><button onclick="location.href='admin-dashboard.html'">← Dashboard</button></header>
+<main id="app"><div class="empty">Loading…</div></main>
+<script>
+const client = window.supabase.createClient("https://ubkfrpkapqnlaiscrxim.supabase.co","sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE");
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const STATUS={new:'New',contacted:'Contacted',viewing:'Viewing',closed_won:'Won',closed_lost:'Lost'};
+let me=null, cities=[], city=null, agents=[], leads=[], kpi={};
+function gate(m){ $('app').innerHTML='<div class="card empty">'+esc(m)+'<br><br><a href="index.html">Go to login</a></div>'; }
+async function init(){
+  const user=await eedbUser(client);
+  if(!user) return gate('Please log in as an admin.');
+  const {data:p}=await client.from('profiles').select('id,full_name,role').eq('id',user.id).maybeSingle();
+  if(!p||!['super_admin','admin','city_admin'].includes(String(p.role).toLowerCase())) return gate('Admin access required.');
+  me=p;
+  if(p.role==='city_admin'){
+    const {data:a}=await client.from('admin_city_assignments').select('city_id').eq('admin_id',user.id);
+    const ids=(a||[]).map(x=>x.city_id);
+    const {data:l}=ids.length?await client.from('locations').select('id,name').in('id',ids).eq('type','city'):{data:[]};
+    cities=l||[];
+  } else {
+    const {data:l}=await client.from('locations').select('id,name').eq('type','city').eq('is_active',true).order('name');
+    cities=l||[];
+  }
+  if(!cities.length) return gate('No city is assigned to your account yet.');
+  city=cities[0].id; await load();
+}
+async function load(){
+  const {data:a}=await client.from('admin_city_assignments').select('admin_id').eq('city_id',city);
+  const ids=(a||[]).map(x=>x.admin_id);
+  const {data:ps}=ids.length?await client.from('profiles').select('id,full_name,phone,role,is_active').in('id',ids).eq('role','agent'):{data:[]};
+  agents=ps||[];
+  const {data:r}=await client.rpc('eedb_agent_report'); kpi={}; (r||[]).forEach(x=>kpi[x.agent_id]=x);
+  const {data:ls}=await client.from('leads').select('*').eq('city_id',city).order('created_at',{ascending:false}).limit(200);
+  leads=ls||[]; render();
+}
+function render(){
+  const cnt=s=>leads.filter(l=>l.status===s).length;
+  $('app').innerHTML=
+  '<div class="card"><select id="citySel" onchange="city=this.value;load()">'+cities.map(c=>'<option value="'+c.id+'"'+(c.id===city?' selected':'')+'>'+esc(c.name)+'</option>').join('')+'</select>'+
+  '<div class="kpis"><div class="kpi"><b>'+leads.length+'</b><span>Leads</span></div><div class="kpi"><b>'+cnt('new')+'</b><span>New</span></div><div class="kpi"><b>'+cnt('closed_won')+'</b><span>Won</span></div><div class="kpi"><b>'+agents.length+'</b><span>Agents</span></div></div></div>'+
+  '<div class="card"><h2>Agents</h2>'+(agents.length?agents.map(a=>{const k=kpi[a.id]||{};return '<div class="row"><div><b>'+esc(a.full_name)+'</b><div class="muted">'+esc(a.phone||'')+' · leads '+(k.leads_total||0)+' · won '+(k.leads_won||0)+' · listings '+(k.listings_total||0)+'</div></div><button class="b r" onclick="removeAgent(\''+a.id+'\')">Remove</button></div>';}).join(''):'<div class="empty">No agents in this city yet.</div>')+
+  '<h2 style="margin-top:14px">Add agent</h2><input id="srch" placeholder="Search registered user by phone or name"><button class="b" onclick="search()">Search</button><div id="found"></div></div>'+
+  '<div class="card"><h2>Leads</h2>'+(leads.length?leads.map(l=>
+    '<div class="lead"><b>'+esc(l.customer_name)+'</b> · <a href="tel:'+esc(l.customer_phone)+'">'+esc(l.customer_phone)+'</a><div class="muted">'+new Date(l.created_at).toLocaleString()+' · '+esc(l.listing_kind)+'</div>'+
+    (l.message?'<div style="font-size:14px;margin-top:4px;white-space:pre-wrap">'+esc(l.message)+'</div>':'')+
+    '<select onchange="upd(\''+l.id+'\',{assigned_agent_id:this.value||null})"><option value="">Unassigned</option>'+agents.map(a=>'<option value="'+a.id+'"'+(a.id===l.assigned_agent_id?' selected':'')+'>'+esc(a.full_name)+'</option>').join('')+'</select>'+
+    '<select onchange="upd(\''+l.id+'\',{status:this.value})">'+Object.keys(STATUS).map(k=>'<option value="'+k+'"'+(k===l.status?' selected':'')+'>'+STATUS[k]+'</option>').join('')+'</select></div>').join(''):'<div class="empty">No leads yet.</div>')+'</div>';
+}
+async function search(){
+  const q=$('srch').value.trim().replace(/[%,]/g,''); if(q.length<3){$('found').innerHTML='<div class="muted">Type at least 3 characters.</div>';return;}
+  const {data,error}=await client.rpc('eedb_find_user_for_agent',{q:q});
+  if(error){$('found').innerHTML='<div class="muted">'+esc(error.message)+'</div>';return;}
+  $('found').innerHTML=(data||[]).filter(u=>!['super_admin','admin','city_admin','agent'].includes(u.role)).map(u=>'<div class="row"><div><b>'+esc(u.full_name)+'</b><div class="muted">'+esc(u.phone||'')+' · '+esc(u.role)+'</div></div><button class="b" onclick="makeAgent(\''+u.id+'\')">Make agent</button></div>').join('')||'<div class="muted">No matching user.</div>';
+}
+async function makeAgent(id){ const {error}=await client.rpc('eedb_make_agent',{target:id,city}); if(error)return alert(error.message); await load(); }
+async function removeAgent(id){ if(!confirm('Remove this agent from the city?'))return; const {error}=await client.rpc('eedb_remove_agent',{target:id,city}); if(error)return alert(error.message); await load(); }
+async function upd(id,patch){ const {error}=await client.from('leads').update(patch).eq('id',id); if(error)alert(error.message); await load(); }
+window.eedbClient = client;
+eedbWatchdog('app', 20000);
+init().catch(function(e){ gate((e&&e.message)||'Could not load. Check your connection.'); });
+</script>
+<script src="notify.js"></script>
+</body>
+</html>
