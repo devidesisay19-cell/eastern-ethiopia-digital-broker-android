@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Optimize photos | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="perf.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#0d47a1;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center}
+header button{border:0;background:#ffffff33;color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+main{width:min(720px,94%);margin:16px auto 60px}
+.card{background:#fff;border-radius:14px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px #1018280d}
+h2{font-size:17px;margin-bottom:8px}p,li{font-size:14px;color:#475467;line-height:1.5}
+.btn{border:0;background:#0d47a1;color:#fff;font-weight:700;padding:12px 16px;border-radius:12px;cursor:pointer;font-size:15px;width:100%;margin-top:10px}
+.btn:disabled{opacity:.5}.bar{height:12px;background:#e4e7ec;border-radius:8px;overflow:hidden;margin:12px 0 6px}
+.bar div{height:100%;width:0;background:#16a34a;transition:width .2s}.big{font-size:26px;font-weight:700;color:#0d47a1}
+.log{max-height:220px;overflow:auto;font:12px monospace;background:#0b1220;color:#9ae6b4;border-radius:10px;padding:10px;margin-top:10px;white-space:pre-wrap}
+</style>
+</head>
+<body>
+<header><b>&#128247; Optimize property photos</b><button onclick="location.href='admin-dashboard.html'">&larr; Admin</button></header>
+<main id="app"><div class="card">Loading...</div></main>
+<script>
+const client = window.supabase.createClient("https://ubkfrpkapqnlaiscrxim.supabase.co","sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE");
+const BUCKET='property-images', BIG=400*1024, MAXSIDE=1280, QUALITY=0.78;
+const $=id=>document.getElementById(id);
+let rows=[], big=[], running=false;
+const mb=n=>(n/1048576).toFixed(1)+' MB';
+const log=t=>{const l=$('log'); if(l){l.textContent+=t+'\n'; l.scrollTop=l.scrollHeight;}};
+function pub(path){ return client.storage.from(BUCKET).getPublicUrl(path).data.publicUrl; }
+
+async function init(){
+  const user=await eedbUser(client);
+  if(!user){ $('app').innerHTML='<div class="card">Please log in as an admin. <a href="index.html">Login</a></div>'; return; }
+  const {data:p}=await client.from('profiles').select('role').eq('id',user.id).maybeSingle();
+  if(!p||!['super_admin','admin','city_admin'].includes(p.role)){ $('app').innerHTML='<div class="card">Admin access required.</div>'; return; }
+  $('app').innerHTML='<div class="card"><h2>Make old photos small</h2><p>New photos are resized automatically. This tool shrinks the photos that were uploaded earlier (over 400 KB) to about 1280 px, like marketplace and car photos, so listings open much faster. The original is replaced only after the smaller copy is saved. City admins only see the photos of their own cities.</p>'+
+   '<button class="btn" id="scan">1. Scan photos</button><div id="scanOut" style="margin-top:12px"></div></div>'+
+   '<div class="card" id="runCard" style="display:none"><h2>Optimize</h2><div class="bar"><div id="prog"></div></div><p id="progTxt"></p><button class="btn" id="run">2. Optimize big photos</button><div class="log" id="log"></div></div>';
+  $('scan').onclick=scan; $('run').onclick=optimize;
+}
+async function scan(){
+  $('scan').disabled=true; $('scanOut').textContent='Reading list...';
+  rows=[]; let from=0;
+  for(;;){ const {data,error}=await client.from('property_images').select('id,property_id,storage_path').order('created_at',{ascending:true}).range(from,from+999);
+    if(error){ $('scanOut').textContent=error.message; $('scan').disabled=false; return; }
+    rows=rows.concat(data||[]); if(!data||data.length<1000) break; from+=1000; }
+  rows=rows.filter(r=>r.storage_path && r.storage_path.indexOf('data:')!==0);
+  let total=0, done=0; big=[];
+  const queue=rows.slice();
+  async function worker(){ while(queue.length){ const r=queue.shift(); try{
+      const res=await eedbWithTimeout(fetch(pub(r.storage_path),{method:'HEAD'}),15000);
+      r.size=Number(res.headers.get('content-length')||0);
+    }catch(e){ r.size=0; } total+=r.size||0; if(r.size>BIG) big.push(r); done++; $('scanOut').textContent='Checking '+done+' / '+rows.length+' ...'; } }
+  await Promise.all([worker(),worker(),worker(),worker(),worker()]);
+  const bigBytes=big.reduce((a,r)=>a+r.size,0);
+  $('scanOut').innerHTML='<div class="big">'+big.length+' big photos</div><p>of '+rows.length+' photos. Total size now: '+mb(total)+'. Big photos use '+mb(bigBytes)+' (expected after optimizing: about '+mb(big.length*180*1024)+').</p>';
+  $('scan').disabled=false; $('runCard').style.display=big.length?'block':'none';
+}
+function loadBitmap(blob){ return new Promise((res,rej)=>{ const u=URL.createObjectURL(blob), im=new Image(); im.onload=()=>{URL.revokeObjectURL(u);res(im);}; im.onerror=()=>{URL.revokeObjectURL(u);rej(new Error('cannot decode'));}; im.src=u; }); }
+async function shrink(blob){
+  const im=await loadBitmap(blob), sc=Math.min(1,MAXSIDE/Math.max(im.naturalWidth,im.naturalHeight));
+  const c=document.createElement('canvas'); c.width=Math.round(im.naturalWidth*sc); c.height=Math.round(im.naturalHeight*sc);
+  const x=c.getContext('2d'); x.fillStyle='#fff'; x.fillRect(0,0,c.width,c.height); x.drawImage(im,0,0,c.width,c.height);
+  return new Promise(res=>c.toBlob(res,'image/jpeg',QUALITY));
+}
+async function optimize(){
+  if(running) return; running=true; $('run').disabled=true;
+  let ok=0, fail=0, saved=0, i=0;
+  for(const r of big){ i++;
+    try{
+      const old=await eedbWithTimeout(fetch(pub(r.storage_path)),30000); if(!old.ok) throw new Error('download '+old.status);
+      const blob=await old.blob(); const small=await shrink(blob);
+      if(!small || small.size>blob.size*0.8){ log('skip (already small enough) '+r.id.slice(0,8)); continue; }
+      const newPath=r.property_id+'/'+Date.now()+'_opt_'+Math.random().toString(36).slice(2,8)+'.jpg';
+      const up=await client.storage.from(BUCKET).upload(newPath,small,{contentType:'image/jpeg',cacheControl:'31536000',upsert:false});
+      if(up.error) throw up.error;
+      const upd=await client.from('property_images').update({storage_path:newPath}).eq('id',r.id).select('id');
+      if(upd.error||!upd.data||!upd.data.length){ await client.storage.from(BUCKET).remove([newPath]); throw new Error(upd.error?upd.error.message:'no permission to update'); }
+      await client.storage.from(BUCKET).remove([r.storage_path]);      // old big file is removed only now
+      saved+=blob.size-small.size; ok++; log('ok '+mb(blob.size)+' -> '+mb(small.size));
+    }catch(e){ fail++; log('FAILED '+r.id.slice(0,8)+': '+(e&&e.message||e)); }
+    $('prog').style.width=Math.round(100*i/big.length)+'%'; $('progTxt').textContent=i+' / '+big.length+' - optimized '+ok+', failed '+fail+', saved '+mb(saved);
+  }
+  $('progTxt').textContent='Done. Optimized '+ok+', failed '+fail+', saved '+mb(saved)+'. Run the scan again to confirm.';
+  running=false; $('run').disabled=false;
+}
+eedbWatchdog('app',20000);
+init().catch(e=>{ $('app').innerHTML='<div class="card">'+(e&&e.message||'Could not load')+'</div>'; });
+</script>
+<script src="offline-banner.js"></script>
+</body>
+</html>

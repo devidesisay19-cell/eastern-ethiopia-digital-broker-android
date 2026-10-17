@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Dashboard | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f5f7fb;color:#172033}
+header{background:#0f766e;color:#fff;padding:14px 16px;display:flex;justify-content:space-between;align-items:center;position:sticky;top:0;z-index:10}
+header b{font-size:17px} header button{border:0;background:#fff3;color:#fff;padding:8px 12px;border-radius:10px;font-weight:700;cursor:pointer}
+main{width:min(900px,94%);margin:16px auto 60px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.stat{background:#fff;border-radius:14px;padding:12px;text-align:center;box-shadow:0 4px 14px #1018280d}
+.stat b{display:block;font-size:24px;color:#0f766e}.stat span{font-size:12px;color:#667085}
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{flex:1;border:0;background:#e6efed;padding:11px;border-radius:12px;font-weight:700;cursor:pointer}
+.tab.on{background:#0f766e;color:#fff}
+.post{display:block;text-align:center;text-decoration:none;background:#2563eb;color:#fff;font-weight:700;padding:12px;border-radius:12px;margin-bottom:12px}
+.lead{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 4px 14px #1018280d}
+.lead h3{font-size:16px}.muted{color:#667085;font-size:13px;margin-top:2px}
+.msg{margin:8px 0;white-space:pre-wrap;font-size:14px;color:#344054}
+.row{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+.row a,.row button{flex:1;min-width:90px;text-align:center;text-decoration:none;border:0;color:#fff;font-weight:700;padding:10px;border-radius:10px;cursor:pointer;font-size:14px}
+.call{background:#2563eb}.wa{background:#16a34a}.take{background:#0f766e}.view{background:#475467}
+select,textarea{width:100%;padding:10px;border:1px solid #d0d5dd;border-radius:10px;margin-top:8px;font-size:14px}
+.empty{text-align:center;color:#667085;padding:40px 10px}
+.login{background:#fff;border-radius:16px;padding:20px;margin-top:40px;text-align:center}
+.login a{display:inline-block;margin-top:12px;background:#0f766e;color:#fff;padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:700}
+</style>
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
+</head>
+<body>
+<header><b>🤝 Agent Dashboard</b><button id="out">Logout</button></header>
+<main id="app"><div class="empty">Loading…</div></main>
+<script>
+window.eedbClient = null;
+const client = window.supabase.createClient("https://ubkfrpkapqnlaiscrxim.supabase.co","sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE");
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let me=null, leads=[], tab='new';
+const STATUS={new:'New',contacted:'Contacted',viewing:'Viewing',closed_won:'Closed – Won',closed_lost:'Closed – Lost'};
+const wa=p=>{let n=String(p||'').replace(/[^\d+]/g,'');if(n.startsWith('0'))n='251'+n.slice(1);if(n.startsWith('+'))n=n.slice(1);return n;};
+function link(l){
+  if(l.listing_kind==='property')return 'property-details.html?id='+l.listing_id;
+  if(l.listing_kind==='job')return 'job-details.html?id='+l.listing_id;
+  return 'listing-details.html?kind='+l.listing_kind+'&id='+l.listing_id;
+}
+function gate(msg){ $('app').innerHTML='<div class="login"><p>'+esc(msg)+'</p><a href="index.html">Go to login</a></div>'; }
+function fail(msg){ $('app').innerHTML='<div class="login"><p>'+esc(msg)+'</p><a href="#" onclick="location.reload();return false">Retry</a></div>'; }
+async function init(){
+  try{
+    const user=await eedbUser(client);                       // local session, no network wait
+    if(!user) return gate('Please log in as an agent.');
+    // profile and leads are requested at the same time
+    const [pr,lr]=await eedbWithTimeout(Promise.all([
+      client.from('profiles').select('id,full_name,phone,role').eq('id',user.id).maybeSingle(),
+      client.from('leads').select('*').order('created_at',{ascending:false}).limit(200)
+    ]),15000);
+    const p=pr.data;
+    if(!p||String(p.role).toLowerCase()!=='agent') return gate('This account is not an agent account.');
+    me=p;
+    if(lr.error) return fail('Could not load leads: '+lr.error.message);
+    leads=lr.data||[]; render();
+  }catch(e){ fail((e&&e.message)||'Could not load. Check your connection.'); }
+}
+async function load(){
+  try{
+    const {data,error}=await eedbWithTimeout(client.from('leads').select('*').order('created_at',{ascending:false}).limit(200),15000);
+    if(error){ fail('Could not load leads: '+error.message); return; }
+    leads=data||[]; render();
+  }catch(e){ fail((e&&e.message)||'Could not load.'); }
+}
+function render(){
+  const mine=leads.filter(l=>l.assigned_agent_id===me.id);
+  const fresh=leads.filter(l=>!l.assigned_agent_id);
+  const won=mine.filter(l=>l.status==='closed_won').length;
+  const list=tab==='new'?fresh:mine;
+  $('app').innerHTML=
+   '<div class="stats"><div class="stat"><b>'+fresh.length+'</b><span>New leads</span></div><div class="stat"><b>'+mine.length+'</b><span>My leads</span></div><div class="stat"><b>'+won+'</b><span>Won</span></div></div>'+
+   '<a class="post" href="owner-dashboard.html">➕ Post a listing</a><a class="post" style="background:#0f766e" href="payments.html">💳 Record a payment</a>'+
+   '<div class="tabs"><button class="tab '+(tab==='new'?'on':'')+'" onclick="setTab(\'new\')">New ('+fresh.length+')</button><button class="tab '+(tab==='mine'?'on':'')+'" onclick="setTab(\'mine\')">My leads ('+mine.length+')</button></div>'+
+   (list.length?list.map(card).join(''):'<div class="empty">No leads here yet.</div>');
+}
+function setTab(t){tab=t;render();}
+function card(l){
+  const isMine=l.assigned_agent_id===me.id;
+  return '<div class="lead"><h3>'+esc(l.customer_name)+'</h3>'+
+   '<div class="muted">'+esc(l.customer_phone)+' · '+new Date(l.created_at).toLocaleString()+' · '+esc(l.listing_kind)+'</div>'+
+   (l.message?'<div class="msg">'+esc(l.message)+'</div>':'')+
+   '<div class="row"><a class="call" href="tel:'+esc(l.customer_phone)+'">📞 Call</a><a class="wa" target="_blank" rel="noopener" href="https://wa.me/'+wa(l.customer_phone)+'">💬 WhatsApp</a><a class="view" href="'+link(l)+'">View listing</a></div>'+
+   (isMine?
+     '<select onchange="setStatus(\''+l.id+'\',this.value)">'+Object.keys(STATUS).map(k=>'<option value="'+k+'"'+(k===l.status?' selected':'')+'>'+STATUS[k]+'</option>').join('')+'</select>'+
+     '<textarea rows="2" placeholder="Note" onchange="setNote(\''+l.id+'\',this.value)">'+esc(l.note||'')+'</textarea>'
+     :'<div class="row"><button class="take" onclick="take(\''+l.id+'\')">✋ Take this lead</button></div>')+
+   '</div>';
+}
+async function take(id){
+  const {error}=await client.from('leads').update({assigned_agent_id:me.id,status:'contacted'}).eq('id',id).is('assigned_agent_id',null);
+  if(error) alert(error.message); await load(); tab='mine'; render();
+}
+async function setStatus(id,v){ const {error}=await client.from('leads').update({status:v}).eq('id',id); if(error)alert(error.message); await load(); }
+async function setNote(id,v){ const {error}=await client.from('leads').update({note:v}).eq('id',id); if(error)alert(error.message); }
+$('out').onclick=async()=>{await client.auth.signOut();location.href='index.html';};
+window.eedbClient = client;
+eedbWatchdog('app', 20000);
+init();
+</script>
+<script src="notify.js"></script>
+</body>
+</html>

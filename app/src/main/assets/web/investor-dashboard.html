@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Investor Overview | Eastern Ethiopia Digital Broker</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,Helvetica,sans-serif;background:#f3f6fb;color:#172033}
+header{background:linear-gradient(135deg,#0d47a1,#1e88e5);color:#fff;padding:16px;display:flex;justify-content:space-between;align-items:center;gap:8px}
+header h1{font-size:18px}header small{display:block;opacity:.85;font-size:12px;margin-top:2px}
+header button{border:0;background:#ffffff33;color:#fff;padding:8px 11px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px}
+main{width:min(1000px,94%);margin:16px auto 50px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:14px}
+@media(min-width:700px){.grid{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:#fff;border-radius:16px;padding:14px;box-shadow:0 4px 14px #1018280d}
+.kpi b{display:block;font-size:28px;color:#0d47a1}.kpi span{font-size:12px;color:#667085}.kpi i{display:block;font-style:normal;font-size:12px;color:#16a34a;margin-top:4px}
+.card{background:#fff;border-radius:16px;padding:16px;margin-bottom:14px;box-shadow:0 4px 14px #1018280d}
+h2{font-size:16px;margin-bottom:12px}
+.bar{display:flex;align-items:center;gap:8px;margin:7px 0;font-size:13px}
+.bar .n{width:92px;flex:none}.bar .t{flex:1;background:#eef2f7;border-radius:8px;height:18px;display:flex;overflow:hidden}
+.bar .t div{height:100%}.bar .v{width:34px;text-align:right;color:#475467;flex:none}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#475467;margin-bottom:6px}
+.legend u{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;text-decoration:none}
+.tw{overflow-x:auto}table{width:100%;border-collapse:collapse;font-size:13px;min-width:640px}
+th,td{padding:9px 6px;text-align:right;border-bottom:1px solid #eef2f6}th:first-child,td:first-child{text-align:left}th{color:#667085;font-weight:700}
+.msg{text-align:center;color:#667085;padding:50px 10px}.msg a{color:#0d47a1;font-weight:700}
+.foot{text-align:center;color:#98a2b3;font-size:12px;margin-top:10px}
+@media print{header button{display:none}body{background:#fff}.kpi,.card{box-shadow:none;border:1px solid #e4e7ec}}
+.rep{margin-top:14px}.rep .row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:10px}.rep input{padding:8px;border:1px solid #d0d5dd;border-radius:10px}.rep button{border:0;background:#0d47a1;color:#fff;padding:8px 14px;border-radius:10px;font-weight:700;cursor:pointer}
+.sto-bar{height:14px;background:#e4e7ec;border-radius:8px;overflow:hidden;margin:8px 0}.sto-bar i{display:block;height:100%;background:#1e88e5}.sto-bar.warn i{background:#fb8c00}.sto-bar.full i{background:#d92d20}
+</style>
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
+</head>
+<body>
+<header><div><h1>📈 Investor Overview</h1><small>Eastern Ethiopia Digital Broker</small></div><div><button onclick="window.print()">Print / PDF</button> <button id="backBtn" onclick="location.href='admin-dashboard.html'">← Admin</button><button id="outBtn" style="display:none">Logout</button></div></header>
+<main id="app"><div class="msg">Loading…</div></main>
+<script>
+const client = window.supabase.createClient("https://ubkfrpkapqnlaiscrxim.supabase.co","sb_publishable_5EokG_AyxU4BvcMiq1zyqg_B-NIMoeE");
+const $=id=>document.getElementById(id);
+const esc=v=>String(v==null?'':v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const num=n=>Number(n||0).toLocaleString();
+const COL={properties:'#1e88e5',marketplace:'#43a047',cars:'#fb8c00',jobs:'#8e24aa'};
+function gate(m){$('app').innerHTML='<div class="msg">'+esc(m)+'<br><br><a href="index.html">Go to login</a></div>';}
+async function init(){
+  const user=await eedbUser(client);
+  if(!user) return gate('Please log in as Super Admin or Investor.');
+  const {data:pr}=await client.from('profiles').select('role').eq('id',user.id).maybeSingle();
+  if(pr&&pr.role==='investor'){ $('backBtn').style.display='none'; $('outBtn').style.display=''; $('outBtn').onclick=async()=>{await client.auth.signOut();location.href='index.html';}; }
+  const {data,error}=await client.rpc('eedb_investor_overview');
+  if(error) return gate(error.message.includes('Only Super Admin')?'Super Admin or Investor access required.':'Could not load: '+error.message);
+  render(data);
+  loadStorage();
+}
+function spark(daily,key,color){
+  const w=300,h=70,p=6,max=Math.max(1,...daily.map(d=>d[key])),n=daily.length;
+  const pts=daily.map((d,i)=>[p+i*(w-2*p)/(n-1), h-p-(d[key]/max)*(h-2*p)]);
+  const line=pts.map(q=>q.join(',')).join(' ');
+  const area='M'+pts[0].join(',')+' L'+pts.slice(1).map(q=>q.join(',')).join(' L')+' L'+(w-p)+','+(h-p)+' L'+p+','+(h-p)+'Z';
+  return '<svg viewBox="0 0 '+w+' '+h+'" width="100%" height="'+h+'" preserveAspectRatio="none"><path d="'+area+'" fill="'+color+'22"/><polyline points="'+line+'" fill="none" stroke="'+color+'" stroke-width="2.5" stroke-linejoin="round"/></svg>';
+}
+function render(d){
+  const t=d.totals, cities=d.by_city||[], daily=d.daily||[];
+  const live=t.properties_live+t.marketplace_live+t.cars_live;
+  const conv=t.leads_total?Math.round(100*t.leads_won/t.leads_total):0;
+  const maxCity=Math.max(1,...cities.map(c=>c.properties+c.marketplace+c.cars+c.jobs));
+  const sum=k=>daily.reduce((a,x)=>a+x[k],0);
+  $('app').innerHTML=
+  '<div class="grid">'+
+   '<div class="kpi"><b>'+num(live)+'</b><span>Live listings</span><i>+'+num(t.new_listings_7d)+' last 7 days</i></div>'+
+   '<div class="kpi"><b>'+num(t.users)+'</b><span>Registered users</span><i>+'+num(t.new_users_7d)+' last 7 days</i></div>'+
+   '<div class="kpi"><b>'+num(t.leads_total)+'</b><span>Customer leads</span><i>'+conv+'% won</i></div>'+
+   '<div class="kpi"><b>'+num(t.agents)+'</b><span>Active agents</span><i>'+num(t.cities)+' cities</i></div>'+
+   '<div class="kpi"><b>'+num(t.jobs_live)+'</b><span>Open jobs</span><i>'+num(t.applications)+' applications</i></div>'+
+   '<div class="kpi"><b>'+num(t.closed_deals)+'</b><span>Closed deals (sold/rented)</span></div>'+
+   '<div class="kpi"><b>'+num(t.leads_new)+'</b><span>New leads waiting</span></div>'+
+   '<div class="kpi"><b>'+num(t.city_admins)+'</b><span>City admins</span></div>'+
+   '<div class="kpi"><b>ETB '+num(t.revenue_total)+'</b><span>Confirmed revenue</span><i>ETB '+num(t.revenue_30d)+' last 30 days</i></div>'+
+   '<div class="kpi"><b>'+num(t.featured_active)+'</b><span>Active featured listings</span></div>'+
+   '<div class="kpi"><b>'+num(t.payments_pending)+'</b><span>Payments awaiting confirmation</span></div>'+
+  '</div>'+
+  '<div class="card"><h2>Listings by city</h2><div class="legend">'+Object.keys(COL).map(k=>'<span><u style="background:'+COL[k]+'"></u>'+k+'</span>').join('')+'</div>'+
+   (cities.length?cities.map(c=>{const tot=c.properties+c.marketplace+c.cars+c.jobs;return '<div class="bar"><div class="n">'+esc(c.city)+'</div><div class="t" style="max-width:'+Math.max(6,100*tot/maxCity)+'%">'+['properties','marketplace','cars','jobs'].map(k=>c[k]?'<div style="width:'+(100*c[k]/tot)+'%;background:'+COL[k]+'"></div>':'').join('')+'</div><div class="v">'+tot+'</div></div>';}).join(''):'<div class="msg">No cities yet.</div>')+'</div>'+
+  '<div class="card"><h2>Last 14 days</h2><div class="grid" style="margin:0">'+
+   [['listings','New listings','#1e88e5'],['leads','New leads','#fb8c00'],['users','New users','#43a047']].map(x=>'<div><div style="font-size:12px;color:#667085">'+x[1]+' · <b style="color:#172033">'+num(sum(x[0]))+'</b></div>'+spark(daily,x[0],x[2])+'</div>').join('')+'</div></div>'+
+  '<div class="card"><h2>City performance</h2><div class="tw"><table><tr><th>City</th><th>Properties</th><th>Market</th><th>Cars</th><th>Jobs</th><th>Agents</th><th>Leads</th><th>Won</th><th>Revenue (ETB)</th></tr>'+
+   cities.map(c=>'<tr><td><b>'+esc(c.city)+'</b></td><td>'+c.properties+'</td><td>'+c.marketplace+'</td><td>'+c.cars+'</td><td>'+c.jobs+'</td><td>'+c.agents+'</td><td>'+c.leads+'</td><td>'+c.leads_won+'</td></tr>').join('')+'</table></div></div>'+
+  '<div class="card rep"><h2>Daily report</h2><div class="row"><input type="date" id="repDate"><button onclick="loadReport()">Show report</button></div><div id="repOut"><span class="muted">Choose a date and press Show report.</span></div></div>'+
+  '<div class="card"><h2>Storage</h2><div id="stoOut"><span class="muted">Loading storage...</span></div></div>'+
+  '<div class="foot">Generated '+new Date(d.generated_at).toLocaleString()+' · figures include demo data until it is removed</div>';
+}
+
+async function loadStorage(){
+  const {data, error} = await client.rpc('eedb_storage_status');
+  if(error){ $('stoOut').innerHTML = '<span class="muted">'+esc(error.message)+'</span>'; return; }
+  const mb = b => (Number(b||0)/1048576).toFixed(1);
+  const p = Math.min(100, Number(data.percent)||0);
+  const cls = data.full ? 'full' : (p >= 80 ? 'warn' : '');
+  const note = data.full
+    ? '<b style="color:#d92d20">Storage is full: photo uploads and publishing are blocked.</b>'
+    : (p >= 80 ? '<b style="color:#fb8c00">Storage is almost full.</b>' : 'Storage is healthy.');
+  $('stoOut').innerHTML =
+    '<div class="sto-bar '+cls+'"><i style="width:'+p+'%"></i></div>'+
+    '<div>'+mb(data.used_bytes)+' MB used of '+mb(data.limit_bytes)+' MB ('+p+'%)</div>'+
+    '<div style="margin-top:6px">'+note+'</div>';
+}
+
+function repNum(v){ return Number(v)||0; }
+async function loadReport(){
+  const d = $('repDate').value || new Date().toLocaleDateString('en-CA');
+  $('repOut').innerHTML = '<span class="muted">Loading...</span>';
+  const {data, error} = await client.rpc('eedb_daily_report', {report_date: d});
+  if(error){ $('repOut').innerHTML = '<span class="muted">'+esc(error.message)+'</span>'; return; }
+  const rows = (data||[]).filter(r => ['prop_rent','prop_sale','jobs','mkt_sell','mkt_rent','car_sell','car_rent','prop_sold','prop_rented','mkt_sold','mkt_rented','car_sold','car_rented'].some(k => repNum(r[k])>0));
+  if(!rows.length){ $('repOut').innerHTML = '<span class="muted">No activity on '+esc(d)+'.</span>'; return; }
+  const newOf = r => repNum(r.prop_rent)+repNum(r.prop_sale)+repNum(r.jobs)+repNum(r.mkt_sell)+repNum(r.mkt_rent)+repNum(r.car_sell)+repNum(r.car_rent);
+  const doneOf = r => repNum(r.prop_sold)+repNum(r.prop_rented)+repNum(r.mkt_sold)+repNum(r.mkt_rented)+repNum(r.car_sold)+repNum(r.car_rented);
+  const cols = [
+    ['Properties (rent)', r=>repNum(r.prop_rent)], ['Properties (sale)', r=>repNum(r.prop_sale)],
+    ['Jobs', r=>repNum(r.jobs)], ['Market (sell)', r=>repNum(r.mkt_sell)], ['Market (rent)', r=>repNum(r.mkt_rent)],
+    ['Cars (sell)', r=>repNum(r.car_sell)], ['Cars (rent)', r=>repNum(r.car_rent)],
+    ['Total new', newOf],
+    ['Property sold', r=>repNum(r.prop_sold)], ['Property rented', r=>repNum(r.prop_rented)],
+    ['Market sold', r=>repNum(r.mkt_sold)], ['Market rented', r=>repNum(r.mkt_rented)],
+    ['Cars sold', r=>repNum(r.car_sold)], ['Cars rented', r=>repNum(r.car_rented)],
+    ['Total completed', doneOf]
+  ];
+  const head = '<tr><th>City</th>'+cols.map(c=>'<th>'+c[0]+'</th>').join('')+'</tr>';
+  const body = rows.map(r => '<tr><td><b>'+esc(r.city_name)+'</b></td>'+cols.map(c=>'<td>'+c[1](r)+'</td>').join('')+'</tr>').join('');
+  const totals = '<tr><td><b>ALL CITIES</b></td>'+cols.map(c=>'<td><b>'+rows.reduce((t,r)=>t+c[1](r),0)+'</b></td>').join('')+'</tr>';
+  $('repOut').innerHTML = '<div class="tw"><table>'+head+body+totals+'</table></div>';
+}
+$('repDate') && ($('repDate').value = new Date().toLocaleDateString('en-CA'));
+window.eedbClient = client;
+eedbWatchdog('app', 20000);
+init().catch(function(e){ gate((e&&e.message)||'Could not load. Check your connection.'); });
+</script>
+<script src="notify.js"></script>
+</body>
+</html>

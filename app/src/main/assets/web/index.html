@@ -1,0 +1,6556 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+<link rel="preconnect" href="https://ubkfrpkapqnlaiscrxim.supabase.co" crossorigin>
+<link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+>
+
+<meta
+    name="description"
+    content="Eastern Ethiopia Digital Broker - Find houses, jobs and local opportunities."
+>
+
+<title>Eastern Ethiopia Digital Broker</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.116.0"></script>
+<script src="storage-patch.js"></script>
+<script src="supabase.js"></script>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family:
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Roboto,
+        Arial,
+        sans-serif;
+
+    background: #f5f7fb;
+    color: #172033;
+    line-height: 1.5;
+}
+
+:root {
+
+    --primary: #0f766e;
+    --primary-dark: #115e59;
+
+    --secondary: #2563eb;
+
+    --dark: #172033;
+    --muted: #667085;
+
+    --white: #ffffff;
+
+    --border: #e4e7ec;
+
+    --background: #f5f7fb;
+
+    --success: #15803d;
+    --danger: #dc2626;
+    --warning: #d97706;
+
+    --shadow:
+        0 10px 30px rgba(15, 23, 42, 0.08);
+
+    --radius: 16px;
+}
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    background: rgba(255,255,255,0.96);
+
+    backdrop-filter: blur(12px);
+
+    border-bottom: 1px solid var(--border);
+}
+
+.navbar {
+
+    max-width: 1200px;
+    margin: auto;
+
+    padding: 14px 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.logo {
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    font-size: 20px;
+    font-weight: 800;
+
+    color: var(--primary);
+
+    cursor: pointer;
+
+    flex: 1;
+}
+
+.logo-icon {
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 12px;
+
+    background: var(--primary);
+
+    color: white;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 22px;
+
+    flex-shrink: 0;
+}
+
+.nav-links {
+
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+.nav-btn {
+
+    border: none;
+    background: transparent;
+
+    padding: 9px 13px;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-size: 14px;
+    font-weight: 600;
+
+    color: var(--dark);
+
+    white-space: nowrap;
+}
+
+.nav-btn:hover {
+    background: #f1f5f9;
+}
+
+.nav-primary {
+
+    background: var(--primary);
+    color: white;
+}
+
+.nav-primary:hover {
+
+    background: var(--primary-dark);
+    color: white;
+}
+
+/* =========================================================
+   LANGUAGE SELECTOR
+========================================================= */
+
+.language-selector {
+
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.language-selector select {
+
+    height: 40px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    background: white;
+
+    padding: 0 9px;
+
+    color: var(--dark);
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+
+    outline: none;
+}
+
+.language-selector select:focus {
+
+    border-color: var(--primary);
+}
+
+.mobile-menu-btn {
+
+    display: none;
+
+    border: none;
+    background: transparent;
+
+    font-size: 26px;
+
+    cursor: pointer;
+}
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.hero {
+
+    background:
+        linear-gradient(
+            135deg,
+            #0f766e,
+            #164e63
+        );
+
+    color: white;
+
+    padding: 70px 20px 80px;
+
+    text-align: center;
+}
+
+.hero-inner {
+
+    max-width: 900px;
+    margin: auto;
+}
+
+.hero h1 {
+
+    font-size: clamp(34px, 6vw, 58px);
+
+    line-height: 1.1;
+
+    margin-bottom: 18px;
+
+    font-weight: 800;
+}
+
+.hero p {
+
+    max-width: 700px;
+
+    margin: auto;
+
+    font-size: 18px;
+
+    opacity: 0.92;
+
+    margin-bottom: 30px;
+}
+
+.hero-actions {
+
+    display: flex;
+
+    justify-content: center;
+
+    flex-wrap: wrap;
+
+    gap: 12px;
+}
+
+.hero-btn {
+
+    border: none;
+
+    padding: 14px 22px;
+
+    border-radius: 12px;
+
+    font-size: 15px;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.hero-btn-primary {
+
+    background: white;
+
+    color: var(--primary);
+}
+
+.hero-btn-secondary {
+
+    background: rgba(255,255,255,0.15);
+
+    color: white;
+
+    border: 1px solid rgba(255,255,255,0.35);
+}
+
+/* =========================================================
+   FEATURES
+========================================================= */
+
+.features {
+
+    max-width: 1100px;
+
+    margin: -35px auto 0;
+
+    padding: 0 20px;
+
+    position: relative;
+
+    z-index: 2;
+}
+
+.feature-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 18px;
+}
+
+.feature-card {
+
+    background: white;
+
+    border-radius: var(--radius);
+
+    padding: 25px;
+
+    box-shadow: var(--shadow);
+
+    border: 1px solid var(--border);
+
+    text-align: center;
+}
+
+.feature-icon {
+
+    font-size: 30px;
+
+    margin-bottom: 10px;
+}
+
+.feature-card h3 {
+
+    margin-bottom: 5px;
+
+    font-size: 17px;
+}
+
+.feature-card p {
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* =========================================================
+   MAIN
+========================================================= */
+
+main {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    padding: 50px 20px;
+}
+
+.section-title {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 20px;
+
+    margin-bottom: 20px;
+}
+
+.section-title h2 {
+
+    font-size: 28px;
+}
+
+.section-title p {
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+/* =========================================================
+   FILTER
+========================================================= */
+
+.filter-box {
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    padding: 20px;
+
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 5px 20px rgba(15,23,42,0.04);
+}
+
+.filter-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        2fr
+        1fr
+        1fr
+        1fr
+        1fr
+        auto;
+
+    gap: 12px;
+
+    align-items: end;
+}
+
+.field {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 6px;
+}
+
+.field label {
+
+    font-size: 12px;
+
+    font-weight: 700;
+
+    color: var(--muted);
+}
+
+.field input,
+.field select {
+
+    width: 100%;
+
+    height: 44px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 0 12px;
+
+    font-size: 14px;
+
+    background: white;
+
+    outline: none;
+}
+
+.field input:focus,
+.field select:focus {
+
+    border-color: var(--primary);
+}
+
+.filter-btn {
+
+    height: 44px;
+
+    padding: 0 18px;
+
+    border: none;
+
+    border-radius: 10px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-weight: 700;
+
+    cursor: pointer;
+}
+
+.filter-btn:hover {
+
+    background: var(--primary-dark);
+}
+
+/* =========================================================
+   PROPERTY GRID
+========================================================= */
+
+.property-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 20px;
+}
+
+.property-card {
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+
+    overflow: hidden;
+
+    box-shadow:
+        0 5px 20px rgba(15,23,42,0.05);
+
+    transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.property-card:hover {
+
+    transform: translateY(-3px);
+
+    box-shadow:
+        0 12px 30px rgba(15,23,42,0.10);
+}
+
+.property-image {
+
+    width: 100%;
+
+    height: 210px;
+
+    object-fit: cover;
+
+    display: block;
+
+    background: #e5e7eb;
+}
+
+.property-content {
+
+    padding: 18px;
+}
+
+.property-top {
+
+    display: flex;
+
+    align-items: flex-start;
+
+    justify-content: space-between;
+
+    gap: 10px;
+
+    margin-bottom: 8px;
+}
+
+.property-title {
+
+    font-size: 18px;
+
+    font-weight: 750;
+
+    line-height: 1.25;
+}
+
+.badge {
+
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 5px 9px;
+
+    border-radius: 999px;
+
+    font-size: 11px;
+
+    font-weight: 800;
+
+    white-space: nowrap;
+}
+
+.badge-rent {
+
+    background: #dcfce7;
+
+    color: #166534;
+}
+
+.badge-sale {
+
+    background: #dbeafe;
+
+    color: #1d4ed8;
+}
+
+.property-location {
+
+    color: var(--muted);
+
+    font-size: 13px;
+
+    margin-bottom: 12px;
+}
+
+.property-details {
+
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 8px;
+
+    margin-bottom: 14px;
+}
+
+.detail-pill {
+
+    background: #f8fafc;
+
+    border: 1px solid var(--border);
+
+    padding: 5px 8px;
+
+    border-radius: 8px;
+
+    font-size: 12px;
+
+    color: #475467;
+}
+
+.property-price {
+
+    font-size: 19px;
+
+    font-weight: 800;
+
+    color: var(--primary);
+
+    margin-bottom: 15px;
+}
+
+.property-actions {
+
+    display: flex;
+
+    gap: 8px;
+}
+
+.view-btn {
+
+    flex: 1;
+
+    border: none;
+
+    background: var(--primary);
+
+    color: white;
+
+    border-radius: 10px;
+
+    height: 42px;
+
+    cursor: pointer;
+
+    font-weight: 700;
+}
+
+.view-btn:hover {
+
+    background: var(--primary-dark);
+}
+
+/* =========================================================
+   STATES
+========================================================= */
+
+.loading {
+
+    text-align: center;
+
+    padding: 60px 20px;
+
+    color: var(--muted);
+}
+
+.spinner {
+
+    width: 35px;
+    height: 35px;
+
+    border: 4px solid #e5e7eb;
+
+    border-top-color: var(--primary);
+
+    border-radius: 50%;
+
+    animation: spin 0.8s linear infinite;
+
+    margin: 0 auto 15px;
+}
+
+@keyframes spin {
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.empty-state {
+
+    text-align: center;
+
+    padding: 60px 20px;
+
+    background: white;
+
+    border: 1px solid var(--border);
+
+    border-radius: var(--radius);
+}
+
+.empty-state-icon {
+
+    font-size: 45px;
+
+    margin-bottom: 12px;
+}
+
+.empty-state h3 {
+
+    margin-bottom: 6px;
+}
+
+.empty-state p {
+
+    color: var(--muted);
+
+    font-size: 14px;
+}
+
+.error-box {
+
+    padding: 20px;
+
+    border-radius: 12px;
+
+    background: #fef2f2;
+
+    color: #991b1b;
+
+    border: 1px solid #fecaca;
+
+    margin-bottom: 20px;
+}
+
+/* =========================================================
+   MODAL
+========================================================= */
+
+.modal {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 5000;
+
+    background: rgba(15,23,42,0.65);
+
+    display: none;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 20px;
+}
+
+.modal.active {
+
+    display: flex;
+}
+
+.modal-box {
+
+    width: 100%;
+
+    max-width: 470px;
+
+    max-height: 92vh;
+
+    overflow-y: auto;
+
+    background: white;
+
+    border-radius: 20px;
+
+    padding: 25px;
+
+    box-shadow:
+        0 25px 70px rgba(0,0,0,0.25);
+
+    position: relative;
+}
+
+.modal-close {
+
+    position: absolute;
+
+    right: 16px;
+
+    top: 14px;
+
+    width: 35px;
+
+    height: 35px;
+
+    border-radius: 50%;
+
+    border: none;
+
+    background: #f1f5f9;
+
+    cursor: pointer;
+
+    font-size: 20px;
+}
+
+.modal-title {
+
+    font-size: 25px;
+
+    font-weight: 800;
+
+    margin-bottom: 5px;
+}
+
+.modal-subtitle {
+
+    color: var(--muted);
+
+    font-size: 14px;
+
+    margin-bottom: 22px;
+}
+
+.form-group {
+
+    margin-bottom: 15px;
+}
+
+.form-group label {
+
+    display: block;
+
+    font-size: 13px;
+
+    font-weight: 700;
+
+    margin-bottom: 6px;
+}
+
+.form-group input,
+.form-group select {
+
+    width: 100%;
+
+    height: 46px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    padding: 0 12px;
+
+    font-size: 14px;
+
+    outline: none;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+
+    border-color: var(--primary);
+}
+
+.role-grid {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 8px;
+}
+
+.role-option {
+
+    position: relative;
+}
+
+.role-option input {
+
+    position: absolute;
+
+    opacity: 0;
+}
+
+.role-label {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    min-height: 75px;
+
+    padding: 8px;
+
+    border: 1px solid var(--border);
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    text-align: center;
+
+    font-size: 12px;
+
+    font-weight: 700;
+}
+
+.role-option input:checked + .role-label {
+
+    border-color: var(--primary);
+
+    background: #ecfdf5;
+
+    color: var(--primary);
+}
+
+.modal-submit {
+
+    width: 100%;
+
+    height: 47px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: var(--primary);
+
+    color: white;
+
+    font-weight: 800;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    margin-top: 5px;
+}
+
+.modal-submit:disabled {
+
+    opacity: 0.6;
+
+    cursor: not-allowed;
+}
+
+.switch-auth {
+
+    text-align: center;
+
+    margin-top: 18px;
+
+    font-size: 14px;
+
+    color: var(--muted);
+}
+
+.switch-auth button {
+
+    border: none;
+
+    background: transparent;
+
+    color: var(--primary);
+
+    font-weight: 800;
+
+    cursor: pointer;
+}
+
+.message {
+
+    padding: 12px;
+
+    border-radius: 10px;
+
+    font-size: 13px;
+
+    margin-bottom: 15px;
+
+    display: none;
+}
+
+.message.error {
+
+    display: block;
+
+    background: #fef2f2;
+
+    color: #991b1b;
+
+    border: 1px solid #fecaca;
+}
+
+.message.success {
+
+    display: block;
+
+    background: #ecfdf3;
+
+    color: #166534;
+
+    border: 1px solid #bbf7d0;
+}
+
+/* =========================================================
+   LOGGED USER MENU
+========================================================= */
+
+.user-menu {
+
+    display: none;
+
+    align-items: center;
+
+    gap: 8px;
+}
+
+.user-name {
+
+    max-width: 130px;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+
+    font-size: 13px;
+
+    font-weight: 700;
+}
+
+.logout-btn {
+
+    border: none;
+
+    background: #fef2f2;
+
+    color: #b91c1c;
+
+    padding: 9px 12px;
+
+    border-radius: 9px;
+
+    cursor: pointer;
+
+    font-weight: 700;
+
+    font-size: 12px;
+}
+
+/* =========================================================
+   FOOTER
+========================================================= */
+
+footer {
+
+    background: #0f172a;
+
+    color: white;
+
+    margin-top: 40px;
+
+    padding: 45px 20px;
+}
+
+.footer-inner {
+
+    max-width: 1200px;
+
+    margin: auto;
+
+    display: grid;
+
+    grid-template-columns:
+        2fr 1fr 1fr;
+
+    gap: 35px;
+}
+
+.footer-brand h3 {
+
+    margin-bottom: 10px;
+}
+
+.footer-brand p {
+
+    color: #cbd5e1;
+
+    font-size: 14px;
+
+    max-width: 500px;
+}
+
+.footer-column h4 {
+
+    margin-bottom: 12px;
+}
+
+.footer-column button {
+
+    display: block;
+
+    border: none;
+
+    background: transparent;
+
+    color: #cbd5e1;
+
+    padding: 5px 0;
+
+    cursor: pointer;
+
+    text-align: left;
+}
+
+.footer-bottom {
+
+    max-width: 1200px;
+
+    margin: 30px auto 0;
+
+    padding-top: 20px;
+
+    border-top: 1px solid #334155;
+
+    color: #94a3b8;
+
+    font-size: 13px;
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    .filter-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .property-grid {
+
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+    .footer-inner {
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+    .nav-links {
+
+        gap: 3px;
+    }
+
+    .nav-btn {
+
+        padding: 8px 9px;
+    }
+}
+
+@media (max-width: 650px) {
+
+    .navbar {
+
+        padding: 12px 15px;
+    }
+
+    .logo {
+
+        font-size: 15px;
+    }
+
+    .logo-icon {
+
+        width: 36px;
+        height: 36px;
+
+        font-size: 19px;
+    }
+
+    .nav-links {
+
+        display: none;
+    }
+
+    .mobile-menu-btn {
+
+        display: block;
+    }
+
+    .language-selector {
+
+        display: flex;
+    }
+
+    .language-selector select {
+
+        height: 36px;
+
+        max-width: 95px;
+
+        font-size: 11px;
+    }
+
+    .hero {
+
+        padding:
+            55px 18px
+            65px;
+    }
+
+    .hero p {
+
+        font-size: 16px;
+    }
+
+    .feature-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .features {
+
+        margin-top: -20px;
+    }
+
+    main {
+
+        padding:
+            35px 15px;
+    }
+
+    .section-title {
+
+        display: block;
+    }
+
+    .section-title h2 {
+
+        margin-bottom: 5px;
+    }
+
+    .filter-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .property-grid {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .property-image {
+
+        height: 220px;
+    }
+
+    .role-grid {
+
+        grid-template-columns:
+            1fr 1fr 1fr;
+    }
+
+    .footer-inner {
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .modal {
+
+        padding: 10px;
+    }
+
+    .modal-box {
+
+        padding: 20px;
+    }
+}
+
+.quick-actions{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:18px;margin:28px 0;}
+.quick-action-card{display:block;text-decoration:none;}
+@media(max-width:900px){.quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));}}
+@media(max-width:600px){.quick-actions{grid-template-columns:1fr;}}
+.home-jobs-section{margin:40px 0;padding:24px 0;}
+
+/* ---- Home section header (Jobs / Marketplace / Cars) ---- */
+.home-section-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding:16px 20px;background:#fff;border-radius:14px;border:1px solid var(--border);box-shadow:0 5px 20px rgba(15,23,42,0.05);}
+.home-section-header-left{display:flex;align-items:center;gap:12px;}
+.home-section-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.home-section-icon-jobs{background:#eff6ff;}
+.home-section-icon-marketplace{background:#fdf4ff;}
+.home-section-icon-cars{background:#fff7ed;}
+.home-section-header h2{font-size:20px;margin-bottom:2px;}
+.home-section-header p{color:var(--muted);font-size:13px;}
+.home-section-count{font-size:12px;font-weight:800;color:var(--primary);background:#ecfdf5;padding:6px 12px;border-radius:999px;white-space:nowrap;}
+@media(max-width:600px){.home-section-header{padding:14px;}.home-section-header h2{font-size:17px;}}
+
+/* ---- Shared responsive grid for Marketplace / Cars listings ---- */
+.home-listing-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:18px;}
+@media(max-width:600px){.home-listing-grid{grid-template-columns:1fr;}}
+
+/* ---- No-photo placeholder used by marketplace/car cards ---- */
+.home-card-no-image{width:100%;height:100%;min-height:170px;display:flex;align-items:center;justify-content:center;font-size:42px;background:linear-gradient(135deg,#f1f5f9,#e2e8f0);color:#94a3b8;}
+
+/* ---- Listing type ribbon shown over the photo ---- */
+.listing-type-badge{position:absolute;top:10px;left:10px;z-index:2;}
+.home-marketplace-card,.home-car-card{position:relative;}
+.home-marketplace-card .property-image,.home-car-card .property-image{position:relative;}
+.home-marketplace-card .property-content h3,.home-car-card .property-content h3{font-size:17px;font-weight:750;margin-bottom:8px;line-height:1.25;}
+.home-marketplace-card .property-price,.home-car-card .property-price{margin-bottom:12px;}
+.home-job-date-section{margin:28px 0 36px;}
+.home-job-date-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px;padding:14px 16px;border-radius:14px;background:#ecfdf5;border:1px solid #99f6e4;}
+.home-job-date-heading h3{margin:0;font-size:20px;}
+.home-job-date-heading span{font-size:13px;font-weight:700;padding:6px 10px;border-radius:999px;background:#fff;}
+.home-jobs-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px;}
+.home-job-card{padding:20px;border-radius:16px;background:#fff;border:1px solid #e5e7eb;box-shadow:0 4px 14px rgba(0,0,0,.06);}
+.home-job-card h3{margin:0 0 8px;font-size:19px;}
+.home-job-card strong{display:block;margin-bottom:10px;}
+.home-job-card p{margin:10px 0;line-height:1.6;}
+@media(max-width:600px){.home-job-date-heading h3{font-size:18px;}.home-jobs-grid{grid-template-columns:1fr;}}
+</style>
+
+<!-- =========================================================
+     PWA / iPHONE SUPPORT
+========================================================= -->
+<link rel="manifest" href="./manifest.json">
+
+<link
+    rel="apple-touch-icon"
+    href="./icons/apple-touch-icon.png"
+>
+
+<meta
+    name="theme-color"
+    content="#0f766e"
+>
+
+<meta
+    name="apple-mobile-web-app-capable"
+    content="yes"
+>
+
+<meta
+    name="apple-mobile-web-app-status-bar-style"
+    content="default"
+>
+
+<meta
+    name="apple-mobile-web-app-title"
+    content="EEDB"
+>
+
+<script src="offline-banner.js"></script>
+<script src="perf.js"></script>
+<script src="city-gate.js"></script>
+</head>
+
+<body>
+
+
+<!-- =========================================================
+     HEADER
+========================================================= -->
+
+<header>
+
+    <nav class="navbar">
+
+        <div
+            class="logo"
+            onclick="window.scrollTo({
+                top:0,
+                behavior:'smooth'
+            })"
+        >
+
+            <div class="logo-icon">
+                🏠
+            </div>
+
+            <span data-i18n="brand">
+                Eastern Ethiopia Digital Broker
+            </span>
+
+        </div>
+
+
+        <div class="nav-links">
+
+            <button
+                class="nav-btn"
+                onclick="scrollToProperties()"
+                data-i18n="properties"
+            >
+                Properties
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="openJobBoard()"
+                data-i18n="jobs"
+            >
+                Jobs
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="handleListProperty()"
+            >
+                Property Listing
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="document.getElementById('jobsSection').scrollIntoView({behavior:'smooth'})"
+            >
+                Latest Jobs
+            </button>
+
+            <button
+                class="nav-btn"
+                onclick="handleDashboardClick()"
+                data-i18n="dashboard"
+            >
+                Dashboard
+            </button>
+
+            <button
+                class="nav-btn nav-primary"
+                id="authNavBtn"
+                onclick="openLogin()"
+                data-i18n="login"
+            >
+                Login
+            </button>
+
+        </div>
+
+
+        <div class="language-selector">
+
+            <span>
+                🌐
+            </span>
+
+            <select
+                id="languageSelector"
+                onchange="changeLanguage(this.value)"
+                aria-label="Language"
+            >
+
+                <option value="en">
+                    English
+                </option>
+
+                <option value="om">
+                    Afaan Oromoo
+                </option>
+
+                <option value="am">
+                    አማርኛ
+                </option>
+
+            </select>
+
+        </div>
+
+
+        <div
+            class="user-menu"
+            id="userMenu"
+        >
+
+            <span
+                class="user-name"
+                id="userNameDisplay"
+            >
+                User
+            </span>
+
+            <button
+                class="nav-btn nav-primary"
+                onclick="handleDashboardClick()"
+                data-i18n="dashboard"
+            >
+                Dashboard
+            </button>
+
+            <button
+                class="logout-btn"
+                onclick="logoutUser()"
+                data-i18n="logout"
+            >
+                Logout
+            </button>
+
+        </div>
+
+
+        <button
+            class="mobile-menu-btn"
+            onclick="openLogin()"
+        >
+            ☰
+        </button>
+
+    </nav>
+
+</header>
+
+
+<!-- =========================================================
+     HERO
+========================================================= -->
+
+<section class="hero">
+
+    <div class="hero-inner">
+
+        <h1 data-i18n="heroTitle">
+            Find Your Next Home or Opportunity
+        </h1>
+
+        <p data-i18n="heroDescription">
+            Discover houses for rent and sale,
+            local jobs, and opportunities across
+            Eastern Ethiopia.
+        </p>
+
+        <div class="hero-actions">
+
+            <button
+                class="hero-btn hero-btn-primary"
+                onclick="scrollToProperties()"
+                data-i18n="findProperty"
+            >
+                🏠 Find Property
+            </button>
+
+            <button
+                class="hero-btn hero-btn-secondary"
+                onclick="openJobBoard()"
+                data-i18n="findJobs"
+            >
+                💼 Find Jobs
+            </button>
+
+            <button
+                class="hero-btn hero-btn-secondary"
+                onclick="handleListProperty()"
+                data-i18n="listProperty"
+            >
+                ➕ List Property
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     FEATURES
+========================================================= -->
+
+<section class="features">
+
+    <div class="feature-grid">
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                🏠
+            </div>
+
+            <h3 data-i18n="houses">
+                Houses
+            </h3>
+
+            <p data-i18n="housesDescription">
+                Find houses for rent and sale.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                💼
+            </div>
+
+            <h3 data-i18n="jobs">
+                Jobs
+            </h3>
+
+            <p data-i18n="jobsDescription">
+                Discover local employment opportunities.
+            </p>
+
+        </div>
+
+
+        <div class="feature-card">
+
+            <div class="feature-icon">
+                📍
+            </div>
+
+            <h3 data-i18n="localSearch">
+                Local Search
+            </h3>
+
+            <p data-i18n="localSearchDescription">
+                Search opportunities by location.
+            </p>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- =========================================================
+     MAIN
+========================================================= -->
+
+<main id="propertiesSection">
+
+    <div class="section-title">
+
+        <div>
+
+            <h2 data-i18n="latestProperties">
+                Latest Properties
+            </h2>
+
+            <p data-i18n="browseProperties">
+                Browse available properties.
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <!-- FILTER -->
+
+    <div class="filter-box">
+
+        <div class="filter-grid">
+
+            <div class="field">
+
+                <label data-i18n="search">
+                    Search
+                </label>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    placeholder="Search property, location..."
+                    data-i18n-placeholder="searchPlaceholder"
+                    oninput="applyFilters()"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label data-i18n="type">
+                    Type
+                </label>
+
+                <select
+                    id="typeFilter"
+                    onchange="applyFilters()"
+                >
+
+                    <option
+                        value="all"
+                        data-i18n="all"
+                    >
+                        All
+                    </option>
+
+                    <option
+                        value="rent"
+                        data-i18n="rent"
+                    >
+                        Rent
+                    </option>
+
+                    <option
+                        value="sell"
+                        data-i18n="sale"
+                    >
+                        Sale
+                    </option>
+
+                    <option
+                        value="job"
+                        data-i18n="job"
+                    >
+                        Job
+                    </option>
+                    
+                    <option value="marketplace">
+                        Marketplace
+                    </option>
+
+                    <option value="car">
+                        Car
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label data-i18n="cityTown">
+                    City / Town
+                </label>
+
+                <select
+                    id="cityFilter"
+                    onchange="applyFilters()"
+                >
+
+                    <option value="all">
+                        All Cities
+                    </option>
+
+                </select>
+
+            </div>
+
+
+            <div class="field">
+
+                <label data-i18n="minPrice">
+                    Min Price
+                </label>
+
+                <input
+                    type="number"
+                    id="minPrice"
+                    placeholder="0"
+                    min="0"
+                    oninput="applyFilters()"
+                >
+
+            </div>
+
+
+            <div class="field">
+
+                <label data-i18n="maxPrice">
+                    Max Price
+                </label>
+
+                <input
+                    type="number"
+                    id="maxPrice"
+                    placeholder="Any"
+                    min="0"
+                    oninput="applyFilters()"
+                >
+
+            </div>
+
+
+            <button
+                class="filter-btn"
+                onclick="resetFilters()"
+                data-i18n="reset"
+            >
+                Reset
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- PROPERTY AREA -->
+
+    <div id="propertyArea">
+
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            <p data-i18n="loadingProperties">
+                Loading properties...
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="quick-actions">
+        <a class="quick-action-card" href="#propertiesSection">
+            <div class="quick-action-icon">🏠</div>
+            <div class="quick-action-title">Property Listing</div>
+            <div class="quick-action-text">Browse available properties</div>
+        </a>
+        <a class="quick-action-card" href="#jobsSection">
+            <div class="quick-action-icon">💼</div>
+            <div class="quick-action-title">Latest Jobs</div>
+            <div class="quick-action-text">View the latest job opportunities</div>
+        </a>
+        <a class="quick-action-card" href="#marketplaceSection">
+            <div class="quick-action-icon">🛍️</div>
+            <div class="quick-action-title">Marketplace</div>
+            <div class="quick-action-text">Buy and sell local items</div>
+        </a>
+        <a class="quick-action-card" href="#carsSection">
+            <div class="quick-action-icon">🚗</div>
+            <div class="quick-action-title">Cars</div>
+            <div class="quick-action-text">Find cars for sale or rent</div>
+        </a>
+    </div>
+
+
+    <section id="jobsSection" class="home-jobs-section">
+        <div class="home-section-header">
+            <div class="home-section-header-left">
+                <div class="home-section-icon home-section-icon-jobs">💼</div>
+                <div>
+                    <h2>Latest Jobs</h2>
+                    <p>Latest published job opportunities.</p>
+                </div>
+            </div>
+            <span class="home-section-count" id="jobsCount"></span>
+        </div>
+
+        <div id="homeJobsArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading jobs...</p>
+            </div>
+        </div>
+    </section>
+
+
+
+    <section id="marketplaceSection" class="home-jobs-section">
+        <div class="home-section-header">
+            <div class="home-section-header-left">
+                <div class="home-section-icon home-section-icon-marketplace">🛍️</div>
+                <div>
+                    <h2>Latest Marketplace</h2>
+                    <p>Latest published marketplace items.</p>
+                </div>
+            </div>
+            <span class="home-section-count" id="marketplaceCount"></span>
+        </div>
+        <div id="homeMarketplaceArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading marketplace...</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="carsSection" class="home-jobs-section">
+        <div class="home-section-header">
+            <div class="home-section-header-left">
+                <div class="home-section-icon home-section-icon-cars">🚗</div>
+                <div>
+                    <h2>Latest Cars</h2>
+                    <p>Latest published cars.</p>
+                </div>
+            </div>
+            <span class="home-section-count" id="carsCount"></span>
+        </div>
+        <div id="homeCarsArea">
+            <div class="loading">
+                <div class="spinner"></div>
+                <p>Loading cars...</p>
+            </div>
+        </div>
+    </section>
+
+</main>
+
+
+
+<div
+    class="modal"
+    id="loginModal"
+    onclick="closeModalOutside(event, 'loginModal')"
+>
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('loginModal')"
+        >
+            ×
+        </button>
+
+        <h2
+            class="modal-title"
+            data-i18n="welcomeBack"
+        >
+            Welcome Back
+        </h2>
+
+        <p
+            class="modal-subtitle"
+            data-i18n="loginSubtitle"
+        >
+            Login to continue to your dashboard.
+        </p>
+
+        <div
+            class="message"
+            id="loginMessage"
+        ></div>
+
+        <form
+            onsubmit="event.preventDefault(); loginUser();"
+        >
+
+            <div class="form-group">
+
+                <label data-i18n="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="loginEmail"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label data-i18n="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="loginPassword"
+                    placeholder="Your password"
+                    autocomplete="current-password"
+                    required
+                >
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="modal-submit"
+                id="loginSubmit"
+                data-i18n="login"
+            >
+                Login
+            </button>
+
+        </form>
+
+
+        <div class="switch-auth">
+
+            <span data-i18n="noAccount">
+                Don't have an account?
+            </span>
+
+            <button
+                onclick="switchToSignup()"
+                data-i18n="createAccount"
+            >
+                Create Account
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     SIGNUP MODAL
+========================================================= -->
+
+<div
+    class="modal"
+    id="signupModal"
+    onclick="closeModalOutside(event, 'signupModal')"
+>
+
+    <div class="modal-box">
+
+        <button
+            class="modal-close"
+            onclick="closeModal('signupModal')"
+        >
+            ×
+        </button>
+
+        <h2
+            class="modal-title"
+            data-i18n="createAccount"
+        >
+            Create Account
+        </h2>
+
+        <p
+            class="modal-subtitle"
+            data-i18n="signupSubtitle"
+        >
+            Choose your account type and get started.
+        </p>
+
+        <div
+            class="message"
+            id="signupMessage"
+        ></div>
+
+
+        <form
+            onsubmit="event.preventDefault(); signupUser();"
+        >
+
+            <div class="form-group">
+
+                <label data-i18n="fullName">
+                    Full Name
+                </label>
+
+                <input
+                    type="text"
+                    id="signupName"
+                    placeholder="Your full name"
+                    autocomplete="name"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label data-i18n="phoneNumber">
+                    Phone Number
+                </label>
+
+                <input
+                    type="tel"
+                    id="signupPhone"
+                    placeholder="+251..."
+                    autocomplete="tel"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label data-i18n="email">
+                    Email
+                </label>
+
+                <input
+                    type="email"
+                    id="signupEmail"
+                    placeholder="you@example.com"
+                    autocomplete="email"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label data-i18n="password">
+                    Password
+                </label>
+
+                <input
+                    type="password"
+                    id="signupPassword"
+                    placeholder="At least 6 characters"
+                    autocomplete="new-password"
+                    minlength="6"
+                    required
+                >
+
+            </div>
+
+
+            <div class="form-group">
+
+                <label data-i18n="accountType">
+                    Account Type
+                </label>
+
+                <div class="role-grid">
+
+                    <div class="role-option">
+
+                        <input
+                            type="radio"
+                            name="signupRole"
+                            id="roleOwner"
+                            value="owner"
+                            required
+                        >
+
+                        <label
+                            class="role-label"
+                            for="roleOwner"
+                        >
+                            🏠
+                            <span data-i18n="owner">
+                                Owner
+                            </span>
+                        </label>
+
+                    </div>
+
+
+                    <div class="role-option">
+
+                        <input
+                            type="radio"
+                            name="signupRole"
+                            id="roleRenter"
+                            value="renter"
+                        >
+
+                        <label
+                            class="role-label"
+                            for="roleRenter"
+                        >
+                            🔑
+                            <span data-i18n="renter">
+                                Renter
+                            </span>
+                        </label>
+
+                    </div>
+
+
+                    <div class="role-option">
+
+                        <input
+                            type="radio"
+                            name="signupRole"
+                            id="roleJobSeeker"
+                            value="job_seeker"
+                        >
+
+                        <label
+                            class="role-label"
+                            for="roleJobSeeker"
+                        >
+                            💼
+                            <span data-i18n="jobSeeker">
+                                Job Seeker
+                            </span>
+                        </label>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                type="submit"
+                class="modal-submit"
+                id="signupSubmit"
+                data-i18n="createAccount"
+            >
+                Create Account
+            </button>
+
+        </form>
+
+
+        <div class="switch-auth">
+
+            <span data-i18n="alreadyAccount">
+                Already have an account?
+            </span>
+
+            <button
+                onclick="switchToLogin()"
+                data-i18n="login"
+            >
+                Login
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer>
+
+    <div class="footer-inner">
+
+        <div class="footer-brand">
+
+            <h3>
+                Eastern Ethiopia Digital Broker
+            </h3>
+
+            <p data-i18n="footerDescription">
+                A local digital marketplace for
+                properties, jobs and opportunities
+                across Eastern Ethiopia.
+            </p>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4 data-i18n="property">
+                Property
+            </h4>
+
+            <button
+                onclick="scrollToProperties()"
+                data-i18n="browseProperties"
+            >
+                Browse Properties
+            </button>
+
+            <button
+                onclick="handleListProperty()"
+                data-i18n="listProperty"
+            >
+                List Property
+            </button>
+
+        </div>
+
+
+        <div class="footer-column">
+
+            <h4 data-i18n="jobs">
+                Jobs
+            </h4>
+
+            <button
+                onclick="openJobBoard()"
+                data-i18n="findJobs"
+            >
+                Find Jobs
+            </button>
+
+            <button
+                onclick="openLogin()"
+                data-i18n="login"
+            >
+                Login
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="footer-bottom">
+
+        © 2026 Eastern Ethiopia Digital Broker.
+        <span data-i18n="allRights">
+            All rights reserved.
+        </span>
+
+    </div>
+
+</footer>
+
+
+<script>
+
+/* =========================================================
+   SUPABASE CONFIGURATION
+========================================================= */
+
+function normalizeRole(role) {
+
+    if (!role) {
+
+        return "";
+    }
+
+    role =
+        String(role)
+        .toLowerCase()
+        .trim();
+
+
+    if (
+        role === "jobseeker" ||
+        role === "job-seeker" ||
+        role === "job seeker"
+    ) {
+
+        return "job_seeker";
+    }
+
+
+    return role;
+}
+
+
+/* =========================================================
+   ROLE REDIRECT
+========================================================= */
+
+function redirectByRole(role) {
+
+    role =
+        normalizeRole(role);
+
+
+    localStorage.setItem(
+        "userRole",
+        role
+    );
+
+
+    if (
+        role === "super_admin" ||
+        role === "admin" ||
+        role === "city_admin"
+    ) {
+
+        window.location.href =
+            "admin-dashboard.html";
+
+        return;
+    }
+
+
+    if (role === "investor") {
+
+        window.location.href =
+            "investor-dashboard.html";
+
+        return;
+    }
+
+    if (role === "agent") {
+
+        window.location.href =
+            "agent-dashboard.html";
+
+        return;
+    }
+
+
+    if (role === "owner") {
+
+        window.location.href =
+            "owner-dashboard.html";
+
+        return;
+    }
+
+
+    if (role === "renter") {
+
+        window.location.href =
+            "renter-dashboard.html";
+
+        return;
+    }
+
+
+    if (role === "job_seeker") {
+
+        window.location.href =
+            "job-seeker-dashboard.html";
+
+        return;
+    }
+
+    if (role === "employer") {
+
+        window.location.href =
+            "employer-job-dashboard.html";
+
+        return;
+    }
+
+
+    alert(
+        "Invalid account role: " +
+        (role || "No role found")
+    );
+}
+
+
+/* =========================================================
+   GET PROFILE
+========================================================= */
+
+async function getCurrentProfile(userId) {
+
+    if (!db || !userId) {
+
+        return null;
+    }
+
+
+    const {
+        data,
+        error
+    } =
+        await db
+            .from("profiles")
+            .select(
+                "id, full_name, phone, role"
+            )
+            .eq(
+                "id",
+                userId
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        console.error(
+            "PROFILE ERROR:",
+            error
+        );
+
+        throw error;
+    }
+
+
+    return data;
+}
+
+
+/* =========================================================
+   CHECK CURRENT USER
+========================================================= */
+
+async function checkCurrentUser() {
+
+    if (!db) {
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await db.auth.getUser();
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        if (
+            data &&
+            data.user
+        ) {
+
+            currentUser =
+                data.user;
+
+
+            try {
+
+                currentProfile =
+                    await getCurrentProfile(
+                        currentUser.id
+                    );
+
+            } catch (profileError) {
+
+                console.warn(
+                    "Could not load profile:",
+                    profileError
+                );
+
+                currentProfile = null;
+            }
+
+
+            updateUserMenu();
+
+        } else {
+
+            currentUser = null;
+
+            currentProfile = null;
+
+            updateUserMenu();
+        }
+
+    } catch (error) {
+
+        console.error(
+            "CURRENT USER ERROR:",
+            error
+        );
+
+        currentUser = null;
+
+        currentProfile = null;
+
+        updateUserMenu();
+    }
+}
+
+
+/* =========================================================
+   UPDATE USER MENU
+========================================================= */
+
+function updateUserMenu() {
+
+    const authNavBtn =
+        document.getElementById(
+            "authNavBtn"
+        );
+
+
+    const userMenu =
+        document.getElementById(
+            "userMenu"
+        );
+
+
+    const userNameDisplay =
+        document.getElementById(
+            "userNameDisplay"
+        );
+
+
+    if (
+        !authNavBtn ||
+        !userMenu
+    ) {
+
+        return;
+    }
+
+
+    if (currentUser) {
+
+        authNavBtn.style.display =
+            "none";
+
+
+        userMenu.style.display =
+            "flex";
+
+
+        if (userNameDisplay) {
+
+            userNameDisplay.textContent =
+                currentProfile &&
+                currentProfile.full_name
+                    ? currentProfile.full_name
+                    : "Account";
+        }
+
+    } else {
+
+        authNavBtn.style.display =
+            "block";
+
+
+        userMenu.style.display =
+            "none";
+    }
+}
+
+
+/* =========================================================
+   AUTH STATE LISTENER
+========================================================= */
+
+function setupAuthListener() {
+
+    if (!db) {
+
+        return;
+    }
+
+
+    db.auth.onAuthStateChange(
+        function(event, session) {
+
+            console.log(
+                "AUTH EVENT:",
+                event
+            );
+
+
+            if (
+                event === "SIGNED_IN" &&
+                session &&
+                session.user
+            ) {
+
+                currentUser =
+                    session.user;
+
+
+
+            }
+
+
+            if (
+                event === "SIGNED_OUT"
+            ) {
+
+                currentUser = null;
+
+                currentProfile = null;
+
+                updateUserMenu();
+            }
+        }
+    );
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+async function loginUser() {
+
+    const email =
+        document
+            .getElementById(
+                "loginEmail"
+            )
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById(
+                "loginPassword"
+            )
+            .value;
+
+
+    const button =
+        document
+            .getElementById(
+                "loginSubmit"
+            );
+
+
+    clearMessage(
+        "loginMessage"
+    );
+
+
+    if (
+        !email ||
+        !password
+    ) {
+
+        showMessage(
+            "loginMessage",
+            "Please enter your email and password.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    try {
+
+        button.disabled = true;
+
+        button.textContent =
+            "Logging in...";
+
+
+        const {
+            data,
+            error
+        } =
+            await db.auth.signInWithPassword({
+
+                email:
+                    email,
+
+                password:
+                    password
+
+            });
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        if (
+            !data ||
+            !data.user
+        ) {
+
+            throw new Error(
+                "Login succeeded but user information was not returned."
+            );
+        }
+
+
+        const userId =
+            data.user.id;
+
+
+        const profile =
+            await getCurrentProfile(
+                userId
+            );
+
+
+        if (!profile) {
+
+            await db.auth.signOut();
+
+            throw new Error(
+                "Login successful, but your profile was not found."
+            );
+        }
+
+
+        const role =
+            normalizeRole(
+                profile.role
+            );
+
+
+        if (!role) {
+
+            throw new Error(
+                "Your account role is missing."
+            );
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        currentProfile =
+            profile;
+
+
+        localStorage.setItem(
+            "userId",
+            userId
+        );
+
+
+        localStorage.setItem(
+            "userRole",
+            role
+        );
+
+
+        localStorage.setItem(
+            "userName",
+            profile.full_name || ""
+        );
+
+
+        closeModal(
+            "loginModal"
+        );
+
+
+        redirectByRole(
+            role
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LOGIN ERROR:",
+            error
+        );
+
+
+        showMessage(
+            "loginMessage",
+            error.message ||
+            "Login failed.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "Login";
+    }
+}
+
+
+/* =========================================================
+   SIGNUP
+========================================================= */
+
+async function signupUser() {
+
+    const fullName =
+        document
+            .getElementById(
+                "signupName"
+            )
+            .value
+            .trim();
+
+
+    const phone =
+        document
+            .getElementById(
+                "signupPhone"
+            )
+            .value
+            .trim();
+
+
+    const email =
+        document
+            .getElementById(
+                "signupEmail"
+            )
+            .value
+            .trim();
+
+
+    const password =
+        document
+            .getElementById(
+                "signupPassword"
+            )
+            .value;
+
+
+    const roleElement =
+        document.querySelector(
+            'input[name="signupRole"]:checked'
+        );
+
+
+    const button =
+        document
+            .getElementById(
+                "signupSubmit"
+            );
+
+
+    clearMessage(
+        "signupMessage"
+    );
+
+
+    if (!fullName) {
+
+        showMessage(
+            "signupMessage",
+            "Please enter your full name.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!phone) {
+
+        showMessage(
+            "signupMessage",
+            "Please enter your phone number.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!email) {
+
+        showMessage(
+            "signupMessage",
+            "Please enter your email.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (password.length < 6) {
+
+        showMessage(
+            "signupMessage",
+            "Password must be at least 6 characters.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    if (!roleElement) {
+
+        showMessage(
+            "signupMessage",
+            "Please select your account type.",
+            "error"
+        );
+
+        return;
+    }
+
+
+    const role =
+        normalizeRole(
+            roleElement.value
+        );
+
+
+    try {
+
+        button.disabled = true;
+
+        button.textContent =
+            "Creating account...";
+
+
+        const {
+            data,
+            error
+        } =
+            await db.auth.signUp({
+
+                email:
+                    email,
+
+                password:
+                    password,
+
+                options: {
+
+                    data: {
+
+                        full_name:
+                            fullName,
+
+                        phone:
+                            phone,
+
+                        role:
+                            role
+                    }
+
+                }
+
+            });
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        if (
+            !data ||
+            !data.user
+        ) {
+
+            throw new Error(
+                "Account creation did not return a user."
+            );
+        }
+
+
+        const {
+            error: profileError
+        } =
+            await db
+                .from("profiles")
+                .upsert({
+
+                    id:
+                        data.user.id,
+
+                    full_name:
+                        fullName,
+
+                    phone:
+                        phone,
+
+                    role:
+                        role
+
+                }, {
+
+                    onConflict:
+                        "id"
+
+                });
+
+
+        if (profileError) {
+
+            console.error(
+                "PROFILE SAVE ERROR:",
+                profileError
+            );
+
+            throw new Error(
+                "Account was created, but profile could not be saved: " +
+                profileError.message
+            );
+        }
+
+
+        localStorage.setItem(
+            "userId",
+            data.user.id
+        );
+
+
+        localStorage.setItem(
+            "userRole",
+            role
+        );
+
+
+        localStorage.setItem(
+            "userName",
+            fullName
+        );
+
+
+        if (!data.session) {
+
+            showMessage(
+                "signupMessage",
+                "Account created successfully. Please check your email to confirm your account, then login.",
+                "success"
+            );
+
+
+            setTimeout(
+                function() {
+
+                    closeModal(
+                        "signupModal"
+                    );
+
+                    openLogin();
+
+                },
+                1800
+            );
+
+
+            return;
+        }
+
+
+        currentUser =
+            data.user;
+
+
+        currentProfile = {
+
+            id:
+                data.user.id,
+
+            full_name:
+                fullName,
+
+            phone:
+                phone,
+
+            role:
+                role
+        };
+
+
+        closeModal(
+            "signupModal"
+        );
+
+
+        redirectByRole(
+            role
+        );
+
+    } catch (error) {
+
+        console.error(
+            "SIGNUP ERROR:",
+            error
+        );
+
+
+        showMessage(
+            "signupMessage",
+            error.message ||
+            "Account creation failed.",
+            "error"
+        );
+
+    } finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "Create Account";
+    }
+}
+
+
+/* =========================================================
+   OPEN LOGIN
+========================================================= */
+
+function openLogin() {
+
+    closeModal(
+        "signupModal"
+    );
+
+
+    clearMessage(
+        "loginMessage"
+    );
+
+
+    document
+        .getElementById(
+            "loginModal"
+        )
+        .classList
+        .add("active");
+}
+
+
+/* =========================================================
+   OPEN SIGNUP
+========================================================= */
+
+function openJobSeekerSignup(){
+
+    openSignup();
+
+    const role =
+        document.getElementById(
+            "roleJobSeeker"
+        );
+
+    if(role){
+        role.checked = true;
+    }
+}
+
+
+/* =========================================================
+   JOB SEEKER SIGNUP URL
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function(){
+
+        const params =
+            new URLSearchParams(
+                window.location.search
+            );
+
+        if(
+            params.get("signup") ===
+            "job_seeker"
+        ){
+
+            setTimeout(
+                function(){
+
+                    openJobSeekerSignup();
+
+                },
+                150
+            );
+        }
+    }
+);
+
+
+function openSignup() {
+
+    closeModal(
+        "loginModal"
+    );
+
+
+    clearMessage(
+        "signupMessage"
+    );
+
+
+    document
+        .getElementById(
+            "signupModal"
+        )
+        .classList
+        .add("active");
+}
+
+
+/* =========================================================
+   SWITCH LOGIN
+========================================================= */
+
+function switchToLogin() {
+
+    closeModal(
+        "signupModal"
+    );
+
+    openLogin();
+}
+
+
+/* =========================================================
+   SWITCH SIGNUP
+========================================================= */
+
+function switchToSignup() {
+
+    closeModal(
+        "loginModal"
+    );
+
+    openSignup();
+}
+
+
+/* =========================================================
+   CLOSE MODAL
+========================================================= */
+
+function closeModal(id) {
+
+    const modal =
+        document.getElementById(
+            id
+        );
+
+
+    if (modal) {
+
+        modal.classList.remove(
+            "active"
+        );
+    }
+}
+
+
+/* =========================================================
+   CLOSE OUTSIDE
+========================================================= */
+
+function closeModalOutside(
+    event,
+    id
+) {
+
+    if (
+        event.target.id === id
+    ) {
+
+        closeModal(id);
+    }
+}
+
+
+/* =========================================================
+   MESSAGES
+========================================================= */
+
+function showMessage(
+    elementId,
+    text,
+    type
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element) {
+
+        return;
+    }
+
+
+    element.textContent =
+        text;
+
+
+    element.className =
+        "message " +
+        type;
+}
+
+
+function clearMessage(
+    elementId
+) {
+
+    const element =
+        document.getElementById(
+            elementId
+        );
+
+
+    if (!element) {
+
+        return;
+    }
+
+
+    element.textContent =
+        "";
+
+
+    element.className =
+        "message";
+}
+
+
+/* =========================================================
+   DASHBOARD CLICK
+========================================================= */
+
+async function handleDashboardClick() {
+
+    if (!currentUser) {
+
+        openLogin();
+
+        return;
+    }
+
+
+    await openDashboard();
+}
+
+
+/* =========================================================
+   OPEN DASHBOARD
+========================================================= */
+
+async function openDashboard() {
+
+    if (!db) {
+
+        alert(
+            "Supabase is not ready."
+        );
+
+        return;
+    }
+
+
+    try {
+
+        if (!currentUser) {
+
+            const {
+                data,
+                error
+            } =
+                await db.auth.getUser();
+
+
+            if (error) {
+
+                throw error;
+            }
+
+
+            if (
+                !data ||
+                !data.user
+            ) {
+
+                openLogin();
+
+                return;
+            }
+
+
+            currentUser =
+                data.user;
+        }
+
+
+        let profile =
+            currentProfile;
+
+
+        if (!profile) {
+
+            profile =
+                await getCurrentProfile(
+                    currentUser.id
+                );
+
+
+            currentProfile =
+                profile;
+        }
+
+
+        if (!profile) {
+
+            alert(
+                "Your profile was not found."
+            );
+
+            return;
+        }
+
+
+        const role =
+            normalizeRole(
+                profile.role
+            );
+
+
+        redirectByRole(
+            role
+        );
+
+    } catch (error) {
+
+        console.error(
+            "DASHBOARD ERROR:",
+            error
+        );
+
+
+        alert(
+            "Could not open dashboard:\n\n" +
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   LIST PROPERTY
+========================================================= */
+
+async function handleListProperty() {
+
+    if (!currentUser) {
+
+        openSignup();
+
+        return;
+    }
+
+
+    if (!currentProfile) {
+
+        try {
+
+            currentProfile =
+                await getCurrentProfile(
+                    currentUser.id
+                );
+
+        } catch (error) {
+
+            alert(
+                "Could not load your profile."
+            );
+
+            return;
+        }
+    }
+
+
+    const role =
+        normalizeRole(
+            currentProfile &&
+            currentProfile.role
+        );
+
+
+    if (role === "owner") {
+
+        window.location.href =
+            "owner-dashboard.html";
+
+        return;
+    }
+
+
+    if (
+        role === "super_admin" ||
+        role === "admin" ||
+        role === "city_admin"
+    ) {
+
+        window.location.href =
+            "admin-dashboard.html";
+
+        return;
+    }
+
+
+    if (
+        role === "renter" ||
+        role === "job_seeker"
+    ) {
+
+        alert(
+            "Only property owners or admins can list properties."
+        );
+
+        return;
+    }
+
+
+    openSignup();
+}
+
+
+/* =========================================================
+   JOB BOARD
+   IMPORTANT:
+   jobs.html DOES NOT EXIST.
+   Therefore this function NEVER redirects
+   to jobs.html.
+========================================================= */
+
+function openJobBoard() {
+
+    /*
+     * Job seeker already logged in:
+     * go directly to existing dashboard.
+     */
+
+    if (currentUser) {
+
+        const role =
+            normalizeRole(
+                currentProfile &&
+                currentProfile.role
+            );
+
+
+        if (role === "job_seeker") {
+
+            window.location.href =
+                "job-seeker-dashboard.html";
+
+            return;
+        }
+
+
+        /*
+         * Admin can manage jobs from
+         * the existing admin dashboard.
+         */
+
+        if (
+            role === "super_admin" ||
+            role === "admin" ||
+            role === "city_admin"
+        ) {
+
+            window.location.href =
+                "admin-dashboard.html";
+
+            return;
+        }
+
+
+        /*
+         * Owner/renter are not sent
+         * to a non-existing jobs.html.
+         */
+
+        if (role === "employer") {
+
+            window.location.href =
+                "employer-job-dashboard.html";
+
+            return;
+        }
+
+        if (
+            role === "owner" ||
+            role === "renter"
+        ) {
+
+            alert(
+                "For job opportunities, please use a Job Seeker account."
+            );
+
+            return;
+        }
+    }
+
+
+    /*
+     * Guest:
+     * open signup and automatically
+     * select Job Seeker.
+     */
+
+    openSignup();
+
+
+    setTimeout(
+        function() {
+
+            const jobRole =
+                document.getElementById(
+                    "roleJobSeeker"
+                );
+
+
+            if (jobRole) {
+
+                jobRole.checked =
+                    true;
+            }
+
+        },
+        100
+    );
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+async function logoutUser() {
+
+    if (!db) {
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            error
+        } =
+            await db.auth.signOut();
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        currentUser = null;
+
+        currentProfile = null;
+
+
+        localStorage.removeItem(
+            "userId"
+        );
+
+
+        localStorage.removeItem(
+            "userRole"
+        );
+
+
+        localStorage.removeItem(
+            "userName"
+        );
+
+
+        updateUserMenu();
+
+
+        alert(
+            "You have been logged out."
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LOGOUT ERROR:",
+            error
+        );
+
+
+        alert(
+            "Logout failed:\n\n" +
+            error.message
+        );
+    }
+}
+
+
+/* =========================================================
+   LOAD LOCATIONS
+========================================================= */
+
+async function loadLocations() {
+
+    if (!db) {
+
+        return;
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await db
+                .from("locations")
+                .select(
+                    "id, parent_id, name, type, is_active"
+                )
+                .eq(
+                    "is_active",
+                    true
+                );
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        locationMap = {};
+
+
+        if (data) {
+
+            data.forEach(
+                function(location) {
+
+                    locationMap[
+                        location.id
+                    ] = location;
+                }
+            );
+        }
+
+
+        populateCityFilter(
+            data || []
+        );
+
+    } catch (error) {
+
+        console.error(
+            "LOCATION ERROR:",
+            error
+        );
+    }
+}
+
+
+/* =========================================================
+   POPULATE CITY FILTER
+========================================================= */
+
+function populateCityFilter(
+    locations
+) {
+
+    const select =
+        document.getElementById(
+            "cityFilter"
+        );
+
+
+    if (!select) {
+
+        return;
+    }
+
+
+    const cities =
+        locations.filter(
+            function(location) {
+
+                return (
+                    location.type === "city"
+                );
+            }
+        );
+
+
+    cities.sort(
+        function(a, b) {
+
+            return a.name.localeCompare(
+                b.name
+            );
+        }
+    );
+
+
+    select.innerHTML =
+        "";
+
+
+    const allOption =
+        document.createElement(
+            "option"
+        );
+
+
+    allOption.value =
+        "all";
+
+
+    allOption.textContent =
+        getTranslation(
+            "all"
+        ) +
+        " Cities";
+
+
+    select.appendChild(
+        allOption
+    );
+
+
+    cities.forEach(
+        function(city) {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+
+            option.value =
+                city.id;
+
+
+            option.textContent =
+                city.name;
+
+
+            select.appendChild(
+                option
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   UPDATE CITY FILTER LANGUAGE
+========================================================= */
+
+function updateCityFilterLanguage() {
+
+    const select =
+        document.getElementById(
+            "cityFilter"
+        );
+
+
+    if (!select) {
+
+        return;
+    }
+
+
+    const firstOption =
+        select.querySelector(
+            'option[value="all"]'
+        );
+
+
+    if (firstOption) {
+
+        const lang =
+            getCurrentLanguage();
+
+
+        if (lang === "om") {
+
+            firstOption.textContent =
+                "Magaalota Hunda";
+
+        } else if (lang === "am") {
+
+            firstOption.textContent =
+                "ሁሉም ከተሞች";
+
+        } else {
+
+            firstOption.textContent =
+                "All Cities";
+        }
+    }
+}
+
+
+/* =========================================================
+   TRANSLATION HELPER
+========================================================= */
+
+function getTranslation(key) {
+
+    const lang =
+        getCurrentLanguage();
+
+
+    const dictionary =
+        translations[lang] ||
+        translations.en;
+
+
+    return (
+        dictionary[key] ||
+        translations.en[key] ||
+        key
+    );
+}
+
+
+/* =========================================================
+   LOAD PROPERTIES
+========================================================= */
+
+async function loadProperties() {
+
+    if (!db) {
+
+        return;
+    }
+
+
+    const __cp = window.EEDBCache ? EEDBCache.get("props") : null;
+    if (__cp && __cp.length) {
+        allProperties = __cp;
+        const __ce = document.getElementById("cityFilter");
+        const __cn = __ce ? __ce.value : "all";
+        renderProperties(
+            __cn !== "all"
+                ? allProperties.filter(function(p) { return p.city_id === __cn; })
+                : allProperties
+        );
+    } else {
+        showPropertyLoading();
+    }
+
+
+    try {
+
+        const {
+            data,
+            error
+        } =
+            await db
+                .from("properties")
+                .select(`
+                    *,
+                    property_images (
+                        id,
+                        storage_path,
+                        display_order
+                    )
+                `)
+                .eq(
+                    "status",
+                    "published"
+                )
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                )
+                .range(0, 149);
+
+
+        if (error) {
+
+            throw error;
+        }
+
+
+        allProperties =
+            data || [];
+        if (window.EEDBCache) { EEDBCache.set("props", allProperties); }
+
+
+        const cityEl = document.getElementById("cityFilter");
+        const cityNow = cityEl ? cityEl.value : "all";
+
+        renderProperties(
+            cityNow !== "all"
+                ? allProperties.filter(function(p) { return p.city_id === cityNow; })
+                : allProperties
+        );
+
+    } catch (error) {
+
+        console.error(
+            "PROPERTY LOAD ERROR:",
+            error
+        );
+
+
+        showPropertyError(
+            "Could not load properties. Please check your Supabase tables, RLS policies and internet connection."
+        );
+    }
+}
+
+
+/* =========================================================
+   PROPERTY IMAGE URL
+========================================================= */
+/* =========================================================
+   HOME JOB ACTIONS
+========================================================= */
+
+let homeSavedJobs = [];
+let homeApplications = [];
+
+function homeIsJobSaved(jobId) {
+    return homeSavedJobs.some(function(row) {
+        return String(row.job_id) === String(jobId);
+    });
+}
+
+function homeHasApplied(jobId) {
+    return homeApplications.some(function(row) {
+        return String(row.job_id) === String(jobId);
+    });
+}
+
+async function loadHomeJobActions() {
+
+    homeSavedJobs = [];
+    homeApplications = [];
+
+    if (!db || !currentUser) {
+        return;
+    }
+
+    try {
+
+        const savedResult = await db
+            .from("job_saved")
+            .select("id,job_id,user_id,created_at")
+            .eq("user_id", currentUser.id);
+
+        if (!savedResult.error) {
+            homeSavedJobs = savedResult.data || [];
+        }
+
+        const applicationResult = await db
+            .from("job_applications")
+            .select("id,job_id,user_id")
+            .eq("user_id", currentUser.id);
+
+        if (!applicationResult.error) {
+            homeApplications = applicationResult.data || [];
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "HOME JOB ACTIONS LOAD ERROR:",
+            error
+        );
+    }
+}
+
+async function toggleHomeSaved(encodedJobId) {
+
+    if (!currentUser) {
+
+        if (typeof updateUserMenu === "function") {
+            updateUserMenu();
+        }
+
+        return;
+    }
+
+    const jobId =
+        decodeURIComponent(encodedJobId);
+
+    try {
+
+        const alreadySaved =
+            homeIsJobSaved(jobId);
+
+        if (alreadySaved) {
+
+            const { error } =
+                await db
+                    .from("job_saved")
+                    .delete()
+                    .eq("job_id", jobId)
+                    .eq("user_id", currentUser.id);
+
+            if (error) {
+                throw error;
+            }
+
+        } else {
+
+            const { error } =
+                await db
+                    .from("job_saved")
+                    .insert({
+                        job_id: jobId,
+                        user_id: currentUser.id
+                    });
+
+            if (error) {
+
+                const message =
+                    String(
+                        error.message || ""
+                    ).toLowerCase();
+
+                if (
+                    message.includes("duplicate") ||
+                    message.includes("unique")
+                ) {
+                    await loadHomeJobActions();
+                    renderHomeJobs(window.homeJobs || []);
+                    return;
+                }
+
+                throw error;
+            }
+        }
+
+        await loadHomeJobActions();
+
+        renderHomeJobs(
+            window.homeJobs || []
+        );
+
+    } catch (error) {
+
+        console.error(
+            "HOME SAVE JOB ERROR:",
+            error
+        );
+
+        alert(
+            String(
+                error.message ||
+                "Unable to save this job."
+            )
+        );
+    }
+}
+
+function viewHomeJob(encodedJobId) {
+
+    if (!encodedJobId) {
+        return;
+    }
+
+    const jobId =
+        decodeURIComponent(
+            encodedJobId
+        );
+
+    window.location.href =
+        "job-details.html?job_id=" +
+        encodeURIComponent(jobId);
+}
+
+
+/* =========================================================
+   LOAD HOME JOBS
+========================================================= */
+
+let homeMarketplaceItems = [];
+let homeCars = [];
+
+function homeListingTypeBadge(listingType) {
+    const normalized = String(listingType || "").toLowerCase();
+
+    if (normalized === "rent") {
+        return '<span class="badge badge-rent listing-type-badge">Rent</span>';
+    }
+
+    if (normalized === "sell" || normalized === "sale") {
+        return '<span class="badge badge-sale listing-type-badge">Sell</span>';
+    }
+
+    return "";
+}
+
+function homeDetailsButton(kind, id) {
+    if (!id) {
+        return "";
+    }
+
+    return '<button type="button" class="view-btn" onclick="viewListing(\'' + kind + '\',\'' + escapeHTML(id) + '\')">View Details</button>';
+}
+
+function viewListing(kind, id) {
+    if (!id) {
+        alert("Listing ID is missing.");
+        return;
+    }
+
+    window.location.href =
+        "listing-details.html?kind=" + encodeURIComponent(kind) +
+        "&id=" + encodeURIComponent(id);
+}
+
+function updateHomeSectionCount(elementId, count, singular, plural) {
+    const el = document.getElementById(elementId);
+
+    if (!el) {
+        return;
+    }
+
+    el.textContent = count + " " + (count === 1 ? singular : plural);
+}
+
+function homeGroupByDay(list, cards, noun, singular, plural) {
+    const labels = [
+        "Today " + noun,
+        "Yesterday " + noun,
+        "Before 2 Days " + noun,
+        "Before 3 Days " + noun,
+        "Before 4 Days " + noun,
+        "Before 5 Days " + noun,
+        "Before 6 Days " + noun,
+        "Before Week " + noun
+    ];
+
+    const now = new Date();
+    const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const buckets = labels.map(function() { return []; });
+    const older = [];
+
+    list.forEach(function(entry, index) {
+        const created = entry && entry.created_at ? new Date(entry.created_at) : null;
+        let diff = 9999;
+
+        if (created && !isNaN(created.getTime())) {
+            const day = new Date(created.getFullYear(), created.getMonth(), created.getDate());
+            diff = Math.round((today - day) / 86400000);
+            if (diff < 0) diff = 0;
+        }
+
+        if (diff >= 0 && diff < buckets.length) {
+            buckets[diff].push(cards[index]);
+        } else {
+            older.push(cards[index]);
+        }
+    });
+
+    function section(label, items) {
+        return '<section class="property-date-section">' +
+            '<div class="property-date-heading"><h2>' + label + "</h2><span>" +
+            items.length + " " + (items.length === 1 ? singular : plural) + "</span></div>" +
+            '<div class="home-listing-grid">' + items.join("") + "</div></section>";
+    }
+
+    let html = "";
+
+    buckets.forEach(function(items, i) {
+        if (items.length) html += section(labels[i], items);
+    });
+
+    if (older.length) html += section("Older " + noun, older);
+
+    return html;
+}
+
+function renderHomeMarketplace(list) {
+    const area = document.getElementById("homeMarketplaceArea");
+    if (!area) return;
+
+    updateHomeSectionCount("marketplaceCount", list ? list.length : 0, "Item", "Items");
+
+    if (!list || !list.length) {
+        area.innerHTML =
+            '<div class="empty-state">' +
+            '<div class="empty-state-icon">🛍️</div>' +
+            "<h3>No marketplace items yet</h3>" +
+            "<p>Published marketplace items will appear here.</p>" +
+            "</div>";
+        return;
+    }
+
+    const cards = list.map(function(item) {
+        const photo = item.photo_urls && item.photo_urls.length
+            ? item.photo_urls[0]
+            : "";
+
+        const image = photo
+            ? '<img src="' + escapeHTML(photo) + '" alt="' + escapeHTML(item.title || "Marketplace item") + '" class="property-image">'
+            : '<div class="home-card-no-image">🛍️</div>';
+
+        const pills = [
+            item.category ? '<span class="detail-pill">🏷️ ' + escapeHTML(item.category) + "</span>" : "",
+            item.condition ? '<span class="detail-pill">' + escapeHTML(item.condition) + "</span>" : ""
+        ].filter(Boolean).join("");
+
+        return '<article class="property-card home-marketplace-card">' +
+            '<div class="property-image">' + image + homeListingTypeBadge(item.listing_type) + "</div>" +
+            '<div class="property-content">' +
+            "<h3>" + escapeHTML(item.title || "Marketplace Item") + "</h3>" +
+            (pills ? '<div class="property-details">' + pills + "</div>" : "") +
+            '<div class="property-price">' + Number(item.price || 0).toLocaleString() +
+            (item.price_unit ? " " + escapeHTML(item.price_unit) : "") + "</div>" +
+            '<div class="property-actions">' + homeDetailsButton("marketplace", item.id) + "</div>" +
+            "</div></article>";
+    });
+
+    area.innerHTML = homeGroupByDay(list, cards, "Marketplace", "Item", "Items");
+}
+
+function renderHomeCars(list) {
+    const area = document.getElementById("homeCarsArea");
+    if (!area) return;
+
+    updateHomeSectionCount("carsCount", list ? list.length : 0, "Car", "Cars");
+
+    if (!list || !list.length) {
+        area.innerHTML =
+            '<div class="empty-state">' +
+            '<div class="empty-state-icon">🚗</div>' +
+            "<h3>No cars yet</h3>" +
+            "<p>Published cars will appear here.</p>" +
+            "</div>";
+        return;
+    }
+
+    const cards = list.map(function(car) {
+        const photo = car.photo_urls && car.photo_urls.length
+            ? car.photo_urls[0]
+            : "";
+
+        const carName =
+            car.title ||
+            [car.brand, car.model].filter(Boolean).join(" ") ||
+            "Car";
+
+        const image = photo
+            ? '<img src="' + escapeHTML(photo) + '" alt="' + escapeHTML(carName) + '" class="property-image">'
+            : '<div class="home-card-no-image">🚗</div>';
+
+        const pills = [
+            (car.brand || car.model) ? '<span class="detail-pill">🚗 ' + escapeHTML([car.brand, car.model].filter(Boolean).join(" ")) + "</span>" : "",
+            car.year ? '<span class="detail-pill">' + escapeHTML(String(car.year)) + "</span>" : "",
+            car.condition ? '<span class="detail-pill">' + escapeHTML(car.condition) + "</span>" : "",
+            car.transmission ? '<span class="detail-pill">' + escapeHTML(car.transmission) + "</span>" : "",
+            car.fuel_type ? '<span class="detail-pill">' + escapeHTML(car.fuel_type) + "</span>" : "",
+            car.mileage ? '<span class="detail-pill">' + Number(car.mileage).toLocaleString() + " km</span>" : ""
+        ].filter(Boolean).join("");
+
+        return '<article class="property-card home-car-card">' +
+            '<div class="property-image">' + image + homeListingTypeBadge(car.listing_type) + "</div>" +
+            '<div class="property-content">' +
+            "<h3>" + escapeHTML(carName) + "</h3>" +
+            (pills ? '<div class="property-details">' + pills + "</div>" : "") +
+            '<div class="property-price">' + Number(car.price || 0).toLocaleString() +
+            (car.price_unit ? " " + escapeHTML(car.price_unit) : "") + "</div>" +
+            '<div class="property-actions">' + homeDetailsButton("car", car.id) + "</div>" +
+            "</div></article>";
+    });
+
+    area.innerHTML = homeGroupByDay(list, cards, "Cars", "Car", "Cars");
+}
+
+function showMarketplaceLoading() {
+    const area = document.getElementById("homeMarketplaceArea");
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading marketplace...</p>
+        </div>
+    `;
+}
+
+async function loadHomeMarketplace(cityId = "all", listingType = "all") {
+    const __ck = "mkt_" + cityId + "_" + listingType;
+    const __cached = window.EEDBCache ? EEDBCache.get(__ck) : null;
+    if (__cached && __cached.length) {
+        homeMarketplaceItems = __cached;
+        renderHomeMarketplace(homeMarketplaceItems);
+    } else {
+        showMarketplaceLoading();
+    }
+
+    const area =
+        document.getElementById(
+            "homeMarketplaceArea"
+        );
+
+    if (!db) {
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        }
+        return;
+    }
+
+    try {
+        let query = db
+            .from("marketplace_items")
+            .select("id,title,description,category,condition,listing_type,price,price_unit,city_id,contact_phone,photo_urls,status,created_at")
+            .eq("status", "published")
+            .order("created_at", {ascending:false});
+
+        if (cityId !== "all") {
+            query = query.eq("city_id", cityId);
+        }
+
+        if (listingType === "rent" || listingType === "sell") {
+            query = query.eq("listing_type", listingType);
+        }
+
+        const result = await query;
+
+        if (result.error) {
+            throw result.error;
+        }
+
+        homeMarketplaceItems = result.data || [];
+        if (window.EEDBCache) { EEDBCache.set(__ck, homeMarketplaceItems); }
+
+        renderHomeMarketplace(homeMarketplaceItems);
+
+    } catch (error) {
+        console.error("HOME MARKETPLACE ERROR:", error);
+
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">HOME MARKETPLACE ERROR: ' +
+                String(error.message || error) +
+                '</div>';
+        }
+    }
+}
+
+function showCarLoading() {
+    const area = document.getElementById("homeCarsArea");
+
+    if (!area) {
+        return;
+    }
+
+    area.innerHTML = `
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading cars...</p>
+        </div>
+    `;
+}
+
+async function loadHomeCars(cityId = "all", listingType = "all") {
+    const __ck = "cars_" + cityId + "_" + listingType;
+    const __cached = window.EEDBCache ? EEDBCache.get(__ck) : null;
+    if (__cached && __cached.length) {
+        homeCars = __cached;
+        renderHomeCars(homeCars);
+    } else {
+        showCarLoading();
+    }
+
+    const area =
+        document.getElementById(
+            "homeCarsArea"
+        );
+
+    if (!db) {
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        }
+        return;
+    }
+
+    try {
+        let query = db
+            .from("cars")
+            .select("id,title,description,brand,model,year,condition,transmission,fuel_type,color,mileage,listing_type,price,price_unit,city_id,contact_phone,photo_urls,status,created_at")
+            .eq("status", "published")
+            .order("created_at", {ascending:false});
+
+        if (cityId !== "all") {
+            query = query.eq("city_id", cityId);
+        }
+
+        if (listingType === "rent" || listingType === "sell") {
+            query = query.eq("listing_type", listingType);
+        }
+
+        const result = await query;
+
+        if (result.error) {
+            throw result.error;
+        }
+
+        homeCars = result.data || [];
+        if (window.EEDBCache) { EEDBCache.set(__ck, homeCars); }
+
+        renderHomeCars(homeCars);
+
+    } catch (error) {
+        console.error("HOME CARS ERROR:", error);
+
+        if (area) {
+            area.innerHTML =
+                '<div class="error-box">HOME CARS ERROR: ' +
+                String(error.message || error) +
+                '</div>';
+        }
+    }
+}
+
+async function loadHomeJobs(cityId = "all") {
+
+    const area =
+        document.getElementById(
+            "homeJobsArea"
+        );
+
+    if (!area) return;
+
+    const __ck = "jobs_" + cityId;
+    const __cached = window.EEDBCache ? EEDBCache.get(__ck) : null;
+    if (__cached && __cached.length) {
+        window.homeJobs = __cached;
+        renderHomeJobs(window.homeJobs);
+    }
+
+    if (!db) {
+        area.innerHTML =
+            '<div class="error-box">Supabase client is not ready. Please restart the app.</div>';
+        return;
+    }
+
+    try {
+
+        let query =
+            db
+                .from("jobs")
+                .select(
+                    "id,city_id,title,description,category,job_type,salary,company_name,application_deadline,status,created_at"
+                )
+                .eq(
+                    "status",
+                    "published"
+                );
+
+        if (
+            cityId &&
+            cityId !== "all"
+        ) {
+            query =
+                query.eq(
+                    "city_id",
+                    cityId
+                );
+        }
+
+        const { data, error } =
+            await query.order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+        if (error) {
+            throw error;
+        }
+
+        await loadHomeJobActions();
+
+        window.homeJobs =
+            data || [];
+
+        if (window.EEDBCache) { EEDBCache.set(__ck, window.homeJobs); }
+
+        renderHomeJobs(
+            window.homeJobs
+        );
+
+    } catch (error) {
+
+        console.error(
+            "HOME JOB LOAD ERROR:",
+            error
+        );
+
+        area.innerHTML =
+            '<div class="error-box">HOME JOB ERROR: ' +
+            String(
+                error.message || error
+            ) +
+            '</div>';
+    }
+}
+
+function renderHomeJobs(list) {
+
+    const area =
+        document.getElementById(
+            "homeJobsArea"
+        );
+
+    if (!area) return;
+
+    updateHomeSectionCount("jobsCount", list.length, "Job", "Jobs");
+
+    if (!list.length) {
+
+        area.innerHTML =
+            '<div class="empty">No published jobs found.</div>';
+
+        return;
+    }
+
+    const groups = {
+        today:[],
+        yesterday:[],
+        day2:[],
+        day3:[],
+        day4:[],
+        day5:[],
+        day6:[],
+        week:[],
+        older:[]
+    };
+
+    const now = new Date();
+
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    list.forEach(function(job) {
+
+        const d =
+            new Date(
+                job.created_at
+            );
+
+        if (isNaN(d.getTime())) {
+
+            groups.older.push(job);
+
+            return;
+        }
+
+        const jobDate =
+            new Date(
+                d.getFullYear(),
+                d.getMonth(),
+                d.getDate()
+            );
+
+        const diff =
+            Math.floor(
+                (today - jobDate) /
+                86400000
+            );
+
+        if (diff === 0)
+            groups.today.push(job);
+
+        else if (diff === 1)
+            groups.yesterday.push(job);
+
+        else if (diff === 2)
+            groups.day2.push(job);
+
+        else if (diff === 3)
+            groups.day3.push(job);
+
+        else if (diff === 4)
+            groups.day4.push(job);
+
+        else if (diff === 5)
+            groups.day5.push(job);
+
+        else if (diff === 6)
+            groups.day6.push(job);
+
+        else if (diff === 7)
+            groups.week.push(job);
+
+        else
+            groups.older.push(job);
+    });
+
+    const names = [
+        ["today","Today Jobs"],
+        ["yesterday","Yesterday Jobs"],
+        ["day2","Before 2 Days Jobs"],
+        ["day3","Before 3 Days Jobs"],
+        ["day4","Before 4 Days Jobs"],
+        ["day5","Before 5 Days Jobs"],
+        ["day6","Before 6 Days Jobs"],
+        ["week","Before Week Jobs"],
+        ["older","Older Jobs"]
+    ];
+
+    let html = "";
+
+    names.forEach(function(item) {
+
+        const jobs =
+            groups[item[0]];
+
+        if (!jobs.length) {
+            return;
+        }
+
+        html += `
+            <section class="home-job-date-section">
+
+                <div class="home-job-date-heading">
+
+                    <h3>
+                        ${item[1]}
+                    </h3>
+
+                    <span>
+                        ${jobs.length}
+                        ${
+                            jobs.length === 1
+                            ? "Job"
+                            : "Jobs"
+                        }
+                    </span>
+
+                </div>
+
+                <div class="home-jobs-grid">
+
+                    ${jobs.map(function(job) {
+
+                        const saved =
+                            homeIsJobSaved(
+                                job.id
+                            );
+
+                        const applied =
+                            homeHasApplied(
+                                job.id
+                            );
+
+                        const description =
+                            String(
+                                job.description ||
+                                ""
+                            );
+
+                        const shortDescription =
+                            description.length > 180
+                            ? description.substring(
+                                0,
+                                180
+                              ) + "..."
+                            : description;
+
+                        return `
+                            <article
+                                class="home-job-card"
+                            >
+
+                                <h3>
+                                    ${escapeHTML(
+                                        job.title ||
+                                        "Untitled Job"
+                                    )}
+                                </h3>
+
+                                <strong>
+                                    🏢
+                                    ${escapeHTML(
+                                        job.company_name ||
+                                        "Company"
+                                    )}
+                                </strong>
+
+                                <div
+                                    class="job-meta"
+                                >
+
+                                    ${
+                                        job.category
+                                        ?
+                                        `
+                                        <span
+                                            class="chip"
+                                        >
+                                            📂
+                                            ${escapeHTML(
+                                                job.category
+                                            )}
+                                        </span>
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                    <span
+                                        class="chip"
+                                    >
+                                        💼
+                                        ${escapeHTML(
+                                            job.job_type ||
+                                            ""
+                                        )}
+                                    </span>
+
+                                    ${
+                                        job.salary
+                                        ?
+                                        `
+                                        <span
+                                            class="chip"
+                                        >
+                                            💰
+                                            ${escapeHTML(
+                                                String(
+                                                    job.salary
+                                                )
+                                            )}
+                                        </span>
+                                        `
+                                        :
+                                        ""
+                                    }
+
+                                </div>
+
+                                <div
+                                    class="job-description"
+                                >
+                                    ${escapeHTML(
+                                        shortDescription ||
+                                        "No description available."
+                                    )}
+                                </div>
+
+                                ${
+                                    applied
+                                    ?
+                                    `
+                                    <div
+                                        style="
+                                            margin-top:10px;
+                                            padding:9px;
+                                            border-radius:9px;
+                                            background:#e8f7f0;
+                                            color:#16734f;
+                                            font-size:12px;
+                                            font-weight:700;
+                                        "
+                                    >
+                                        ✓ You already applied
+                                    </div>
+                                    `
+                                    :
+                                    ""
+                                }
+
+                                <div
+                                    class="job-actions"
+                                >
+
+                                    <button
+                                        class="
+                                            btn
+                                            btn-primary
+                                            btn-small
+                                        "
+                                        type="button"
+                                        onclick="viewHomeJob('${encodeURIComponent(
+                                            job.id
+                                        )}')"
+                                    >
+                                        View Job
+                                    </button>
+
+                                    <button
+                                        class="
+                                            btn
+                                            btn-secondary
+                                            btn-small
+                                        "
+                                        type="button"
+                                        onclick="toggleHomeSaved('${encodeURIComponent(
+                                            job.id
+                                        )}')"
+                                    >
+                                        ${
+                                            saved
+                                            ?
+                                            "❤️ Saved"
+                                            :
+                                            "🤍 Save"
+                                        }
+                                    </button>
+
+                                </div>
+
+                            </article>
+                        `;
+
+                    }).join("")}
+
+                </div>
+
+            </section>
+        `;
+    });
+
+    area.innerHTML = html;
+}
+
+function getPropertyImage(
+    property
+) {
+
+    const images =
+        Array.isArray(
+            property.property_images
+        )
+            ? [...property.property_images]
+            : [];
+
+
+    if (
+        images.length > 0
+    ) {
+
+        images.sort(
+            function(a, b) {
+
+                return (
+                    (a.display_order || 0) -
+                    (b.display_order || 0)
+                );
+            }
+        );
+
+
+        const path =
+            images[0].storage_path;
+
+
+        if (path) {
+
+            const {
+                data
+            } =
+                db.storage
+                    .from(
+                        "property-images"
+                    )
+                    .getPublicUrl(
+                        path
+                    );
+
+
+            if (
+                data &&
+                data.publicUrl
+            ) {
+
+                return data.publicUrl;
+            }
+        }
+    }
+
+
+    return "";
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+========================================================= */
+
+function escapeHTML(value) {
+
+    if (
+        value === null ||
+        value === undefined
+    ) {
+
+        return "";
+    }
+
+
+    return String(value)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+}
+
+
+/* =========================================================
+   LOCATION TEXT
+========================================================= */
+
+function getPropertyLocationText(
+    property
+) {
+
+    const parts = [];
+
+
+    const area =
+        locationMap[
+            property.area_id
+        ];
+
+
+    const woreda =
+        locationMap[
+            property.woreda_id
+        ];
+
+
+    const city =
+        locationMap[
+            property.city_id
+        ];
+
+
+    const zone =
+        locationMap[
+            property.zone_id
+        ];
+
+
+    const region =
+        locationMap[
+            property.region_id
+        ];
+
+
+    if (area) {
+
+        parts.push(
+            area.name
+        );
+    }
+
+
+    if (woreda) {
+
+        parts.push(
+            woreda.name
+        );
+    }
+
+
+    if (city) {
+
+        parts.push(
+            city.name
+        );
+    }
+
+
+    if (zone) {
+
+        parts.push(
+            zone.name
+        );
+    }
+
+
+    if (region) {
+
+        parts.push(
+            region.name
+        );
+    }
+
+
+    /*
+     * Fallback for old text location
+     * values.
+     */
+
+    if (
+        parts.length === 0
+    ) {
+
+        const fallback = [
+
+            property.area,
+
+            property.woreda,
+
+            property.city,
+
+            property.zone,
+
+            property.region,
+
+            property.location
+
+        ].filter(
+            function(item) {
+
+                return (
+                    item !== null &&
+                    item !== undefined &&
+                    String(item).trim() !== ""
+                );
+            }
+        );
+
+
+        if (
+            fallback.length > 0
+        ) {
+
+            return fallback.join(
+                ", "
+            );
+        }
+    }
+
+
+    return parts.join(
+        ", "
+    ) ||
+    "Location not specified";
+}
+
+
+/* =========================================================
+   FORMAT PRICE
+========================================================= */
+
+function formatPrice(
+    price
+) {
+
+    if (
+        price === null ||
+        price === undefined ||
+        price === ""
+    ) {
+
+        return "Price not specified";
+    }
+
+
+    const number =
+        Number(price);
+
+
+    if (
+        Number.isNaN(number)
+    ) {
+
+        return escapeHTML(
+            price
+        );
+    }
+
+
+    return (
+        new Intl.NumberFormat(
+            "en-US"
+        ).format(number)
+        +
+        " ETB"
+    );
+}
+
+
+/* =========================================================
+   PROPERTY TYPE
+========================================================= */
+
+function normalizePropertyType(
+    property
+) {
+
+    const value = String(property.listing_type || property.type || property.property_type || '').toLowerCase().trim();
+    return value === 'sale' ? 'sell' : value;
+}
+
+
+/* =========================================================
+   RENDER PROPERTIES
+========================================================= */
+
+function renderProperties(properties) {
+
+    const area = document.getElementById("propertyArea");
+
+    if (!area) return;
+
+    if (!properties || properties.length === 0) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🏠</div>
+                <h3>No Properties Found</h3>
+                <p>Try changing your search or filters.</p>
+            </div>
+        `;
+        return;
+    }
+
+    const groups = [
+        { label: "Today Property", days: 0 },
+        { label: "Yesterday Property", days: 1 },
+        { label: "Before 2 Days Property", days: 2 },
+        { label: "Before 3 Days Property", days: 3 },
+        { label: "Before 4 Days Property", days: 4 },
+        { label: "Before 5 Days Property", days: 5 },
+        { label: "Before 6 Days Property", days: 6 },
+        { label: "Before Week Property", days: 7 }
+    ];
+
+    const now = new Date();
+    const today = new Date(
+        now.getFullYear(),
+        now.getMonth(),
+        now.getDate()
+    );
+
+    const getDayDifference = function(property) {
+        if (!property.created_at) return 9999;
+
+        const created = new Date(property.created_at);
+
+        if (isNaN(created.getTime())) return 9999;
+
+        const createdDay = new Date(
+            created.getFullYear(),
+            created.getMonth(),
+            created.getDate()
+        );
+
+        return Math.floor(
+            (today - createdDay) / (1000 * 60 * 60 * 24)
+        );
+    };
+
+    const grouped = {};
+    groups.forEach(function(group) {
+        grouped[group.days] = [];
+    });
+
+    grouped.older = [];
+
+    properties.forEach(function(property) {
+        const diff = getDayDifference(property);
+
+        if (grouped[diff] !== undefined) {
+            grouped[diff].push(property);
+        } else {
+            grouped.older.push(property);
+        }
+    });
+
+    area.innerHTML = "";
+
+    let shownGroups = 0;
+
+    groups.forEach(function(group) {
+
+        const items = grouped[group.days];
+
+        if (!items || items.length === 0) return;
+
+        const section = document.createElement("section");
+        section.className = "property-date-section";
+
+        section.innerHTML = `
+            <div class="property-date-heading">
+                <h2>${group.label}</h2>
+                <span>${items.length} ${items.length === 1 ? "Property" : "Properties"}</span>
+            </div>
+        `;
+
+        const grid = document.createElement("div");
+        grid.className = "property-grid";
+
+        items.forEach(function(property) {
+            const card = createPropertyCard(property);
+            grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        area.appendChild(section);
+
+        shownGroups++;
+    });
+
+    if (grouped.older.length > 0) {
+
+        const section = document.createElement("section");
+        section.className = "property-date-section";
+
+        section.innerHTML = `
+            <div class="property-date-heading">
+                <h2>Older Properties</h2>
+                <span>${grouped.older.length} ${grouped.older.length === 1 ? "Property" : "Properties"}</span>
+            </div>
+        `;
+
+        const grid = document.createElement("div");
+        grid.className = "property-grid";
+
+        grouped.older.forEach(function(property) {
+            const card = createPropertyCard(property);
+            grid.appendChild(card);
+        });
+
+        section.appendChild(grid);
+        area.appendChild(section);
+
+        shownGroups++;
+    }
+
+    if (shownGroups === 0) {
+        area.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">🏠</div>
+                <h3>No Properties Found</h3>
+                <p>Try changing your search or filters.</p>
+            </div>
+        `;
+    }
+}
+
+
+/* =========================================================
+   CREATE PROPERTY CARD
+========================================================= */
+
+function createPropertyCard(
+    property
+) {
+
+    const card =
+        document.createElement(
+            "article"
+        );
+
+
+    card.className =
+        "property-card";
+
+
+    const type =
+        normalizePropertyType(
+            property
+        );
+
+
+    const isRent =
+        type === "rent";
+
+
+    const badgeClass =
+        isRent
+            ? "badge-rent"
+            : "badge-sale";
+
+
+    const badgeText =
+        isRent
+            ? "FOR RENT"
+            : "FOR SALE";
+
+
+    const imageUrl =
+        getPropertyImage(
+            property
+        );
+
+
+    const imageHTML =
+        imageUrl
+
+            ? `
+                <img
+                    class="property-image"
+                    src="${escapeHTML(imageUrl)}"
+                    alt="${escapeHTML(
+                        property.title ||
+                        "Property"
+                    )}"
+                    loading="lazy"
+                    onerror="this.style.display='none';"
+                >
+            `
+
+            : `
+
+                <div
+                    class="property-image"
+                    style="
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        font-size:45px;
+                    "
+                >
+                    🏠
+                </div>
+            `;
+
+
+    const title =
+        property.title ||
+        property.name ||
+        "Property";
+
+
+    const location =
+        getPropertyLocationText(
+            property
+        );
+
+
+    const bedrooms =
+        property.bedrooms;
+
+
+    const bathrooms =
+        property.bathrooms;
+
+
+    const details = [];
+
+
+    if (
+        bedrooms !== null &&
+        bedrooms !== undefined &&
+        bedrooms !== ""
+    ) {
+
+        details.push(
+            "🛏 " +
+            escapeHTML(
+                bedrooms
+            ) +
+            " Bedrooms"
+        );
+    }
+
+
+    if (
+        bathrooms !== null &&
+        bathrooms !== undefined &&
+        bathrooms !== ""
+    ) {
+
+        details.push(
+            "🚿 " +
+            escapeHTML(
+                bathrooms
+            ) +
+            " Bathrooms"
+        );
+    }
+
+
+    if (
+        property.area_size ||
+        property.size
+    ) {
+
+        details.push(
+            "📐 " +
+            escapeHTML(
+                property.area_size ||
+                property.size
+            )
+        );
+    }
+
+
+    card.innerHTML = `
+
+        ${imageHTML}
+
+        <div class="property-content">
+
+            <div class="property-top">
+
+                <h3 class="property-title">
+
+                    ${escapeHTML(
+                        title
+                    )}
+
+                </h3>
+
+                <span
+                    class="badge ${badgeClass}"
+                >
+
+                    ${badgeText}
+
+                </span>
+
+            </div>
+
+
+            <div class="property-location">
+
+                📍
+                ${escapeHTML(
+                    location
+                )}
+
+            </div>
+
+
+            <div class="property-details">
+
+                ${
+                    details.length > 0
+
+                        ? details.map(
+                            function(item) {
+
+                                return `
+                                    <span
+                                        class="detail-pill"
+                                    >
+                                        ${item}
+                                    </span>
+                                `;
+                            }
+                        ).join("")
+
+                        : `
+                            <span
+                                class="detail-pill"
+                            >
+                                Property
+                            </span>
+                        `
+                }
+
+            </div>
+
+
+            <div class="property-price">
+
+                ${formatPrice(
+                    property.price
+                )}
+
+            </div>
+
+
+            <div class="property-actions">
+
+                <button
+                    class="view-btn"
+                    onclick="viewProperty('${escapeHTML(
+                        property.id
+                    )}')"
+                >
+                    View Property
+                </button>
+
+                <button class="view-btn" type="button" onclick="shareProperty('${escapeHTML(property.id)}','${escapeHTML(property.title||'Property')}')">↗ Share</button>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    return card;
+}
+
+
+/* =========================================================
+   VIEW PROPERTY
+========================================================= */
+
+function shareProperty(propertyId, title){
+    const url = new URL('property-details.html?id='+encodeURIComponent(propertyId), window.location.href).href;
+    if(navigator.share){ navigator.share({title:title||'Property', text:title||'Property listing', url}).catch(()=>{}); return; }
+    if(navigator.clipboard){ navigator.clipboard.writeText(url).then(()=>alert('Property link copied.')).catch(()=>window.prompt('Copy property link:',url)); return; }
+    window.prompt('Copy property link:',url);
+}
+
+function viewProperty(
+    propertyId
+) {
+
+    if (!propertyId) {
+
+        alert(
+            "Property ID is missing."
+        );
+
+        return;
+    }
+
+
+    localStorage.setItem(
+        "selectedPropertyId",
+        propertyId
+    );
+
+
+    window.location.href =
+        "property-details.html?id=" +
+        encodeURIComponent(
+            propertyId
+        );
+}
+
+
+/* =========================================================
+   APPLY FILTERS
+========================================================= */
+
+function applyFilters() {
+    const searchElement = document.getElementById("searchInput");
+    const typeElement = document.getElementById("typeFilter");
+    const cityElement = document.getElementById("cityFilter");
+
+    const search = searchElement
+        ? searchElement.value.toLowerCase().trim()
+        : "";
+
+    const type = typeElement
+        ? typeElement.value.toLowerCase()
+        : "all";
+
+    const cityId = cityElement
+        ? cityElement.value
+        : "all";
+
+    const propertySection =
+        document.getElementById("propertiesSection");
+
+    const propertyArea =
+        document.getElementById("propertyArea");
+
+    const jobsSection =
+        document.getElementById("jobsSection");
+
+    const marketplaceSection =
+        document.getElementById("marketplaceSection");
+
+    const carsSection =
+        document.getElementById("carsSection");
+
+    const showJobs =
+        type === "all" || type === "job";
+
+    const showMarketplace =
+        type === "all" ||
+        type === "rent" ||
+        type === "sell" ||
+        type === "marketplace";
+
+    const showCars =
+        type === "all" ||
+        type === "rent" ||
+        type === "sell" ||
+        type === "car";
+
+    const showProperties =
+        type === "all" ||
+        type === "rent" ||
+        type === "sell";
+
+    if (propertySection) {
+        propertySection.style.display = "";
+    }
+
+    if (jobsSection) {
+        jobsSection.style.display =
+            showJobs ? "" : "none";
+    }
+
+    if (marketplaceSection) {
+        marketplaceSection.style.display =
+            showMarketplace ? "" : "none";
+    }
+
+    if (carsSection) {
+        carsSection.style.display =
+            showCars ? "" : "none";
+    }
+
+    /*
+     * JOBS
+     * Job filter always respects selected city.
+     */
+    if (showJobs) {
+        loadHomeJobs(cityId);
+    }
+
+    /*
+     * MARKETPLACE
+     * Rent/Sell type is passed to the database loader.
+     */
+    if (showMarketplace) {
+        const marketplaceType =
+            type === "rent" || type === "sell"
+                ? type
+                : "all";
+
+        loadHomeMarketplace(
+            cityId,
+            marketplaceType
+        );
+    }
+
+    /*
+     * CARS
+     * Rent/Sell type is passed to the database loader.
+     */
+    if (showCars) {
+        const carType =
+            type === "rent" || type === "sell"
+                ? type
+                : "all";
+
+        loadHomeCars(
+            cityId,
+            carType
+        );
+    }
+
+    /*
+     * PROPERTY FILTER
+     */
+    if (!showProperties) {
+        if (propertyArea) {
+            propertyArea.innerHTML = "";
+        }
+
+        return;
+    }
+
+    const minPriceElement =
+        document.getElementById("minPrice");
+
+    const maxPriceElement =
+        document.getElementById("maxPrice");
+
+    const minPriceValue =
+        minPriceElement
+            ? minPriceElement.value
+            : "";
+
+    const maxPriceValue =
+        maxPriceElement
+            ? maxPriceElement.value
+            : "";
+
+    const minPrice =
+        minPriceValue === ""
+            ? null
+            : Number(minPriceValue);
+
+    const maxPrice =
+        maxPriceValue === ""
+            ? null
+            : Number(maxPriceValue);
+
+    if (
+        minPrice !== null &&
+        maxPrice !== null &&
+        minPrice > maxPrice
+    ) {
+        showPropertyError(
+            "Minimum price cannot be greater than maximum price."
+        );
+        return;
+    }
+
+    const filtered =
+        allProperties.filter(function(property) {
+
+            const normalized =
+                normalizePropertyType(property);
+
+            const propertyType =
+                normalized === "sale"
+                    ? "sell"
+                    : normalized;
+
+            /*
+             * TYPE
+             * Property participates only in:
+             * All / Rent / Sell.
+             */
+            if (
+                type !== "all" &&
+                propertyType !== type
+            ) {
+                return false;
+            }
+
+            /*
+             * CITY
+             */
+            if (
+                cityId !== "all" &&
+                property.city_id !== cityId
+            ) {
+                return false;
+            }
+
+            /*
+             * PRICE
+             */
+            const price =
+                Number(property.price);
+
+            if (
+                minPrice !== null &&
+                !Number.isNaN(price) &&
+                price < minPrice
+            ) {
+                return false;
+            }
+
+            if (
+                maxPrice !== null &&
+                !Number.isNaN(price) &&
+                price > maxPrice
+            ) {
+                return false;
+            }
+
+            /*
+             * SEARCH
+             */
+            if (search) {
+                const location =
+                    getPropertyLocationText(
+                        property
+                    );
+
+                const searchableText = [
+                    property.title,
+                    property.description,
+                    property.city,
+                    property.location,
+                    propertyType,
+                    location
+                ]
+                .filter(function(item) {
+                    return (
+                        item !== null &&
+                        item !== undefined &&
+                        String(item).trim() !== ""
+                    );
+                })
+                .join(" ")
+                .toLowerCase();
+
+                if (
+                    !searchableText.includes(search)
+                ) {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+
+    renderProperties(filtered);
+}
+
+/* =========================================================
+   RESET FILTERS
+========================================================= */
+
+function resetFilters() {
+
+    document
+        .getElementById(
+            "searchInput"
+        )
+        .value =
+        "";
+
+
+    document
+        .getElementById(
+            "typeFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "cityFilter"
+        )
+        .value =
+        "all";
+
+
+    document
+        .getElementById(
+            "minPrice"
+        )
+        .value =
+        "";
+
+
+    document
+        .getElementById(
+            "maxPrice"
+        )
+        .value =
+        "";
+
+
+    if (window.eedbRestoreCity) { window.eedbRestoreCity(); }
+
+    applyFilters();
+}
+
+
+/* =========================================================
+   SCROLL TO PROPERTIES
+========================================================= */
+
+function scrollToProperties() {
+
+    const section =
+        document.getElementById(
+            "propertiesSection"
+        );
+
+
+    if (section) {
+
+        section.scrollIntoView({
+            behavior:
+                "smooth"
+        });
+    }
+}
+
+
+/* =========================================================
+   PROPERTY LOADING
+========================================================= */
+
+function showPropertyLoading() {
+
+    const area =
+        document.getElementById(
+            "propertyArea"
+        );
+
+
+    if (!area) {
+
+        return;
+    }
+
+
+    area.innerHTML = `
+
+        <div class="loading">
+
+            <div class="spinner"></div>
+
+            <p>
+                ${escapeHTML(
+                    getTranslation(
+                        "loadingProperties"
+                    )
+                )}
+            </p>
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   PROPERTY ERROR
+========================================================= */
+
+function showPropertyError(
+    message
+) {
+
+    const area =
+        document.getElementById(
+            "propertyArea"
+        );
+
+
+    if (!area) {
+
+        return;
+    }
+
+
+    area.innerHTML = `
+
+        <div class="error-box">
+
+            <strong>
+                Something went wrong
+            </strong>
+
+            <br><br>
+
+            ${escapeHTML(
+                message
+            )}
+
+        </div>
+
+    `;
+}
+
+
+/* =========================================================
+   LANGUAGE SYSTEM (English / Afaan Oromoo / Amharic)
+   These functions were referenced by the page but missing,
+   which made initializeApp() crash on its first line and left
+   every section stuck on "Loading...".
+========================================================= */
+
+const translations = {
+    en: {
+        brand: "Eastern Ethiopia Digital Broker",
+        properties: "Properties", jobs: "Jobs", dashboard: "Dashboard",
+        login: "Login", logout: "Logout",
+        heroTitle: "Find Your Next Home or Opportunity",
+        heroDescription: "Discover houses for rent and sale, local jobs, and opportunities across Eastern Ethiopia.",
+        findProperty: "🏠 Find Property", findJobs: "💼 Find Jobs", listProperty: "➕ List Property",
+        houses: "Houses", housesDescription: "Find houses for rent and sale.",
+        jobsDescription: "Discover local employment opportunities.",
+        localSearch: "Local Search", localSearchDescription: "Search opportunities by location.",
+        latestProperties: "Latest Properties", browseProperties: "Browse available properties.",
+        search: "Search", type: "Type", all: "All", rent: "Rent", sale: "Sale", job: "Job",
+        cityTown: "City / Town", minPrice: "Min Price", maxPrice: "Max Price", reset: "Reset",
+        loadingProperties: "Loading properties...",
+        welcomeBack: "Welcome Back", loginSubtitle: "Login to continue to your dashboard.",
+        email: "Email", password: "Password", noAccount: "Don't have an account?",
+        createAccount: "Create Account", signupSubtitle: "Choose your account type and get started.",
+        fullName: "Full Name", phoneNumber: "Phone Number", accountType: "Account Type",
+        owner: "Owner", renter: "Renter", jobSeeker: "Job Seeker",
+        alreadyAccount: "Already have an account?",
+        footerDescription: "A local digital marketplace for properties, jobs and opportunities across Eastern Ethiopia.",
+        property: "Property", allRights: "All rights reserved.",
+        searchPlaceholder: "Search property, location..."
+    },
+    om: {
+        brand: "Daldalaa Dijitaalaa Bahaa Itoophiyaa",
+        properties: "Qabeenya", jobs: "Hojiiwwan", dashboard: "Daashboordii",
+        login: "Seeni", logout: "Ba'i",
+        heroTitle: "Mana ykn Carraa Kee Itti Aanu Argadhu",
+        heroDescription: "Manneen kiraa fi gurgurtaa, hojiiwwan naannoo fi carraawwan Bahaa Itoophiyaa guutuu keessatti argadhu.",
+        findProperty: "🏠 Qabeenya Barbaadi", findJobs: "💼 Hojii Barbaadi", listProperty: "➕ Qabeenya Galmeessi",
+        houses: "Manneen", housesDescription: "Manneen kiraa fi gurgurtaa argadhu.",
+        jobsDescription: "Carraawwan hojii naannoo argadhu.",
+        localSearch: "Barbaacha Naannoo", localSearchDescription: "Carraawwan bakka jirtaniin barbaadi.",
+        latestProperties: "Qabeenya Haaraa", browseProperties: "Qabeenya jiru ilaali.",
+        search: "Barbaadi", type: "Gosa", all: "Hunda", rent: "Kiraa", sale: "Gurgurtaa", job: "Hojii",
+        cityTown: "Magaalaa / Ganda", minPrice: "Gatii Gadi Aanaa", maxPrice: "Gatii Ol Aanaa", reset: "Haaromsi",
+        loadingProperties: "Qabeenya fe'aa jira...",
+        welcomeBack: "Baga Nagaan Deebitan", loginSubtitle: "Gara daashboordii keetii itti fufuuf seeni.",
+        email: "Imeelii", password: "Jecha Icciitii", noAccount: "Akkaawuntii hin qabduu?",
+        createAccount: "Akkaawuntii Uumi", signupSubtitle: "Gosa akkaawuntii kee filadhuu jalqabi.",
+        fullName: "Maqaa Guutuu", phoneNumber: "Lakkoofsa Bilbilaa", accountType: "Gosa Akkaawuntii",
+        owner: "Abbaa Qabeenyaa", renter: "Kiraa Fudhataa", jobSeeker: "Barbaadaa Hojii",
+        alreadyAccount: "Duraan akkaawuntii qabduu?",
+        footerDescription: "Gabaa dijitaalaa naannoo kan qabeenya, hojii fi carraawwan Bahaa Itoophiyaa guutuu keessatti argamu.",
+        property: "Qabeenya", allRights: "Mirgi hundi eegameera.",
+        searchPlaceholder: "Qabeenya, bakka barbaadi..."
+    },
+    am: {
+        brand: "የምሥራቅ ኢትዮጵያ ዲጂታል ደላላ",
+        properties: "ንብረቶች", jobs: "ሥራዎች", dashboard: "ዳሽቦርድ",
+        login: "ግባ", logout: "ውጣ",
+        heroTitle: "ቀጣዩን ቤትዎን ወይም ዕድልዎን ያግኙ",
+        heroDescription: "በምሥራቅ ኢትዮጵያ ያሉ የኪራይና የሽያጭ ቤቶችን፣ የአካባቢ ሥራዎችን እና ዕድሎችን ያግኙ።",
+        findProperty: "🏠 ንብረት ፈልግ", findJobs: "💼 ሥራ ፈልግ", listProperty: "➕ ንብረት አስመዝግብ",
+        houses: "ቤቶች", housesDescription: "የኪራይና የሽያጭ ቤቶችን ያግኙ።",
+        jobsDescription: "የአካባቢ የሥራ ዕድሎችን ያግኙ።",
+        localSearch: "የአካባቢ ፍለጋ", localSearchDescription: "ዕድሎችን በአካባቢ ይፈልጉ።",
+        latestProperties: "አዳዲስ ንብረቶች", browseProperties: "ያሉ ንብረቶችን ይመልከቱ።",
+        search: "ፈልግ", type: "ዓይነት", all: "ሁሉም", rent: "ኪራይ", sale: "ሽያጭ", job: "ሥራ",
+        cityTown: "ከተማ / ወረዳ", minPrice: "ዝቅተኛ ዋጋ", maxPrice: "ከፍተኛ ዋጋ", reset: "ዳግም አስጀምር",
+        loadingProperties: "ንብረቶች በመጫን ላይ...",
+        welcomeBack: "እንኳን ደህና መጡ", loginSubtitle: "ወደ ዳሽቦርድዎ ለመቀጠል ይግቡ።",
+        email: "ኢሜይል", password: "የይለፍ ቃል", noAccount: "መለያ የለዎትም?",
+        createAccount: "መለያ ፍጠር", signupSubtitle: "የመለያ ዓይነትዎን ይምረጡ እና ይጀምሩ።",
+        fullName: "ሙሉ ስም", phoneNumber: "ስልክ ቁጥር", accountType: "የመለያ ዓይነት",
+        owner: "ባለቤት", renter: "ተከራይ", jobSeeker: "ሥራ ፈላጊ",
+        alreadyAccount: "መለያ አለዎት?",
+        footerDescription: "በምሥራቅ ኢትዮጵያ ላሉ ንብረቶች፣ ሥራዎች እና ዕድሎች የአካባቢ ዲጂታል ገበያ።",
+        property: "ንብረት", allRights: "መብቱ በሕግ የተጠበቀ ነው።",
+        searchPlaceholder: "ንብረት፣ አካባቢ ይፈልጉ..."
+    }
+};
+
+function getCurrentLanguage() {
+    let lang = "en";
+    try {
+        lang = localStorage.getItem("eedb_language") || "en";
+    } catch (e) {}
+    return translations[lang] ? lang : "en";
+}
+
+function applyLanguage(lang) {
+    if (!translations[lang]) {
+        lang = "en";
+    }
+
+    const dictionary = translations[lang];
+
+    document.documentElement.lang = lang;
+
+    document.querySelectorAll("[data-i18n]").forEach(function(el) {
+        const key = el.getAttribute("data-i18n");
+        if (dictionary[key]) {
+            el.textContent = dictionary[key];
+        }
+    });
+
+    document.querySelectorAll("[data-i18n-placeholder]").forEach(function(el) {
+        const key = el.getAttribute("data-i18n-placeholder");
+        if (dictionary[key]) {
+            el.setAttribute("placeholder", dictionary[key]);
+        }
+    });
+
+    const selector = document.getElementById("languageSelector");
+    if (selector && selector.value !== lang) {
+        selector.value = lang;
+    }
+}
+
+function changeLanguage(lang) {
+    try {
+        localStorage.setItem("eedb_language", lang);
+    } catch (e) {}
+
+    applyLanguage(lang);
+}
+
+
+/* =========================================================
+   INITIAL PAGE START
+========================================================= */
+
+function ensureSupabaseReady() {
+    if (typeof db !== "undefined" && db) {
+        console.log("SHARED SUPABASE CLIENT READY");
+        return true;
+    }
+
+    console.error("SHARED SUPABASE CLIENT IS NOT READY");
+    return false;
+}
+
+function withTimeout(promise, ms, label) {
+    return Promise.race([
+        promise,
+        new Promise(function(resolve) {
+            setTimeout(function() {
+                console.warn(label + " timed out after " + ms + "ms, continuing.");
+                resolve();
+            }, ms);
+        })
+    ]);
+}
+
+async function safeStep(label, fn) {
+    try {
+        await fn();
+    } catch (error) {
+        console.error(label + " failed:", error);
+    }
+}
+
+async function initializeApp() {
+
+    /*
+     * Each step is isolated: a failure or a hang in one step
+     * (auth, locations, ...) must never leave the whole page
+     * stuck on "Loading...".
+     */
+    await safeStep("applyLanguage", function() {
+        applyLanguage(getCurrentLanguage());
+    });
+
+    if (!ensureSupabaseReady()) {
+        return;
+    }
+
+    await safeStep("setupAuthListener", function() {
+        setupAuthListener();
+    });
+
+    /* Auth check and locations load run at the same time (was one after the other). */
+    await Promise.all([
+        safeStep("checkCurrentUser", function() {
+            return withTimeout(checkCurrentUser(), 8000, "checkCurrentUser");
+        }),
+        safeStep("loadLocations", function() {
+            return withTimeout(loadLocations(), 8000, "loadLocations");
+        })
+    ]);
+
+    await safeStep("cityGate", function() {
+        return window.cityGate ? window.cityGate() : null;
+    });
+
+    /* Everything below loads only the selected city (properties are filtered right after download). */
+    const startCity = (document.getElementById("cityFilter") || {}).value || "all";
+
+    await Promise.all([
+        safeStep("loadProperties", loadProperties),
+        safeStep("loadHomeJobs", function() { return loadHomeJobs(startCity); }),
+        safeStep("loadHomeMarketplace", function() { return loadHomeMarketplace(startCity); }),
+        safeStep("loadHomeCars", function() { return loadHomeCars(startCity); })
+    ]);
+
+    console.log(
+        "EASTERN ETHIOPIA GENERAL DIGITAL BROKER INDEX READY"
+    );
+}
+
+
+/* =========================================================
+   DOM READY
+========================================================= */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    initializeApp
+);
+
+
+/* =========================================================
+   ESC KEY CLOSE MODAL
+========================================================= */
+
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key === "Escape"
+        ) {
+
+            closeModal(
+                "loginModal"
+            );
+
+            closeModal(
+                "signupModal"
+            );
+        }
+    }
+);
+
+</script>
+
+<!-- =========================================================
+     SERVICE WORKER
+========================================================= -->
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", function() {
+        navigator.serviceWorker
+            .register("./service-worker.js")
+            .then(function() {
+                console.log("EEDB Service Worker registered.");
+            })
+            .catch(function(error) {
+                console.warn(
+                    "EEDB Service Worker registration failed:",
+                    error
+                );
+            });
+    });
+}
+</script>
+
+</body>
+
+</html>
+<style>
+.property-date-section {
+    margin: 34px 0;
+}
+
+.property-date-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 18px;
+    padding: 14px 18px;
+    background: #ffffff;
+    border-left: 5px solid #0f766e;
+    border-radius: 14px;
+    box-shadow: 0 6px 20px rgba(15, 23, 42, 0.08);
+}
+
+.property-date-heading h2 {
+    margin: 0;
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
+}
+
+.property-date-heading span {
+    font-size: 13px;
+    font-weight: 700;
+    color: #0f766e;
+    background: #ecfdf5;
+    padding: 7px 11px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+@media (max-width: 600px) {
+    .property-date-heading {
+        padding: 12px 14px;
+    }
+
+    .property-date-heading h2 {
+        font-size: 18px;
+    }
+
+    .property-date-heading span {
+        font-size: 11px;
+        padding: 6px 9px;
+    }
+}
+</style>
